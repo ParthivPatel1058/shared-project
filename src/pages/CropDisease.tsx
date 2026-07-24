@@ -279,7 +279,7 @@ const CropDisease = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16 max-w-5xl">
+      <main className="container mx-auto px-4 pt-8 md:pt-12 pb-16 max-w-5xl">
         {/* Page header */}
         <div className="mb-8">
           <span className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-primary/10 text-primary text-sm font-medium">

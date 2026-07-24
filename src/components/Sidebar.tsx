@@ -1,73 +1,52 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutGrid,
+  Home,
+  ScanSearch,
   ShoppingBag,
-  HelpCircle,
   Store,
-  Package,
+  HelpCircle,
   Landmark,
   Bot,
   Leaf,
   Carrot,
   MapPin,
   Truck,
-  LifeBuoy,
   Settings as SettingsIcon,
-  ScanSearch,
-  PanelRightClose,
-  PanelRightOpen,
+  Zap,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/bhoomix-logo.jpeg";
 
 interface NavItem {
   path: string;
-  icon: typeof LayoutGrid;
-  labelKey: string;
+  icon: typeof Home;
+  label: { en: string; hi: string };
 }
 
-interface NavSection {
-  headingKey: string;
-  items: NavItem[];
-}
+const NAV_ITEMS: NavItem[] = [
+  { path: "/", icon: Home, label: { en: "Home", hi: "होम" } },
+  { path: "/crop-disease", icon: ScanSearch, label: { en: "Crop Disease", hi: "फसल रोग" } },
+  { path: "/agri-market", icon: ShoppingBag, label: { en: "Agri Market", hi: "कृषि बाज़ार" } },
+  { path: "/kisan-mart", icon: Store, label: { en: "Kisan Mart", hi: "किसान मार्ट" } },
+  { path: "/kisan-help", icon: HelpCircle, label: { en: "Crop Advisory", hi: "फसल सलाह" } },
+  { path: "/gov-schemes", icon: Landmark, label: { en: "Govt. Schemes", hi: "सरकारी योजनाएं" } },
+  { path: "/robotic-farming", icon: Bot, label: { en: "Robotic Farming", hi: "रोबोटिक कृषि" } },
+  { path: "/organic-farming", icon: Leaf, label: { en: "Organic Farming", hi: "जैविक खेती" } },
+  { path: "/vegetable-farming", icon: Carrot, label: { en: "Vegetable Farming", hi: "सब्जी खेती" } },
+  { path: "/shop-locator", icon: MapPin, label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
+  { path: "/partner-registration", icon: Truck, label: { en: "Delivery", hi: "डिलीवरी" } },
+  { path: "/settings", icon: SettingsIcon, label: { en: "Settings", hi: "सेटिंग्स" } },
+];
 
-const SECTIONS: NavSection[] = [
-  {
-    headingKey: "dashboard",
-    items: [
-      { path: "/", icon: LayoutGrid, labelKey: "home" },
-      { path: "/crop-disease", icon: ScanSearch, labelKey: "cropDiseaseDetection" },
-    ],
-  },
-  {
-    headingKey: "shopping",
-    items: [
-      { path: "/agri-market", icon: ShoppingBag, labelKey: "agriMarket" },
-      { path: "/kisan-mart", icon: Store, labelKey: "kisanMart" },
-      { path: "/kisan-help", icon: HelpCircle, labelKey: "kisanHelp" },
-      { path: "/orders", icon: Package, labelKey: "orders" },
-    ],
-  },
-  {
-    headingKey: "navigation",
-    items: [
-      { path: "/gov-schemes", icon: Landmark, labelKey: "govSchemes" },
-      { path: "/robotic-farming", icon: Bot, labelKey: "roboticFarming" },
-      { path: "/organic-farming", icon: Leaf, labelKey: "organicFarming" },
-      { path: "/vegetable-farming", icon: Carrot, labelKey: "vegetableFarming" },
-      { path: "/shop-locator", icon: MapPin, labelKey: "shopLocator" },
-      { path: "/partner-registration", icon: Truck, labelKey: "deliveryPartner" },
-    ],
-  },
-  {
-    headingKey: "accountSection",
-    items: [
-      { path: "/partner-orders", icon: Truck, labelKey: "partnerOrders" },
-      { path: "/support", icon: LifeBuoy, labelKey: "support" },
-      { path: "/settings", icon: SettingsIcon, labelKey: "settings" },
-    ],
-  },
+const QUICK_ACTIONS: NavItem[] = [
+  { path: "/crop-disease", icon: ScanSearch, label: { en: "Scan Disease", hi: "रोग स्कैन" } },
+  { path: "/kisan-help", icon: HelpCircle, label: { en: "Ask Advisory", hi: "सलाह पूछें" } },
+  { path: "/shop-locator", icon: MapPin, label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
 ];
 
 interface SidebarProps {
@@ -76,96 +55,132 @@ interface SidebarProps {
 }
 
 /**
- * Persistent desktop sidebar docked on the RIGHT edge. Renders as a slim
- * icon rail by default and expands to full labels via the toggle button.
- * Hidden below the `lg` breakpoint, where the top-bar mobile menu
- * (in Navigation.tsx) takes over.
+ * Floating glass dock — VisionOS-style sidebar pinned to the left edge with
+ * breathing room on all sides. Icon rail when collapsed, full labels when
+ * expanded. Hidden below `lg`, where the top-bar mobile menu takes over.
  */
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
-  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const { language } = useLanguage();
+  const { user } = useAuth();
+  const en = language === "en";
+
+  const email = user?.email ?? "";
+  const name = email.split("@")[0] || "Farmer";
+  const initials = name.slice(0, 2).toUpperCase();
+
+  const renderItem = (item: NavItem, subtle = false) => {
+    const Icon = item.icon;
+    const isActive = location.pathname === item.path;
+    return (
+      <Link
+        key={`${item.path}-${item.label.en}`}
+        to={item.path}
+        title={collapsed ? (en ? item.label.en : item.label.hi) : undefined}
+        className={cn(
+          "group relative flex items-center gap-3 rounded-2xl transition-all duration-300",
+          collapsed ? "justify-center h-11 w-11 mx-auto" : "px-3.5 h-10",
+          isActive
+            ? "bg-white/10 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+            : "text-white/60 hover:text-white hover:bg-white/[0.07]",
+        )}
+      >
+        {/* Active indicator */}
+        {isActive && !collapsed && (
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-gradient-to-b from-cyan-300 to-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.9)]" />
+        )}
+        <Icon
+          strokeWidth={1.75}
+          className={cn(
+            "h-[19px] w-[19px] flex-shrink-0 transition-all duration-300",
+            isActive ? "icon-glow text-cyan-300" : "group-hover:scale-110",
+          )}
+        />
+        {!collapsed && (
+          <span className={cn("text-sm truncate transition-colors", subtle ? "font-normal" : "font-medium")}>
+            {en ? item.label.en : item.label.hi}
+          </span>
+        )}
+      </Link>
+    );
+  };
 
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col fixed top-0 right-0 bottom-0 z-40 bg-card/85 backdrop-blur-xl border-l border-border/70 shadow-[0_0_24px_hsl(152_45%_20%/0.06)] transition-[width] duration-300",
-        collapsed ? "w-16" : "w-64",
+        "hidden lg:flex flex-col fixed left-3 top-3 bottom-3 z-40 glass-dock rounded-[32px] transition-[width] duration-300 overflow-hidden",
+        collapsed ? "w-[76px]" : "w-64",
       )}
     >
-      {/* Header: brand + expand/collapse control */}
-      <div
-        className={cn(
-          "flex items-center h-16 border-b border-border/60 flex-shrink-0",
-          collapsed ? "flex-col justify-center gap-0 py-2" : "justify-between px-4",
-        )}
-      >
-        {!collapsed && (
-          <Link to="/" className="flex items-center gap-2.5 min-w-0">
-            <img
-              src={logo}
-              alt="BhoomiX"
-              className="h-8 w-8 object-contain rounded-lg flex-shrink-0"
-            />
-            <span className="font-display text-base font-bold text-foreground truncate">
-              BhoomiX
-            </span>
-          </Link>
-        )}
+      {/* Brand */}
+      <div className={cn("flex items-center flex-shrink-0 pt-5 pb-4", collapsed ? "flex-col gap-3" : "px-5 justify-between")}>
+        <Link to="/" className="flex items-center gap-2.5 min-w-0">
+          <img
+            src={logo}
+            alt="BhoomiX"
+            className="h-9 w-9 object-cover rounded-xl ring-1 ring-white/20 flex-shrink-0"
+          />
+          {!collapsed && (
+            <span className="font-display text-base font-bold text-white truncate">BhoomiX</span>
+          )}
+        </Link>
         <button
           onClick={onToggle}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={collapsed ? "Expand menu" : "Collapse menu"}
-          className="flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          className="flex items-center justify-center h-8 w-8 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors"
         >
           {collapsed ? (
-            <PanelRightOpen className="h-[18px] w-[18px]" />
+            <PanelLeftOpen strokeWidth={1.75} className="h-[17px] w-[17px]" />
           ) : (
-            <PanelRightClose className="h-[18px] w-[18px]" />
+            <PanelLeftClose strokeWidth={1.75} className="h-[17px] w-[17px]" />
           )}
         </button>
       </div>
 
-      {/* Nav sections */}
-      <nav className={cn("flex-1 overflow-y-auto py-3", collapsed ? "px-2" : "px-3")}>
-        {SECTIONS.map((section, i) => (
-          <div key={section.headingKey} className={cn(i > 0 && "mt-4")}>
-            {collapsed ? (
-              i > 0 && <div className="mx-2 mb-3 border-t border-border/60" />
-            ) : (
-              <h4 className="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
-                {t(section.headingKey)}
-              </h4>
-            )}
-            <div className="space-y-0.5">
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    title={collapsed ? t(item.labelKey) : undefined}
-                    className={cn(
-                      "relative flex items-center gap-3 rounded-lg transition-colors duration-150",
-                      collapsed ? "justify-center h-10 w-10 mx-auto" : "px-3 h-9",
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    )}
-                  >
-                    <Icon className="h-[18px] w-[18px] flex-shrink-0" />
-                    {!collapsed && (
-                      <span className="text-sm font-medium truncate">
-                        {t(item.labelKey)}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+      {/* Navigation — spacing instead of separators */}
+      <nav className={cn("flex-1 overflow-y-auto py-1 space-y-1", collapsed ? "px-3" : "px-3.5")}>
+        {NAV_ITEMS.map((item) => renderItem(item))}
+
+        {/* Quick actions */}
+        <div className="pt-6">
+          {!collapsed && (
+            <div className="flex items-center gap-2 px-3.5 mb-2">
+              <Zap strokeWidth={1.75} className="h-3.5 w-3.5 text-cyan-300" />
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+                {en ? "Quick Actions" : "त्वरित कार्य"}
+              </span>
             </div>
+          )}
+          <div className="space-y-1">
+            {QUICK_ACTIONS.map((item) => renderItem(item, true))}
           </div>
-        ))}
+        </div>
       </nav>
+
+      {/* User profile */}
+      <button
+        onClick={() => navigate("/settings")}
+        className={cn(
+          "flex items-center gap-3 m-3 p-2.5 rounded-3xl bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 transition-all duration-300 flex-shrink-0",
+          collapsed && "justify-center p-2",
+        )}
+      >
+        <div className="h-9 w-9 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-white flex-shrink-0 shadow-[0_0_14px_rgba(45,212,191,0.35)]">
+          {initials || "BX"}
+        </div>
+        {!collapsed && (
+          <>
+            <div className="min-w-0 text-left flex-1">
+              <p className="text-sm font-semibold text-white truncate capitalize">{name}</p>
+              <p className="text-[11px] text-white/50 truncate">
+                {en ? "Premium Farmer" : "प्रीमियम किसान"}
+              </p>
+            </div>
+            <ChevronRight strokeWidth={1.75} className="h-4 w-4 text-white/40" />
+          </>
+        )}
+      </button>
     </aside>
   );
 }

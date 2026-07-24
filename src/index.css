@@ -57,47 +57,58 @@ All colors MUST be HSL.
     --glow-primary: 175 75% 36%;
     --glow-secondary: 258 72% 56%;
 
-    --font-display: "Outfit", "Plus Jakarta Sans", system-ui, sans-serif;
-    --font-body: "Plus Jakarta Sans", "Outfit", system-ui, sans-serif;
+    --font-display: "Inter", "SF Pro Display", "Outfit", system-ui, sans-serif;
+    --font-body: "Inter", "SF Pro Display", "Plus Jakarta Sans", system-ui, sans-serif;
   }
 
+  /* Premium immersive theme — VisionOS-style glass over a cinematic scene */
   .dark {
-    --background: 226 35% 7%;
-    --background-start: 226 35% 7%;
-    --background-end: 250 35% 10%;
-    --foreground: 220 25% 94%;
+    --background: 216 50% 8%;
+    --background-start: 214 45% 12%;
+    --background-end: 222 55% 6%;
+    --foreground: 0 0% 100%;
 
-    --card: 226 28% 10%;
-    --card-foreground: 220 25% 94%;
+    --card: 218 35% 10%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 226 28% 10%;
-    --popover-foreground: 220 25% 94%;
+    --popover: 218 35% 12%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 170 70% 45%;
-    --primary-foreground: 226 45% 7%;
+    --primary: 164 100% 39%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 38 90% 55%;
-    --secondary-foreground: 32 80% 10%;
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 226 20% 16%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 218 25% 18%;
+    --muted-foreground: 216 20% 78%;
 
-    --accent: 258 75% 66%;
-    --accent-foreground: 250 45% 10%;
+    --accent: 258 90% 66%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 52%;
+    --destructive: 0 72% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 226 20% 20%;
-    --input: 226 20% 16%;
-    --ring: 170 70% 45%;
+    --border: 0 0% 100% / 0.15;
+    --input: 0 0% 100% / 0.12;
+    --ring: 172 100% 45%;
 
-    --glass-bg: 226 28% 10% / 0.55;
-    --glass-border: 220 30% 50% / 0.25;
-    --glass-highlight: 220 60% 80% / 0.1;
+    --glass-bg: 0 0% 100% / 0.08;
+    --glass-border: 0 0% 100% / 0.15;
+    --glass-highlight: 0 0% 100% / 0.25;
 
-    --glow-primary: 170 70% 45%;
-    --glow-secondary: 258 75% 62%;
+    --gradient-primary-start: 164 100% 36%;
+    --gradient-primary-end: 190 95% 45%;
+    --gradient-secondary-start: 217 91% 60%;
+    --gradient-secondary-end: 258 90% 66%;
+    --gradient-accent-start: 258 90% 66%;
+    --gradient-accent-end: 190 95% 50%;
+
+    --glow-primary: 172 100% 45%;
+    --glow-secondary: 217 91% 60%;
+
+    /* Cinematic full-viewport scene. Swap the file to change the backdrop. */
+    --scene-image: url("./assets/scene-bg.png");
   }
 }
 
@@ -126,13 +137,18 @@ All colors MUST be HSL.
     text-rendering: optimizeLegibility;
   }
 
+  /* Cinematic scene: readability gradients (darker left + bottom, train stays
+     visible lower-right) + light blue tint + image + gradient fallback */
   .dark body {
     background:
-      radial-gradient(ellipse 80% 60% at 12% 15%, hsl(170 70% 45% / 0.09) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 55% at 88% 12%, hsl(258 75% 62% / 0.09) 0%, transparent 50%),
-      radial-gradient(ellipse 75% 60% at 80% 88%, hsl(192 80% 50% / 0.08) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 50% at 20% 90%, hsl(38 90% 55% / 0.05) 0%, transparent 50%),
+      linear-gradient(105deg, hsl(216 55% 9% / 0.78) 0%, hsl(216 50% 10% / 0.5) 42%, hsl(214 45% 12% / 0.22) 100%),
+      linear-gradient(180deg, hsl(216 55% 10% / 0.3) 0%, hsl(216 50% 9% / 0.12) 45%, hsl(222 60% 6% / 0.68) 100%),
+      linear-gradient(180deg, hsl(205 85% 60% / 0.1), hsl(215 70% 40% / 0.08)),
+      var(--scene-image),
       linear-gradient(160deg, hsl(var(--background-start)) 0%, hsl(232 38% 9%) 50%, hsl(var(--background-end)) 100%);
+    background-size: cover, cover, cover, cover, cover;
+    background-position: center, center, center, center 35%, center;
+    background-repeat: no-repeat;
     background-attachment: fixed;
   }
 
@@ -173,26 +189,45 @@ All colors MUST be HSL.
 
   .glass {
     background: hsl(var(--glass-bg));
-    backdrop-filter: blur(16px) saturate(1.6);
-    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    backdrop-filter: blur(35px) saturate(1.8);
+    -webkit-backdrop-filter: blur(35px) saturate(1.8);
     border: 1px solid hsl(var(--glass-border));
     border-radius: var(--radius);
     box-shadow:
-      0 8px 32px hsl(152 45% 20% / 0.08),
-      0 2px 8px hsl(152 45% 20% / 0.05),
+      0 8px 32px hsl(220 45% 8% / 0.18),
+      0 2px 8px hsl(220 45% 8% / 0.1),
       inset 0 1px 1px hsl(var(--glass-highlight));
   }
 
   .glass-strong {
     background: hsl(var(--glass-bg));
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(35px) saturate(1.8);
+    -webkit-backdrop-filter: blur(35px) saturate(1.8);
     border: 1px solid hsl(var(--glass-border));
     border-radius: var(--radius);
     box-shadow:
-      0 12px 48px hsl(152 45% 20% / 0.12),
-      0 4px 12px hsl(152 45% 20% / 0.06),
-      inset 0 1px 1px hsl(var(--glass-highlight));
+      0 16px 56px hsl(220 45% 8% / 0.28),
+      0 4px 16px hsl(220 45% 8% / 0.14),
+      inset 0 1px 1px hsl(var(--glass-highlight)),
+      inset 0 -1px 1px hsl(0 0% 100% / 0.04);
+  }
+
+  /* Floating glass dock (sidebar) — VisionOS style */
+  .glass-dock {
+    background: linear-gradient(165deg, hsl(0 0% 100% / 0.12), hsl(0 0% 100% / 0.05));
+    backdrop-filter: blur(35px) saturate(1.8);
+    -webkit-backdrop-filter: blur(35px) saturate(1.8);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow:
+      0 24px 80px hsl(220 50% 5% / 0.45),
+      0 8px 24px hsl(220 50% 5% / 0.25),
+      inset 0 1px 1px hsl(0 0% 100% / 0.28),
+      inset 0 -1px 1px hsl(0 0% 100% / 0.05);
+  }
+
+  /* Cyan glow for active icons */
+  .icon-glow {
+    filter: drop-shadow(0 0 8px hsl(180 100% 55% / 0.85)) drop-shadow(0 0 20px hsl(180 100% 55% / 0.4));
   }
 
   .glass-orb-shadow {

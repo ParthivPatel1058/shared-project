@@ -1,4 +1,4 @@
-import { ShoppingBag, HelpCircle, Store, Landmark, Bot, Leaf, Truck, Carrot, ScanSearch, MapPin } from 'lucide-react';
+import { ShoppingBag, HelpCircle, Store, Landmark, Bot, Leaf, Truck, Carrot, ScanSearch } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
@@ -10,55 +10,77 @@ const Index = () => {
   const { t, language } = useLanguage();
   const en = language === 'en';
 
-  const quickLinks = [
-    { href: '/crop-disease', icon: ScanSearch, label: en ? 'Scan Crop Disease' : 'फसल रोग स्कैन' },
-    { href: '/agri-market', icon: ShoppingBag, label: en ? 'Agri Market' : 'कृषि बाज़ार' },
-    { href: '/gov-schemes', icon: Landmark, label: en ? 'Govt. Schemes' : 'सरकारी योजनाएं' },
-    { href: '/shop-locator', icon: MapPin, label: en ? 'Nearby Shops' : 'नज़दीकी दुकानें' },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
+      <main className="container mx-auto px-4 pt-8 md:pt-12 pb-16">
         {/* Hero */}
-        <section className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-12 items-center mb-14">
+        <section className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-12 items-center mb-16">
           <div className="animate-slide-up">
-            <span className="inline-flex items-center gap-2 px-3 py-1 mb-5 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              🌾 {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
+            <span className="glass inline-flex items-center gap-2 px-4 py-1.5 mb-6 !rounded-full text-primary text-sm font-medium">
+              🌱 {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
             </span>
-            <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
+            <h1 className="font-display text-5xl md:text-6xl font-extrabold tracking-tight text-foreground mb-5 leading-[1.05]">
               {en ? (
-                <>Grow smarter with <span className="text-gradient">BhoomiX</span></>
+                <>Grow smarter<br />with <span className="text-gradient">BhoomiX</span></>
               ) : (
-                <><span className="text-gradient">BhoomiX</span> के साथ स्मार्ट खेती करें</>
+                <><span className="text-gradient">BhoomiX</span> के साथ<br />स्मार्ट खेती करें</>
               )}
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-7 max-w-xl">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-md">
               {t('tagline')}
             </p>
 
-            <div className="mb-6 max-w-xl">
-              <SearchBar />
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <Link
+                to="/crop-disease"
+                className="group inline-flex items-center gap-2 h-12 px-6 rounded-full gradient-primary text-white text-sm font-semibold glow-primary shine hover:scale-[1.03] active:scale-95 transition-transform duration-300"
+              >
+                <ScanSearch strokeWidth={1.75} className="h-4 w-4" />
+                {en ? 'Scan Crop Disease' : 'फसल रोग स्कैन करें'}
+              </Link>
+              <Link
+                to="/agri-market"
+                className="glass inline-flex items-center gap-2 h-12 px-6 !rounded-full text-sm font-semibold text-foreground hover:bg-white/[0.14] hover:scale-[1.03] active:scale-95 transition-all duration-300"
+              >
+                <ShoppingBag strokeWidth={1.75} className="h-4 w-4" />
+                {en ? 'Explore Market' : 'बाज़ार देखें'}
+              </Link>
             </div>
 
-            {/* Quick actions */}
-            <div className="flex flex-wrap gap-2">
-              {quickLinks.map(({ href, icon: Icon, label }) => (
-                <Link
-                  key={href}
-                  to={href}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-card/70 border border-border/70 text-sm font-medium text-foreground hover:border-primary/50 hover:text-primary hover:shadow-sm transition-all duration-200"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Link>
-              ))}
+            {/* Trusted by */}
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2.5">
+                {['RS', 'AK', 'MP'].map((ini, i) => (
+                  <div
+                    key={ini}
+                    className={`h-9 w-9 rounded-full border-2 border-background/40 flex items-center justify-center text-[10px] font-bold text-white ${
+                      ['gradient-primary', 'gradient-secondary', 'gradient-accent'][i]
+                    }`}
+                  >
+                    {ini}
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground leading-tight">
+                {en ? (
+                  <>Trusted by <span className="text-foreground font-semibold">25K+</span><br />farmers across India</>
+                ) : (
+                  <>भारत भर के <span className="text-foreground font-semibold">25K+</span><br />किसानों का भरोसा</>
+                )}
+              </p>
+            </div>
+
+            {/* Mobile search (desktop search lives in the top bar) */}
+            <div className="mt-8 md:hidden">
+              <SearchBar />
             </div>
           </div>
 
-          <div className="animate-scale-in max-w-md w-full mx-auto lg:mx-0">
+          {/* Floating weather card */}
+          <div className="animate-scale-in max-w-md w-full mx-auto lg:mx-0 animate-float" style={{ animationDuration: '6s' }}>
             <WeatherWidget />
           </div>
         </section>

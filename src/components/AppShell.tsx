@@ -25,7 +25,7 @@ export default function AppShell() {
     <div className="min-h-screen">
       <Sidebar collapsed={collapsed} onToggle={toggle} />
       <div
-        className={`transition-[padding] duration-300 ${collapsed ? "lg:pr-16" : "lg:pr-64"}`}
+        className={`transition-[padding] duration-300 ${collapsed ? "lg:pl-[100px]" : "lg:pl-[280px]"}`}
       >
         <Outlet />
       </div>
