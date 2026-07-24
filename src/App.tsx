@@ -24,6 +24,7 @@ import Support from "./pages/Support";
 import OrganicFarming from "./pages/OrganicFarming";
 import VegetableFarming from "./pages/VegetableFarming";
 import Settings from "./pages/Settings";
+import CropDisease from "./pages/CropDisease";
 import NotFound from "./pages/NotFound";
 import Welcome from "./pages/auth/Welcome";
 import Signup from "./pages/auth/Signup";
@@ -70,6 +71,7 @@ const App = () => (
                   <Route path="/organic-farming" element={<OrganicFarming />} />
                   <Route path="/vegetable-farming" element={<VegetableFarming />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/crop-disease" element={<CropDisease />} />
                 </Route>
 
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

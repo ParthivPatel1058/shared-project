@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { ArrowRight, LucideIcon } from 'lucide-react';
 
 interface SectionCardProps {
@@ -9,6 +8,7 @@ interface SectionCardProps {
   href: string;
   buttonText: string;
   gradient?: 'primary' | 'secondary';
+  badge?: string;
 }
 
 const SectionCard = ({
@@ -18,29 +18,33 @@ const SectionCard = ({
   href,
   buttonText,
   gradient = 'primary',
+  badge,
 }: SectionCardProps) => {
   return (
     <Link to={href} className="group block h-full">
-      <div className="glass border-glow relative rounded-[2rem] p-8 h-full flex flex-col transition-all duration-500 hover:-translate-y-2 hover:shadow-elevated">
-        <div
-          className={`shine inline-flex self-start p-5 rounded-3xl mb-6 shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 ${
-            gradient === 'primary' ? 'gradient-primary glow-primary' : 'gradient-secondary glow-secondary'
-          }`}
-        >
-          <Icon className="h-8 w-8 text-white drop-shadow" />
+      <div className="glass relative h-full flex flex-col p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+        <div className="flex items-start justify-between mb-4">
+          <div
+            className={`inline-flex p-2.5 rounded-lg shadow-sm ${
+              gradient === 'primary' ? 'gradient-primary' : 'gradient-secondary'
+            }`}
+          >
+            <Icon className="h-5 w-5 text-white" />
+          </div>
+          {badge && (
+            <span className="text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-accent/15 text-accent">
+              {badge}
+            </span>
+          )}
         </div>
-        <h3 className="font-display text-2xl font-bold mb-3 text-foreground group-hover:text-gradient transition-colors duration-300">
+        <h3 className="font-display text-lg font-semibold mb-1 text-foreground">
           {title}
         </h3>
-        <p className="text-muted-foreground mb-6 leading-relaxed flex-1">{description}</p>
-        <Button
-          variant={gradient === 'primary' ? 'default' : 'secondary'}
-          size="lg"
-          className="w-full group-hover:shadow-elevated"
-        >
+        <p className="text-sm text-muted-foreground leading-relaxed flex-1">{description}</p>
+        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
           {buttonText}
-          <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-        </Button>
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+        </span>
       </div>
     </Link>
   );

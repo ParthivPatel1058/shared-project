@@ -39,22 +39,23 @@ const Navigation = () => {
   return <nav className="glass-strong fixed top-0 left-0 right-0 z-50 !rounded-none border-x-0 border-t-0 border-b border-primary/15">
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between gap-2">
-          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-            <img src={logo} alt="BhoomiX Logo" className="h-10 sm:h-12 md:h-14 lg:h-16 object-contain transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_20px_hsl(var(--primary)/0.4)] cursor-pointer drop-shadow-xl rounded-2xl" />
+          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <img src={logo} alt="BhoomiX Logo" className="h-9 sm:h-10 object-contain rounded-lg transition-transform duration-300 group-hover:scale-105" />
+            <span className="hidden sm:inline font-display text-lg font-bold text-foreground">BhoomiX</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2 flex-1 justify-center max-w-3xl">
+          {/* Tablet navigation — on lg+ the right sidebar takes over */}
+          <div className="hidden md:flex lg:hidden items-center gap-1 flex-1 justify-center max-w-3xl">
             {navItems.map(item => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
-              return <Link 
-                key={item.path} 
-                to={item.path} 
-                className={`flex items-center gap-2 px-4 lg:px-5 py-2 rounded-full transition-all duration-300 text-sm lg:text-base ${isActive ? 'gradient-primary text-primary-foreground shadow-glow-primary scale-105' : 'hover:bg-primary/10 hover:text-primary text-foreground'}`}
+              return <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg transition-colors duration-150 text-sm ${isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted hover:text-foreground text-muted-foreground'}`}
               >
                 <Icon className="h-4 w-4" />
-                <span className="font-medium hidden lg:inline">{item.label}</span>
+                <span className="font-medium">{item.label}</span>
               </Link>;
             })}
           </div>

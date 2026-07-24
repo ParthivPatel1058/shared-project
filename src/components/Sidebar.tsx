@@ -13,8 +13,9 @@ import {
   Truck,
   LifeBuoy,
   Settings as SettingsIcon,
-  ChevronLeft,
-  ChevronRight,
+  ScanSearch,
+  PanelRightClose,
+  PanelRightOpen,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -34,7 +35,10 @@ interface NavSection {
 const SECTIONS: NavSection[] = [
   {
     headingKey: "dashboard",
-    items: [{ path: "/", icon: LayoutGrid, labelKey: "home" }],
+    items: [
+      { path: "/", icon: LayoutGrid, labelKey: "home" },
+      { path: "/crop-disease", icon: ScanSearch, labelKey: "cropDiseaseDetection" },
+    ],
   },
   {
     headingKey: "shopping",
@@ -72,8 +76,10 @@ interface SidebarProps {
 }
 
 /**
- * Persistent, collapsible desktop sidebar. Hidden below the `lg` breakpoint,
- * where the top-bar mobile menu (in Navigation.tsx) takes over.
+ * Persistent desktop sidebar docked on the RIGHT edge. Renders as a slim
+ * icon rail by default and expands to full labels via the toggle button.
+ * Hidden below the `lg` breakpoint, where the top-bar mobile menu
+ * (in Navigation.tsx) takes over.
  */
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
@@ -82,34 +88,55 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col fixed top-0 left-0 bottom-0 z-40 glass-strong border-r border-primary/20 transition-[width] duration-300",
-        collapsed ? "w-20" : "w-64",
+        "hidden lg:flex flex-col fixed top-0 right-0 bottom-0 z-40 bg-card/85 backdrop-blur-xl border-l border-border/70 shadow-[0_0_24px_hsl(152_45%_20%/0.06)] transition-[width] duration-300",
+        collapsed ? "w-16" : "w-64",
       )}
     >
-      {/* Brand */}
-      <div className="flex items-center gap-3 h-20 px-4 border-b border-border/40 flex-shrink-0">
-        <Link to="/" className="flex items-center gap-3 min-w-0">
-          <img
-            src={logo}
-            alt="Bhoomi"
-            className="h-10 w-10 object-contain rounded-2xl flex-shrink-0"
-          />
-          {!collapsed && (
-            <span className="text-xl font-bold text-foreground truncate">Bhoomi</span>
+      {/* Header: brand + expand/collapse control */}
+      <div
+        className={cn(
+          "flex items-center h-16 border-b border-border/60 flex-shrink-0",
+          collapsed ? "flex-col justify-center gap-0 py-2" : "justify-between px-4",
+        )}
+      >
+        {!collapsed && (
+          <Link to="/" className="flex items-center gap-2.5 min-w-0">
+            <img
+              src={logo}
+              alt="BhoomiX"
+              className="h-8 w-8 object-contain rounded-lg flex-shrink-0"
+            />
+            <span className="font-display text-base font-bold text-foreground truncate">
+              BhoomiX
+            </span>
+          </Link>
+        )}
+        <button
+          onClick={onToggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand menu" : "Collapse menu"}
+          className="flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          {collapsed ? (
+            <PanelRightOpen className="h-[18px] w-[18px]" />
+          ) : (
+            <PanelRightClose className="h-[18px] w-[18px]" />
           )}
-        </Link>
+        </button>
       </div>
 
       {/* Nav sections */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        {SECTIONS.map((section) => (
-          <div key={section.headingKey}>
-            {!collapsed && (
-              <h4 className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <nav className={cn("flex-1 overflow-y-auto py-3", collapsed ? "px-2" : "px-3")}>
+        {SECTIONS.map((section, i) => (
+          <div key={section.headingKey} className={cn(i > 0 && "mt-4")}>
+            {collapsed ? (
+              i > 0 && <div className="mx-2 mb-3 border-t border-border/60" />
+            ) : (
+              <h4 className="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
                 {t(section.headingKey)}
               </h4>
             )}
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -119,16 +146,18 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     to={item.path}
                     title={collapsed ? t(item.labelKey) : undefined}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all duration-200",
-                      collapsed && "justify-center",
+                      "relative flex items-center gap-3 rounded-lg transition-colors duration-150",
+                      collapsed ? "justify-center h-10 w-10 mx-auto" : "px-3 h-9",
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
-                        : "text-foreground hover:bg-primary/10",
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    <Icon className="h-[18px] w-[18px] flex-shrink-0" />
                     {!collapsed && (
-                      <span className="text-sm font-medium truncate">{t(item.labelKey)}</span>
+                      <span className="text-sm font-medium truncate">
+                        {t(item.labelKey)}
+                      </span>
                     )}
                   </Link>
                 );
@@ -137,16 +166,6 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </div>
         ))}
       </nav>
-
-      {/* Collapse toggle */}
-      <button
-        onClick={onToggle}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="flex items-center justify-center gap-2 m-3 px-3 py-2.5 rounded-2xl text-muted-foreground hover:bg-primary/10 hover:text-foreground transition-colors flex-shrink-0"
-      >
-        {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-        {!collapsed && <span className="text-sm">{t("menu")}</span>}
-      </button>
     </aside>
   );
 }

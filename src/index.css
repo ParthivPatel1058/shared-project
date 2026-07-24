@@ -38,7 +38,7 @@ All colors MUST be HSL.
     --input: 120 22% 92%;
     --ring: 152 65% 32%;
 
-    --radius: 1.5rem;
+    --radius: 0.75rem;
 
     /* Glass effect colors — translucent enough for the aurora to show through */
     --glass-bg: 0 0% 100% / 0.6;
