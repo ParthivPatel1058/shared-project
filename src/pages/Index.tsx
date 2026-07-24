@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
 import WeatherWidget from '@/components/WeatherWidget';
 import SectionCard from '@/components/SectionCard';
+import ScrollCinema from '@/components/ScrollCinema';
 
 const Index = () => {
   const { t, language } = useLanguage();
@@ -84,6 +85,9 @@ const Index = () => {
             <WeatherWidget />
           </div>
         </section>
+
+        {/* Scroll-scrubbed cinematic journey */}
+        <ScrollCinema />
 
         {/* Feature grid */}
         <section>
