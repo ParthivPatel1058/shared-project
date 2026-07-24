@@ -1,0 +1,275 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import Navigation from '@/components/Navigation';
+import { MapPin, Package, Phone, Navigation as NavIcon, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface Order {
+  id: string;
+  order_number: string;
+  items: any;
+  total_amount: number;
+  status: string;
+  delivery_address: string | null;
+  phone_number: string | null;
+  gps_lat: number | null;
+  gps_lng: number | null;
+  created_at: string;
+}
+
+const PartnerOrders = () => {
+  const { user } = useAuth();
+  const { language } = useLanguage();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadOrders();
+      
+      // Subscribe to realtime order updates
+      const channel = supabase
+        .channel('partner-orders')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'orders'
+          },
+          () => {
+            loadOrders();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user]);
+
+  const loadOrders = async () => {
+    try {
+      // Use secure RPC that hides customer PII for pending orders
+      const { data, error } = await supabase
+        .rpc('get_partner_orders');
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error loading orders:', error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAcceptOrder = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          status: 'accepted',
+          assigned_partner: user?.id 
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast.success(
+        language === 'en' 
+          ? 'Order accepted! Starting delivery...' 
+          : 'ऑर्डर स्वीकार किया गया! डिलीवरी शुरू हो रही है...'
+      );
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error accepting order:', error);
+      }
+      toast.error(
+        language === 'en' 
+          ? 'Failed to accept order' 
+          : 'ऑर्डर स्वीकार करने में विफल'
+      );
+    }
+  };
+
+  const handleNavigate = (lat: number, lng: number) => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center h-64">
+            <p className="text-muted-foreground">
+              {language === 'en' ? 'Loading orders...' : 'ऑर्डर लोड हो रहे हैं...'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <Navigation />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2 gradient-text">
+            {language === 'en' ? '🚚 Partner Deliveries' : '🚚 पार्टनर डिलीवरी'}
+          </h1>
+          <p className="text-muted-foreground">
+            {language === 'en' 
+              ? 'Accept and deliver orders in your area' 
+              : 'अपने क्षेत्र में ऑर्डर स्वीकार करें और डिलीवर करें'}
+          </p>
+        </div>
+
+        {orders.length === 0 ? (
+          <Card className="p-12 text-center">
+            <Package className="h-24 w-24 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="text-xl font-semibold mb-2">
+              {language === 'en' ? 'No Orders Available' : 'कोई ऑर्डर उपलब्ध नहीं'}
+            </h3>
+            <p className="text-muted-foreground">
+              {language === 'en' 
+                ? 'New orders will appear here automatically' 
+                : 'नए ऑर्डर यहां स्वचालित रूप से दिखाई देंगे'}
+            </p>
+          </Card>
+        ) : (
+          <div className="grid gap-6">
+            {orders.map((order) => (
+              <Card key={order.id} className="p-6 glass hover:shadow-lg transition-all">
+                <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-xl font-bold">
+                        {language === 'en' ? 'Order' : 'ऑर्डर'} #{order.order_number}
+                      </h3>
+                      <Badge variant={order.status === 'pending' ? 'default' : 'secondary'}>
+                        {order.status === 'pending' 
+                          ? (language === 'en' ? '🔔 New' : '🔔 नया')
+                          : (language === 'en' ? '✅ Accepted' : '✅ स्वीकृत')}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(order.created_at).toLocaleString(
+                        language === 'en' ? 'en-IN' : 'hi-IN',
+                        { dateStyle: 'medium', timeStyle: 'short' }
+                      )}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-primary">₹{order.total_amount}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {order.items?.length} {language === 'en' ? 'items' : 'आइटम'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Order Items */}
+                <div className="mb-4 p-4 bg-secondary/20 rounded-lg">
+                  <p className="font-semibold mb-2">
+                    {language === 'en' ? 'Order Items:' : 'ऑर्डर आइटम:'}
+                  </p>
+                  <div className="space-y-1">
+                    {order.items?.map((item: any, idx: number) => (
+                      <div key={idx} className="flex justify-between text-sm">
+                        <span>{language === 'en' ? item.name : item.nameHi}</span>
+                        <span className="font-medium">x{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Delivery Info - Only shown for accepted orders */}
+                {order.status === 'pending' ? (
+                  <div className="mb-4 p-3 bg-secondary/20 rounded-lg flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      {language === 'en' 
+                        ? '🔒 Customer details will be revealed after accepting' 
+                        : '🔒 स्वीकार करने के बाद ग्राहक विवरण दिखाई देगा'}
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    {order.delivery_address && (
+                      <div className="mb-4 flex items-start gap-2">
+                        <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                        <div>
+                          <p className="font-medium">
+                            {language === 'en' ? 'Delivery Address:' : 'डिलीवरी पता:'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{order.delivery_address}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {order.phone_number && (
+                      <div className="mb-4 flex items-center gap-2">
+                        <Phone className="h-5 w-5 text-primary" />
+                        <a href={`tel:${order.phone_number}`} className="text-primary hover:underline">
+                          {order.phone_number}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* GPS Location */}
+                    {order.gps_lat && order.gps_lng && (
+                      <div className="mb-4 p-3 bg-primary/10 rounded-lg flex items-center gap-2">
+                        <MapPin className="h-5 w-5 text-primary animate-pulse" />
+                        <span className="text-sm font-medium">
+                          {language === 'en' 
+                            ? '📍 Live GPS Location Available' 
+                            : '📍 लाइव GPS लोकेशन उपलब्ध'}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 mt-4">
+                  {order.status === 'pending' ? (
+                    <Button 
+                      className="flex-1 gradient-primary"
+                      onClick={() => handleAcceptOrder(order.id)}
+                    >
+                      <CheckCircle className="mr-2 h-5 w-5" />
+                      {language === 'en' ? 'Accept Order' : 'ऑर्डर स्वीकार करें'}
+                    </Button>
+                  ) : null}
+                  
+                  {order.gps_lat && order.gps_lng && (
+                    <Button 
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => handleNavigate(order.gps_lat!, order.gps_lng!)}
+                    >
+                      <NavIcon className="mr-2 h-5 w-5" />
+                      {language === 'en' ? 'Navigate' : 'नेविगेट करें'}
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default PartnerOrders;
