@@ -8,16 +8,16 @@ import { useTheme } from "@/contexts/ThemeContext";
  * backdrop-filter, producing the "liquid glass" refraction effect.
  *
  * Palette swaps with the theme toggle:
- *  - light: agriculture green / gold / amber (matches --primary/--secondary/--accent)
- *  - dark:  emerald / violet / teal for contrast on the deep background
+ *  - light: teal / cyan / violet (matches --primary/--gradient/--accent)
+ *  - dark:  brighter teal / violet / cyan for contrast on the deep background
  */
 export default function LiquidBackground() {
   const { theme } = useTheme();
 
   const palette =
     theme === "dark"
-      ? ["#10B981", "#7C3AED", "#06B6D4"]
-      : ["#16A34A", "#EAB308", "#F97316"];
+      ? ["#14B8A6", "#8B5CF6", "#22D3EE"]
+      : ["#0D9488", "#7C3AED", "#0891B2"];
 
   return (
     <div

@@ -8,96 +8,96 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 90 30% 97%;
-    --background-start: 88 45% 94%;
-    --background-end: 150 40% 92%;
-    --foreground: 152 45% 12%;
+    --background: 210 25% 97%;
+    --background-start: 200 35% 96%;
+    --background-end: 250 30% 96%;
+    --foreground: 224 35% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 152 45% 12%;
+    --card-foreground: 224 35% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 152 45% 12%;
+    --popover-foreground: 224 35% 12%;
 
-    --primary: 152 65% 32%;
+    --primary: 168 72% 30%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 42 95% 52%;
-    --secondary-foreground: 40 80% 12%;
+    --secondary: 38 92% 52%;
+    --secondary-foreground: 32 80% 12%;
 
-    --accent: 28 85% 52%;
+    --accent: 258 72% 56%;
     --accent-foreground: 0 0% 100%;
 
-    --muted: 100 18% 90%;
-    --muted-foreground: 150 18% 38%;
+    --muted: 216 18% 92%;
+    --muted-foreground: 222 14% 42%;
 
     --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 25% 84%;
-    --input: 120 22% 92%;
-    --ring: 152 65% 32%;
+    --border: 216 18% 86%;
+    --input: 216 18% 92%;
+    --ring: 168 72% 30%;
 
     --radius: 0.75rem;
 
     /* Glass effect colors — translucent enough for the aurora to show through */
-    --glass-bg: 0 0% 100% / 0.6;
-    --glass-border: 150 45% 60% / 0.35;
+    --glass-bg: 0 0% 100% / 0.65;
+    --glass-border: 216 25% 70% / 0.35;
     --glass-highlight: 0 0% 100% / 0.6;
 
-    /* Gradient colors - Agriculture themed, richer stops */
-    --gradient-primary-start: 152 70% 30%;
-    --gradient-primary-end: 130 65% 42%;
-    --gradient-secondary-start: 42 95% 50%;
-    --gradient-secondary-end: 28 90% 55%;
-    --gradient-accent-start: 85 65% 45%;
-    --gradient-accent-end: 152 60% 38%;
+    /* Gradient colors — professional teal → cyan → violet system */
+    --gradient-primary-start: 170 75% 28%;
+    --gradient-primary-end: 192 80% 38%;
+    --gradient-secondary-start: 38 95% 52%;
+    --gradient-secondary-end: 22 90% 55%;
+    --gradient-accent-start: 258 72% 56%;
+    --gradient-accent-end: 192 80% 42%;
 
     /* Glow shadows */
-    --glow-primary: 152 70% 40%;
-    --glow-secondary: 42 95% 55%;
+    --glow-primary: 175 75% 36%;
+    --glow-secondary: 258 72% 56%;
 
     --font-display: "Outfit", "Plus Jakarta Sans", system-ui, sans-serif;
     --font-body: "Plus Jakarta Sans", "Outfit", system-ui, sans-serif;
   }
 
   .dark {
-    --background: 158 42% 6%;
-    --background-start: 158 42% 6%;
-    --background-end: 222 45% 10%;
-    --foreground: 140 25% 94%;
+    --background: 226 35% 7%;
+    --background-start: 226 35% 7%;
+    --background-end: 250 35% 10%;
+    --foreground: 220 25% 94%;
 
-    --card: 156 32% 10%;
-    --card-foreground: 140 25% 94%;
+    --card: 226 28% 10%;
+    --card-foreground: 220 25% 94%;
 
-    --popover: 156 32% 10%;
-    --popover-foreground: 140 25% 94%;
+    --popover: 226 28% 10%;
+    --popover-foreground: 220 25% 94%;
 
-    --primary: 150 70% 45%;
-    --primary-foreground: 158 60% 6%;
+    --primary: 170 70% 45%;
+    --primary-foreground: 226 45% 7%;
 
-    --secondary: 42 90% 55%;
-    --secondary-foreground: 40 80% 10%;
+    --secondary: 38 90% 55%;
+    --secondary-foreground: 32 80% 10%;
 
-    --muted: 155 22% 16%;
-    --muted-foreground: 140 18% 65%;
+    --muted: 226 20% 16%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 28 85% 58%;
-    --accent-foreground: 24 70% 10%;
+    --accent: 258 75% 66%;
+    --accent-foreground: 250 45% 10%;
 
     --destructive: 0 70% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 152 22% 22%;
-    --input: 155 22% 16%;
-    --ring: 150 70% 45%;
+    --border: 226 20% 20%;
+    --input: 226 20% 16%;
+    --ring: 170 70% 45%;
 
-    --glass-bg: 156 32% 10% / 0.55;
-    --glass-border: 150 40% 45% / 0.25;
-    --glass-highlight: 150 60% 80% / 0.12;
+    --glass-bg: 226 28% 10% / 0.55;
+    --glass-border: 220 30% 50% / 0.25;
+    --glass-highlight: 220 60% 80% / 0.1;
 
-    --glow-primary: 150 70% 45%;
-    --glow-secondary: 42 90% 55%;
+    --glow-primary: 170 70% 45%;
+    --glow-secondary: 258 75% 62%;
   }
 }
 
@@ -114,11 +114,11 @@ All colors MUST be HSL.
     position: relative;
     font-family: var(--font-body);
     background:
-      radial-gradient(ellipse 80% 60% at 15% 20%, hsl(152 65% 42% / 0.16) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 55% at 85% 15%, hsl(42 95% 55% / 0.18) 0%, transparent 50%),
-      radial-gradient(ellipse 75% 60% at 75% 85%, hsl(85 65% 48% / 0.14) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 50% at 25% 90%, hsl(28 85% 55% / 0.12) 0%, transparent 50%),
-      linear-gradient(160deg, hsl(var(--background-start)) 0%, hsl(95 42% 92%) 30%, hsl(128 40% 90%) 55%, hsl(48 55% 90%) 80%, hsl(var(--background-end)) 100%);
+      radial-gradient(ellipse 80% 60% at 12% 15%, hsl(175 70% 42% / 0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 55% at 88% 12%, hsl(258 72% 60% / 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse 75% 60% at 80% 88%, hsl(192 80% 45% / 0.1) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 20% 90%, hsl(38 92% 55% / 0.08) 0%, transparent 50%),
+      linear-gradient(160deg, hsl(var(--background-start)) 0%, hsl(210 30% 96%) 45%, hsl(var(--background-end)) 100%);
     background-attachment: fixed;
     @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -128,11 +128,11 @@ All colors MUST be HSL.
 
   .dark body {
     background:
-      radial-gradient(ellipse 80% 60% at 15% 20%, hsl(150 70% 45% / 0.1) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 55% at 85% 15%, hsl(42 90% 55% / 0.07) 0%, transparent 50%),
-      radial-gradient(ellipse 75% 60% at 75% 85%, hsl(200 70% 50% / 0.08) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 50% at 25% 90%, hsl(280 55% 55% / 0.06) 0%, transparent 50%),
-      linear-gradient(160deg, hsl(var(--background-start)) 0%, hsl(190 45% 8%) 35%, hsl(230 40% 10%) 70%, hsl(var(--background-end)) 100%);
+      radial-gradient(ellipse 80% 60% at 12% 15%, hsl(170 70% 45% / 0.09) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 55% at 88% 12%, hsl(258 75% 62% / 0.09) 0%, transparent 50%),
+      radial-gradient(ellipse 75% 60% at 80% 88%, hsl(192 80% 50% / 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 20% 90%, hsl(38 90% 55% / 0.05) 0%, transparent 50%),
+      linear-gradient(160deg, hsl(var(--background-start)) 0%, hsl(232 38% 9%) 50%, hsl(var(--background-end)) 100%);
     background-attachment: fixed;
   }
 
@@ -215,7 +215,7 @@ All colors MUST be HSL.
 
   /* Gradient headline text */
   .text-gradient {
-    background: linear-gradient(120deg, hsl(var(--gradient-primary-start)), hsl(var(--gradient-primary-end)) 45%, hsl(var(--gradient-secondary-start)));
+    background: linear-gradient(120deg, hsl(var(--gradient-primary-start)), hsl(var(--gradient-primary-end)) 45%, hsl(var(--gradient-accent-start)));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
