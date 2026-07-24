@@ -291,7 +291,7 @@ const RoboticFarming = () => {
     price: '₹6-12 Lakhs',
     category: 'Weed Management'
   }];
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen">
       <Navigation />
       
       <div className="pt-24 pb-12 px-4 container mx-auto">

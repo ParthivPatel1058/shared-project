@@ -131,7 +131,7 @@ const OrganicFarming = () => {
     }]
   }];
   const benefits = ['No synthetic chemicals or pesticides', 'Improves soil health naturally', 'Better nutrition and taste', 'Environmentally sustainable', 'Higher market value', 'Safe for farmers and consumers'];
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen">
       <Navigation />
       
       <div className="pt-24 pb-12 px-4 container mx-auto">

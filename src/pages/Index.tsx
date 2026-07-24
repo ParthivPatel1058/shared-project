@@ -5,14 +5,13 @@ import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
 import WeatherWidget from '@/components/WeatherWidget';
 import SectionCard from '@/components/SectionCard';
-import ScrollCinema from '@/components/ScrollCinema';
 
 const Index = () => {
   const { t, language } = useLanguage();
   const en = language === 'en';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <main className="container mx-auto px-4 pt-8 md:pt-12 pb-16">
@@ -86,9 +85,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Scroll-scrubbed cinematic journey */}
-        <ScrollCinema />
-
         {/* Feature grid */}
         <section>
           <div className="flex items-end justify-between mb-6">
@@ -107,18 +103,20 @@ const Index = () => {
               title={en ? 'Crop Disease Detection' : 'फसल रोग पहचान'}
               description={en ? 'Scan crop photos to identify diseases, browse the disease library, and get treatment advice' : 'फसल की फोटो स्कैन करके रोग पहचानें और उपचार की सलाह पाएं'}
               icon={ScanSearch}
+              emoji="🔬"
               href="/crop-disease"
               buttonText={en ? 'Scan Now' : 'स्कैन करें'}
               gradient="primary"
               badge={en ? 'New' : 'नया'}
             />
-            <SectionCard title={t('agriMarketTitle')} description={t('agriMarketDesc')} icon={ShoppingBag} href="/agri-market" buttonText={t('shopNow')} gradient="secondary" />
-            <SectionCard title={t('kisanMartTitle')} description={t('kisanMartDesc')} icon={Store} href="/kisan-mart" buttonText={t('orderNow')} gradient="primary" />
-            <SectionCard title={t('kisanHelpTitle')} description={t('kisanHelpDesc')} icon={HelpCircle} href="/kisan-help" buttonText={t('getHelp')} gradient="secondary" />
+            <SectionCard title={t('agriMarketTitle')} description={t('agriMarketDesc')} emoji="🛒" icon={ShoppingBag} href="/agri-market" buttonText={t('shopNow')} gradient="secondary" />
+            <SectionCard title={t('kisanMartTitle')} description={t('kisanMartDesc')} emoji="🏪" icon={Store} href="/kisan-mart" buttonText={t('orderNow')} gradient="primary" />
+            <SectionCard title={t('kisanHelpTitle')} description={t('kisanHelpDesc')} emoji="👨‍🌾" icon={HelpCircle} href="/kisan-help" buttonText={t('getHelp')} gradient="secondary" />
             <SectionCard
               title={en ? 'Government Schemes' : 'सरकारी योजनाएं'}
               description={en ? 'Explore latest government benefits and schemes for farmers' : 'किसानों के लिए नवीनतम सरकारी लाभ और योजनाओं का अन्वेषण करें'}
               icon={Landmark}
+              emoji="🏛️"
               href="/gov-schemes"
               buttonText={en ? 'View Schemes' : 'योजनाएं देखें'}
               gradient="primary"
@@ -127,6 +125,7 @@ const Index = () => {
               title={en ? 'Robotic Farming' : 'रोबोटिक कृषि'}
               description={en ? 'Discover modern farming robots and automation technology' : 'आधुनिक कृषि रोबोट और स्वचालन प्रौद्योगिकी की खोज करें'}
               icon={Bot}
+              emoji="🤖"
               href="/robotic-farming"
               buttonText={en ? 'Explore Tech' : 'तकनीक जानें'}
               gradient="secondary"
@@ -135,6 +134,7 @@ const Index = () => {
               title={en ? 'Organic Farming' : 'जैविक खेती'}
               description={en ? 'Complete guide to organic farming with certified seeds and natural fertilizers' : 'प्रमाणित बीजों और प्राकृतिक उर्वरकों के साथ जैविक खेती की संपूर्ण मार्गदर्शिका'}
               icon={Leaf}
+              emoji="🌱"
               href="/organic-farming"
               buttonText={en ? 'Explore Organic' : 'जैविक खेती देखें'}
               gradient="primary"
@@ -143,6 +143,7 @@ const Index = () => {
               title={en ? 'Vegetable Farming' : 'सब्जी की खेती'}
               description={en ? 'Comprehensive guide to all vegetables, farming methods, and tools' : 'सभी सब्जियों, खेती के तरीकों और उपकरणों की व्यापक मार्गदर्शिका'}
               icon={Carrot}
+              emoji="🥕"
               href="/vegetable-farming"
               buttonText={en ? 'View Guide' : 'मार्गदर्शिका देखें'}
               gradient="secondary"
@@ -151,6 +152,7 @@ const Index = () => {
               title={en ? 'Delivery Partner' : 'डिलीवरी पार्टनर'}
               description={en ? 'Join as a delivery partner and start earning with flexible hours' : 'डिलीवरी पार्टनर के रूप में शामिल हों और लचीले घंटों में कमाई शुरू करें'}
               icon={Truck}
+              emoji="🚚"
               href="/partner-registration"
               buttonText={en ? 'Join Now' : 'अभी जुड़ें'}
               gradient="primary"

@@ -110,7 +110,7 @@ const PartnerRegistration = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
       
       <div className="pt-24 pb-12 px-4 container mx-auto max-w-2xl">

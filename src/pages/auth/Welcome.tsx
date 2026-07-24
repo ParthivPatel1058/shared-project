@@ -18,7 +18,7 @@ export default function Welcome() {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 py-10 animate-fade-in">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 py-10 animate-fade-in">
       {/* Language Switcher — liquid glass pill */}
       <div className="absolute top-6 right-6 z-10">
         <button

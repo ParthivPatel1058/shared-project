@@ -25,28 +25,29 @@ import logo from "@/assets/bhoomix-logo.jpeg";
 interface NavItem {
   path: string;
   icon: typeof Home;
+  emoji: string;
   label: { en: string; hi: string };
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { path: "/", icon: Home, label: { en: "Home", hi: "होम" } },
-  { path: "/crop-disease", icon: ScanSearch, label: { en: "Crop Disease", hi: "फसल रोग" } },
-  { path: "/agri-market", icon: ShoppingBag, label: { en: "Agri Market", hi: "कृषि बाज़ार" } },
-  { path: "/kisan-mart", icon: Store, label: { en: "Kisan Mart", hi: "किसान मार्ट" } },
-  { path: "/kisan-help", icon: HelpCircle, label: { en: "Crop Advisory", hi: "फसल सलाह" } },
-  { path: "/gov-schemes", icon: Landmark, label: { en: "Govt. Schemes", hi: "सरकारी योजनाएं" } },
-  { path: "/robotic-farming", icon: Bot, label: { en: "Robotic Farming", hi: "रोबोटिक कृषि" } },
-  { path: "/organic-farming", icon: Leaf, label: { en: "Organic Farming", hi: "जैविक खेती" } },
-  { path: "/vegetable-farming", icon: Carrot, label: { en: "Vegetable Farming", hi: "सब्जी खेती" } },
-  { path: "/shop-locator", icon: MapPin, label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
-  { path: "/partner-registration", icon: Truck, label: { en: "Delivery", hi: "डिलीवरी" } },
-  { path: "/settings", icon: SettingsIcon, label: { en: "Settings", hi: "सेटिंग्स" } },
+  { path: "/", icon: Home, emoji: "🏠", label: { en: "Home", hi: "होम" } },
+  { path: "/crop-disease", icon: ScanSearch, emoji: "🔬", label: { en: "Crop Disease", hi: "फसल रोग" } },
+  { path: "/agri-market", icon: ShoppingBag, emoji: "🛒", label: { en: "Agri Market", hi: "कृषि बाज़ार" } },
+  { path: "/kisan-mart", icon: Store, emoji: "🏪", label: { en: "Kisan Mart", hi: "किसान मार्ट" } },
+  { path: "/kisan-help", icon: HelpCircle, emoji: "👨‍🌾", label: { en: "Crop Advisory", hi: "फसल सलाह" } },
+  { path: "/gov-schemes", icon: Landmark, emoji: "🏛️", label: { en: "Govt. Schemes", hi: "सरकारी योजनाएं" } },
+  { path: "/robotic-farming", icon: Bot, emoji: "🤖", label: { en: "Robotic Farming", hi: "रोबोटिक कृषि" } },
+  { path: "/organic-farming", icon: Leaf, emoji: "🌱", label: { en: "Organic Farming", hi: "जैविक खेती" } },
+  { path: "/vegetable-farming", icon: Carrot, emoji: "🥕", label: { en: "Vegetable Farming", hi: "सब्जी खेती" } },
+  { path: "/shop-locator", icon: MapPin, emoji: "📍", label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
+  { path: "/partner-registration", icon: Truck, emoji: "🚚", label: { en: "Delivery", hi: "डिलीवरी" } },
+  { path: "/settings", icon: SettingsIcon, emoji: "⚙️", label: { en: "Settings", hi: "सेटिंग्स" } },
 ];
 
 const QUICK_ACTIONS: NavItem[] = [
-  { path: "/crop-disease", icon: ScanSearch, label: { en: "Scan Disease", hi: "रोग स्कैन" } },
-  { path: "/kisan-help", icon: HelpCircle, label: { en: "Ask Advisory", hi: "सलाह पूछें" } },
-  { path: "/shop-locator", icon: MapPin, label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
+  { path: "/crop-disease", icon: ScanSearch, emoji: "🔬", label: { en: "Scan Disease", hi: "रोग स्कैन" } },
+  { path: "/kisan-help", icon: HelpCircle, emoji: "💬", label: { en: "Ask Advisory", hi: "सलाह पूछें" } },
+  { path: "/shop-locator", icon: MapPin, emoji: "📍", label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
 ];
 
 interface SidebarProps {
@@ -71,7 +72,6 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const initials = name.slice(0, 2).toUpperCase();
 
   const renderItem = (item: NavItem, subtle = false) => {
-    const Icon = item.icon;
     const isActive = location.pathname === item.path;
     return (
       <Link
@@ -90,13 +90,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {isActive && !collapsed && (
           <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-gradient-to-b from-cyan-300 to-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.9)]" />
         )}
-        <Icon
-          strokeWidth={1.75}
+        <span
           className={cn(
-            "h-[19px] w-[19px] flex-shrink-0 transition-all duration-300",
-            isActive ? "icon-glow text-cyan-300" : "group-hover:scale-110",
+            "text-[19px] leading-none flex-shrink-0 transition-transform duration-300 drop-shadow",
+            isActive ? "scale-110" : "group-hover:scale-110 opacity-90",
           )}
-        />
+        >
+          {item.emoji}
+        </span>
         {!collapsed && (
           <span className={cn("text-sm truncate transition-colors", subtle ? "font-normal" : "font-medium")}>
             {en ? item.label.en : item.label.hi}
@@ -109,7 +110,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col fixed left-3 top-3 bottom-3 z-40 glass-dock rounded-[32px] transition-[width] duration-300 overflow-hidden",
+        "hidden lg:flex flex-col fixed left-3 top-3 bottom-3 z-40 glass-dock liquid rounded-[32px] transition-[width] duration-300 overflow-hidden",
         collapsed ? "w-[76px]" : "w-64",
       )}
     >

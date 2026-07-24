@@ -86,7 +86,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 py-8 animate-fade-in">
+    <div className="min-h-screen p-6 py-8 animate-fade-in">
       <button
         onClick={() => navigate('/auth/welcome')}
         className="mb-8 text-muted-foreground hover:text-foreground transition-colors"

@@ -175,11 +175,11 @@ const KisanMart = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen pb-24">
       <Navigation />
       
       {/* Fixed Header */}
-      <div className="fixed top-[73px] left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
+      <div className="fixed top-[73px] left-0 right-0 z-40 bg-card/80 backdrop-blur-md border-b border-border">
         <div className="px-4 py-4">
           {/* Top Bar */}
           <div className="flex items-center justify-between mb-4">

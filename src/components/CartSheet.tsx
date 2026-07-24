@@ -190,7 +190,7 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
               ))}
             </div>
 
-            <div className="border-t border-border p-6 space-y-4 bg-background">
+            <div className="border-t border-border p-6 space-y-4 ">
               <div className="space-y-2">
                 <div className="flex justify-between text-lg font-bold">
                   <span>{language === 'en' ? 'Total Amount' : 'कुल राशि'}</span>

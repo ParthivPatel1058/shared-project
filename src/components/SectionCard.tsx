@@ -9,6 +9,8 @@ interface SectionCardProps {
   buttonText: string;
   gradient?: 'primary' | 'secondary';
   badge?: string;
+  /** Rich colorful icon — when set, replaces the lucide glyph */
+  emoji?: string;
 }
 
 const SectionCard = ({
@@ -19,18 +21,25 @@ const SectionCard = ({
   buttonText,
   gradient = 'primary',
   badge,
+  emoji,
 }: SectionCardProps) => {
   return (
     <Link to={href} className="group block h-full">
-      <div className="glass shine relative h-full flex flex-col p-6 !rounded-3xl transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-[0_20px_50px_rgba(8,15,30,0.35),0_0_30px_rgba(45,212,191,0.12)]">
+      <div className="glass liquid relative h-full flex flex-col p-6 !rounded-3xl transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/40 hover:bg-white/[0.12] hover:shadow-[0_20px_50px_rgba(8,15,30,0.35),0_0_30px_rgba(45,212,191,0.12)]">
         <div className="flex items-start justify-between mb-4">
-          <div
-            className={`inline-flex p-3 rounded-2xl shadow-md transition-transform duration-500 group-hover:scale-110 ${
-              gradient === 'primary' ? 'gradient-primary' : 'gradient-secondary'
-            }`}
-          >
-            <Icon strokeWidth={1.75} className="h-5 w-5 text-white" />
-          </div>
+          {emoji ? (
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-white/10 border border-white/15 shadow-inner text-[26px] leading-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">
+              <span className="drop-shadow">{emoji}</span>
+            </div>
+          ) : (
+            <div
+              className={`inline-flex p-3 rounded-2xl shadow-md transition-transform duration-500 group-hover:scale-110 ${
+                gradient === 'primary' ? 'gradient-primary' : 'gradient-secondary'
+              }`}
+            >
+              <Icon strokeWidth={1.75} className="h-5 w-5 text-white" />
+            </div>
+          )}
           {badge && (
             <span className="text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent/20 text-accent-foreground border border-accent/30">
               {badge}

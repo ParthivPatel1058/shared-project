@@ -101,7 +101,7 @@ function PhotoScan({ id, title, hint, analyzeLabel, resultTitle, resultBody, res
             <button
               onClick={clearImage}
               aria-label="Remove photo"
-              className="absolute top-2 right-2 p-1.5 rounded-full bg-background/90 border border-border text-muted-foreground hover:text-destructive transition-colors"
+              className="absolute top-2 right-2 p-1.5 rounded-full bg-card/90 border border-border text-muted-foreground hover:text-destructive transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -276,7 +276,7 @@ const CropDisease = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navigation />
 
       <main className="container mx-auto px-4 pt-8 md:pt-12 pb-16 max-w-5xl">
