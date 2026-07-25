@@ -12,9 +12,12 @@ import {
   Search,
   Bell,
 } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWeather } from '@/hooks/useWeather';
+import { WeatherIcon } from './WeatherWidget';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -26,6 +29,7 @@ const Navigation = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { signOut, user } = useAuth();
+  const { weather } = useWeather();
   const [settingsSidebarOpen, setSettingsSidebarOpen] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
@@ -60,6 +64,19 @@ const Navigation = () => {
           />
           <span className="hidden sm:inline font-display text-base font-bold text-foreground">BhoomiX</span>
         </Link>
+
+        {/* Weather capsules — location · temp · condition */}
+        <div className="hidden xl:flex items-center gap-1.5 flex-shrink-0">
+          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/[0.07] border border-white/10 text-sm text-foreground">
+            <MapPin strokeWidth={1.75} className="h-3.5 w-3.5 text-primary" />
+            {weather.city}
+          </span>
+          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/[0.07] border border-white/10 text-sm text-foreground">
+            <WeatherIcon icon={weather.conditionIcon} className="h-4 w-4" />
+            <span className="font-semibold">{weather.temperature}°C</span>
+            <span className="text-muted-foreground text-xs">{weather.condition}</span>
+          </span>
+        </div>
 
         {/* Apple-style search — grows on focus */}
         <form

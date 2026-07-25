@@ -42,10 +42,10 @@ export default function LiquidBackground() {
         glow={2.8}
         taper={3}
         spread={1}
-        intensity={theme === "dark" ? 0.5 : 0.45}
+        intensity={theme === "dark" ? 0.32 : 0.45}
         saturation={1.4}
-        opacity={theme === "dark" ? 0.85 : 0.7}
-        scale={1.6}
+        opacity={theme === "dark" ? 0.5 : 0.7}
+        scale={1.9}
       />
     </div>
   );
