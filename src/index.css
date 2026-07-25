@@ -2,6 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Premium cinematic effects (Laocoön-inspired)
+   ============================================================ */
+
+/* Custom double-ring cursor — only when a fine pointer is present */
+body.has-custom-cursor,
+body.has-custom-cursor * {
+  cursor: none !important;
+}
+.cursor-inner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border: 2px solid hsl(172 100% 55%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 99999;
+  box-shadow: 0 0 8px hsl(172 100% 55% / 0.7);
+}
+.cursor-outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid hsl(0 0% 100% / 0.55);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 99998;
+  transition: width 0.3s, height 0.3s, background 0.3s, border-color 0.3s;
+}
+.cursor-outer.cursor-grow {
+  width: 56px;
+  height: 56px;
+  background: hsl(172 100% 55% / 0.08);
+  border-color: hsl(172 100% 55% / 0.6);
+}
+
+/* Per-letter blur-up reveal */
+.blur-text .blur-text-line {
+  display: block;
+}
+.blur-text .blur-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(50px);
+  filter: blur(12px);
+  transition:
+    opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+    filter 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, transform, filter;
+}
+.blur-text.is-shown .blur-char {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blur-text .blur-char {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
 All colors MUST be HSL.
 */

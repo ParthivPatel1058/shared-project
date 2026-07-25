@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
 import SectionCard from '@/components/SectionCard';
+import BlurText from '@/components/BlurText';
 import heroScene from '@/assets/scene-bg.png';
 
 interface Feature {
@@ -68,13 +69,12 @@ const Index = () => {
               <span className="glass inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 !rounded-full text-primary text-sm font-medium">
                 🌱 {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
               </span>
-              <h1 className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-[1.03]">
-                {en ? (
-                  <>Grow smarter<br />with <span className="text-gradient">BhoomiX</span></>
-                ) : (
-                  <><span className="text-gradient">BhoomiX</span> के साथ<br />स्मार्ट खेती करें</>
-                )}
-              </h1>
+              <BlurText
+                as="h1"
+                key={en ? 'en' : 'hi'}
+                text={en ? 'Grow smarter\nwith BhoomiX' : 'BhoomiX के साथ\nस्मार्ट खेती करें'}
+                className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-[1.03]"
+              />
               <p className="text-base md:text-lg text-white/75 leading-relaxed mb-6 max-w-md">
                 {t('tagline')}
               </p>

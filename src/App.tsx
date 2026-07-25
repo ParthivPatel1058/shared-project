@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import LiquidBackground from "@/components/LiquidBackground";
+import CustomCursor from "@/components/CustomCursor";
 import AppShell from "@/components/AppShell";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -38,6 +39,7 @@ const App = () => (
       <LanguageProvider>
         <TooltipProvider>
           <LiquidBackground />
+          <CustomCursor />
           <Toaster />
           <Sonner />
           <BrowserRouter>
