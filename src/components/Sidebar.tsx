@@ -110,7 +110,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col fixed left-3 top-3 bottom-3 z-40 glass-dock liquid rounded-[32px] transition-[width] duration-300 overflow-hidden",
+        "hidden lg:flex flex-col fixed left-3 top-3 bottom-3 z-40 glass-dock rounded-[32px] transition-[width] duration-300 overflow-hidden",
         collapsed ? "w-[76px]" : "w-64",
       )}
     >
