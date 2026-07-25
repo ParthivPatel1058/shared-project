@@ -7,6 +7,15 @@ import SearchBar from '@/components/SearchBar';
 import SectionCard from '@/components/SectionCard';
 import BlurText from '@/components/BlurText';
 import heroScene from '@/assets/scene-bg.png';
+import imgDisease from '@/assets/cabbage.jpg';
+import imgMarket from '@/assets/organic-sprayer.jpg';
+import imgMart from '@/assets/milk.jpg';
+import imgAdvisory from '@/assets/spinach.jpg';
+import imgSchemes from '@/assets/india-gate-rice.jpg';
+import imgRobotic from '@/assets/mulch-spreader.jpg';
+import imgOrganic from '@/assets/vermicompost.jpg';
+import imgVegetable from '@/assets/carrots.jpg';
+import imgDelivery from '@/assets/potatoes.jpg';
 
 interface Feature {
   title: string;
@@ -15,6 +24,7 @@ interface Feature {
   descriptionHi: string;
   icon: typeof ScanSearch;
   emoji: string;
+  img: string;
   href: string;
   cta: string;
   ctaHi: string;
@@ -24,15 +34,15 @@ interface Feature {
 }
 
 const FEATURES: Feature[] = [
-  { title: 'Crop Disease Detection', titleHi: 'फसल रोग पहचान', description: 'Scan crop photos to identify diseases, browse the disease library, and get treatment advice', descriptionHi: 'फसल की फोटो स्कैन करके रोग पहचानें और उपचार की सलाह पाएं', icon: ScanSearch, emoji: '🔬', href: '/crop-disease', cta: 'Scan Now', ctaHi: 'स्कैन करें', gradient: 'primary', badge: 'New', badgeHi: 'नया' },
-  { title: 'Agri Market', titleHi: 'कृषि बाज़ार', description: 'Seeds, fertilizers, tools, and crop protection', descriptionHi: 'बीज, उर्वरक, उपकरण और फसल सुरक्षा', icon: ShoppingBag, emoji: '🛒', href: '/agri-market', cta: 'Browse Products', ctaHi: 'उत्पाद देखें', gradient: 'secondary' },
-  { title: 'Kisan Mart', titleHi: 'किसान मार्ट', description: 'Everyday groceries and farm household supplies', descriptionHi: 'रोज़मर्रा का किराना और घरेलू सामान', icon: Store, emoji: '🏪', href: '/kisan-mart', cta: 'Browse Store', ctaHi: 'स्टोर देखें', gradient: 'primary' },
-  { title: 'Crop Advisory', titleHi: 'फसल सलाह', description: 'Ask a question or identify crop disease from a photo', descriptionHi: 'प्रश्न पूछें या फोटो से फसल रोग पहचानें', icon: HelpCircle, emoji: '👨‍🌾', href: '/kisan-help', cta: 'Get Advice', ctaHi: 'सलाह लें', gradient: 'secondary' },
-  { title: 'Government Schemes', titleHi: 'सरकारी योजनाएं', description: 'Explore latest government benefits and schemes for farmers', descriptionHi: 'किसानों के लिए नवीनतम सरकारी लाभ और योजनाओं का अन्वेषण करें', icon: Landmark, emoji: '🏛️', href: '/gov-schemes', cta: 'View Schemes', ctaHi: 'योजनाएं देखें', gradient: 'primary' },
-  { title: 'Robotic Farming', titleHi: 'रोबोटिक कृषि', description: 'Discover modern farming robots and automation technology', descriptionHi: 'आधुनिक कृषि रोबोट और स्वचालन प्रौद्योगिकी की खोज करें', icon: Bot, emoji: '🤖', href: '/robotic-farming', cta: 'Explore Tech', ctaHi: 'तकनीक जानें', gradient: 'secondary' },
-  { title: 'Organic Farming', titleHi: 'जैविक खेती', description: 'Complete guide to organic farming with certified seeds and natural fertilizers', descriptionHi: 'प्रमाणित बीजों और प्राकृतिक उर्वरकों के साथ जैविक खेती की संपूर्ण मार्गदर्शिका', icon: Leaf, emoji: '🌱', href: '/organic-farming', cta: 'Explore Organic', ctaHi: 'जैविक खेती देखें', gradient: 'primary' },
-  { title: 'Vegetable Farming', titleHi: 'सब्जी की खेती', description: 'Comprehensive guide to all vegetables, farming methods, and tools', descriptionHi: 'सभी सब्जियों, खेती के तरीकों और उपकरणों की व्यापक मार्गदर्शिका', icon: Carrot, emoji: '🥕', href: '/vegetable-farming', cta: 'View Guide', ctaHi: 'मार्गदर्शिका देखें', gradient: 'secondary' },
-  { title: 'Delivery Partner', titleHi: 'डिलीवरी पार्टनर', description: 'Join as a delivery partner and start earning with flexible hours', descriptionHi: 'डिलीवरी पार्टनर के रूप में शामिल हों और लचीले घंटों में कमाई शुरू करें', icon: Truck, emoji: '🚚', href: '/partner-registration', cta: 'Join Now', ctaHi: 'अभी जुड़ें', gradient: 'primary' },
+  { title: 'Crop Disease Detection', titleHi: 'फसल रोग पहचान', description: 'Scan crop photos to identify diseases, browse the disease library, and get treatment advice', descriptionHi: 'फसल की फोटो स्कैन करके रोग पहचानें और उपचार की सलाह पाएं', icon: ScanSearch, emoji: '🔬', img: imgDisease, href: '/crop-disease', cta: 'Scan Now', ctaHi: 'स्कैन करें', gradient: 'primary', badge: 'New', badgeHi: 'नया' },
+  { title: 'Agri Market', titleHi: 'कृषि बाज़ार', description: 'Seeds, fertilizers, tools, and crop protection', descriptionHi: 'बीज, उर्वरक, उपकरण और फसल सुरक्षा', icon: ShoppingBag, emoji: '🛒', img: imgMarket, href: '/agri-market', cta: 'Browse Products', ctaHi: 'उत्पाद देखें', gradient: 'secondary' },
+  { title: 'Kisan Mart', titleHi: 'किसान मार्ट', description: 'Everyday groceries and farm household supplies', descriptionHi: 'रोज़मर्रा का किराना और घरेलू सामान', icon: Store, emoji: '🏪', img: imgMart, href: '/kisan-mart', cta: 'Browse Store', ctaHi: 'स्टोर देखें', gradient: 'primary' },
+  { title: 'Crop Advisory', titleHi: 'फसल सलाह', description: 'Ask a question or identify crop disease from a photo', descriptionHi: 'प्रश्न पूछें या फोटो से फसल रोग पहचानें', icon: HelpCircle, emoji: '👨‍🌾', img: imgAdvisory, href: '/kisan-help', cta: 'Get Advice', ctaHi: 'सलाह लें', gradient: 'secondary' },
+  { title: 'Government Schemes', titleHi: 'सरकारी योजनाएं', description: 'Explore latest government benefits and schemes for farmers', descriptionHi: 'किसानों के लिए नवीनतम सरकारी लाभ और योजनाओं का अन्वेषण करें', icon: Landmark, emoji: '🏛️', img: imgSchemes, href: '/gov-schemes', cta: 'View Schemes', ctaHi: 'योजनाएं देखें', gradient: 'primary' },
+  { title: 'Robotic Farming', titleHi: 'रोबोटिक कृषि', description: 'Discover modern farming robots and automation technology', descriptionHi: 'आधुनिक कृषि रोबोट और स्वचालन प्रौद्योगिकी की खोज करें', icon: Bot, emoji: '🤖', img: imgRobotic, href: '/robotic-farming', cta: 'Explore Tech', ctaHi: 'तकनीक जानें', gradient: 'secondary' },
+  { title: 'Organic Farming', titleHi: 'जैविक खेती', description: 'Complete guide to organic farming with certified seeds and natural fertilizers', descriptionHi: 'प्रमाणित बीजों और प्राकृतिक उर्वरकों के साथ जैविक खेती की संपूर्ण मार्गदर्शिका', icon: Leaf, emoji: '🌱', img: imgOrganic, href: '/organic-farming', cta: 'Explore Organic', ctaHi: 'जैविक खेती देखें', gradient: 'primary' },
+  { title: 'Vegetable Farming', titleHi: 'सब्जी की खेती', description: 'Comprehensive guide to all vegetables, farming methods, and tools', descriptionHi: 'सभी सब्जियों, खेती के तरीकों और उपकरणों की व्यापक मार्गदर्शिका', icon: Carrot, emoji: '🥕', img: imgVegetable, href: '/vegetable-farming', cta: 'View Guide', ctaHi: 'मार्गदर्शिका देखें', gradient: 'secondary' },
+  { title: 'Delivery Partner', titleHi: 'डिलीवरी पार्टनर', description: 'Join as a delivery partner and start earning with flexible hours', descriptionHi: 'डिलीवरी पार्टनर के रूप में शामिल हों और लचीले घंटों में कमाई शुरू करें', icon: Truck, emoji: '🚚', img: imgDelivery, href: '/partner-registration', cta: 'Join Now', ctaHi: 'अभी जुड़ें', gradient: 'primary' },
 ];
 
 const Index = () => {
@@ -140,9 +150,19 @@ const Index = () => {
 
               <button
                 onClick={() => navigate(current.href)}
-                className="glass group flex items-center gap-4 px-5 py-3.5 !rounded-2xl text-left hover:bg-white/[0.16] transition-all duration-300 min-w-[240px] max-w-sm"
+                className="glass group flex items-center gap-4 px-3 py-3 !rounded-2xl text-left hover:bg-white/[0.16] transition-all duration-300 min-w-[240px] max-w-sm"
               >
-                <span className="text-2xl leading-none">{current.emoji}</span>
+                <span className="relative h-12 w-12 flex-shrink-0 rounded-xl overflow-hidden ring-1 ring-white/20">
+                  {FEATURES.map((f, i) => (
+                    <img
+                      key={f.href + i}
+                      src={f.img}
+                      alt=""
+                      aria-hidden
+                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${i === slide ? 'opacity-100' : 'opacity-0'}`}
+                    />
+                  ))}
+                </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white truncate flex items-center gap-1.5">
                     {en ? current.title : current.titleHi}
