@@ -1,6 +1,3 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -62,7 +59,7 @@ function validateInput(data: unknown): {
   };
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -89,22 +86,35 @@ serve(async (req) => {
     }
 
     const { message, image, type, language } = validation.parsed!;
-    
-    // Use OPENAI_API_KEY for standard Supabase deployment
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
-    if (!OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY not configured');
+    // NVIDIA NIM (OpenAI-compatible) — key stored as NVIDIA_API_KEY secret
+    const NVIDIA_API_KEY = Deno.env.get('NVIDIA_API_KEY');
+
+    if (!NVIDIA_API_KEY) {
+      console.error('NVIDIA_API_KEY not configured');
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to your Supabase Edge Function secrets.' }),
+        JSON.stringify({ error: 'AI key not configured. Please add NVIDIA_API_KEY to your Supabase Edge Function secrets.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Identity guardrail: the assistant must only ever present itself as
+    // BhoomiX AgriNova and never reveal the underlying model or provider.
+    const IDENTITY_EN =
+      'Your name is BhoomiX AgriNova, an AI assistant trained by BhoomiX for Indian agriculture. ' +
+      'If anyone asks what model, AI, LLM, or company you are, who built or trained you, or which technology powers you, ' +
+      'you must ONLY reply that you are trained by BhoomiX AgriNova. ' +
+      'Never mention NVIDIA, OpenAI, Meta, Llama, ChatGPT, or any other company, provider, or model name. ';
+    const IDENTITY_HI =
+      'आपका नाम BhoomiX AgriNova है, जो भारतीय कृषि के लिए BhoomiX द्वारा प्रशिक्षित एक AI सहायक है। ' +
+      'यदि कोई पूछे कि आप कौन-सा मॉडल, AI, LLM या कंपनी हैं, आपको किसने बनाया या प्रशिक्षित किया, या आपको कौन-सी तकनीक चलाती है, ' +
+      'तो आपको केवल यह कहना है कि आप BhoomiX AgriNova द्वारा प्रशिक्षित हैं। ' +
+      'NVIDIA, OpenAI, Meta, Llama, ChatGPT या किसी अन्य कंपनी, प्रदाता या मॉडल का नाम कभी न बताएं। ';
+
     const isHindi = language === 'hi';
-    let systemPrompt = isHindi 
-      ? 'आप भारतीय किसानों की मदद करने वाले एक विशेषज्ञ कृषि सलाहकार हैं। फसलों, उर्वरकों, कीट नियंत्रण और खेती की तकनीकों के बारे में स्पष्ट, व्यावहारिक सलाह दें। जवाब 2-3 वाक्यों में संक्षिप्त और कार्रवाई योग्य रखें।'
-      : 'You are an expert agricultural advisor helping Indian farmers. Provide clear, practical advice about crops, fertilizers, pest control, and farming techniques. Keep answers concise and actionable in 2-3 sentences.';
+    let systemPrompt = isHindi
+      ? IDENTITY_HI + 'आप भारतीय किसानों की मदद करने वाले एक विशेषज्ञ कृषि सलाहकार हैं। फसलों, उर्वरकों, कीट नियंत्रण और खेती की तकनीकों के बारे में स्पष्ट, व्यावहारिक सलाह दें। जवाब 2-3 वाक्यों में संक्षिप्त और कार्रवाई योग्य रखें।'
+      : IDENTITY_EN + 'You are an expert agricultural advisor helping Indian farmers. Provide clear, practical advice about crops, fertilizers, pest control, and farming techniques. Keep answers concise and actionable in 2-3 sentences.';
     
     let userContent: string | Array<{ type: string; text?: string; image_url?: { url: string } }> = message || '';
 
@@ -112,8 +122,8 @@ serve(async (req) => {
     if (type === 'image' && image) {
       console.log('Analyzing crop image for disease detection');
       systemPrompt = isHindi
-        ? 'आप फसल रोगों में विशेषज्ञता रखने वाले एक पादप रोगविज्ञानी हैं। केवल मुख्य बिंदुओं में संक्षिप्त विश्लेषण दें:\n• रोग का नाम\n• गंभीरता\n• उपचार (1-2 उपाय)\n• रोकथाम टिप\n\nलंबा विवरण न दें, केवल मुख्य बातें।'
-        : 'You are an expert plant pathologist. Provide BRIEF analysis in key highlights only:\n• Disease name\n• Severity level\n• Treatment (1-2 methods)\n• Prevention tip\n\nDo NOT write long descriptions. Keep it brief and highlight main points only.';
+        ? IDENTITY_HI + 'आप फसल रोगों में विशेषज्ञता रखने वाले एक पादप रोगविज्ञानी हैं। केवल मुख्य बिंदुओं में संक्षिप्त विश्लेषण दें:\n• रोग का नाम\n• गंभीरता\n• उपचार (1-2 उपाय)\n• रोकथाम टिप\n\nलंबा विवरण न दें, केवल मुख्य बातें।'
+        : IDENTITY_EN + 'You are an expert plant pathologist. Provide BRIEF analysis in key highlights only:\n• Disease name\n• Severity level\n• Treatment (1-2 methods)\n• Prevention tip\n\nDo NOT write long descriptions. Keep it brief and highlight main points only.';
       
       const analysisPrompt = isHindi
         ? 'इस फसल की तस्वीर का विश्लेषण करें। केवल मुख्य बिंदुओं में संक्षिप्त जवाब दें।'
@@ -135,20 +145,22 @@ serve(async (req) => {
       console.log('Received farming question');
     }
 
-    // Use OpenAI API directly for standard Supabase deployment
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // NVIDIA NIM — OpenAI-compatible chat completions with a vision model
+    // (Llama 3.2 Vision handles both text questions and crop-photo analysis).
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${NVIDIA_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Using gpt-4o-mini for cost-effective vision support
+        model: 'meta/llama-3.2-90b-vision-instruct',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userContent }
         ],
         max_tokens: 500,
+        temperature: 0.6,
       }),
     });
 
@@ -161,12 +173,12 @@ serve(async (req) => {
       }
       if (response.status === 401) {
         return new Response(
-          JSON.stringify({ error: 'Invalid OpenAI API key. Please check your OPENAI_API_KEY secret.' }),
+          JSON.stringify({ error: 'Invalid AI key. Please check your NVIDIA_API_KEY secret.' }),
           { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
+      console.error('NVIDIA NIM API error:', response.status, errorText);
       return new Response(
         JSON.stringify({ error: 'AI service error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
