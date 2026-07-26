@@ -68,8 +68,8 @@ const Index = () => {
       <Navigation />
 
       <main className="container mx-auto px-4 pt-4 md:pt-5 pb-16">
-        {/* Hero — text left, image carousel right */}
-        <section className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-12 items-center pt-4 md:pt-8">
+        {/* Hero — text left, large image carousel right */}
+        <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-12 items-center pt-2 md:pt-4">
           {/* Left: editorial copy */}
           <div className="animate-slide-up">
             <span className="glass inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 !rounded-full text-primary text-sm font-medium">
@@ -125,7 +125,7 @@ const Index = () => {
 
           {/* Right: image carousel with scroll buttons */}
           <div className="animate-scale-in">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/12 shadow-[0_24px_70px_rgba(8,15,30,0.5)] aspect-[4/5] sm:aspect-[16/11] lg:aspect-[4/5]">
+            <div className="relative overflow-hidden rounded-[28px] border border-white/12 shadow-[0_24px_70px_rgba(8,15,30,0.5)] h-[58vh] sm:h-[64vh] lg:h-[82vh] lg:max-h-[860px]">
               {/* Cross-fading images */}
               {FEATURES.map((f, i) => (
                 <img
