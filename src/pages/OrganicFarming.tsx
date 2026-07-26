@@ -134,7 +134,7 @@ const OrganicFarming = () => {
   return <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-24 pb-12 px-4 container mx-auto">
+      <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12">
           
           

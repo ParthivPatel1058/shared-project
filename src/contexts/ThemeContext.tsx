@@ -12,13 +12,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    // v2: the immersive glass theme is the new default — migrate old visitors once
-    if (!localStorage.getItem('theme-v2')) {
-      localStorage.setItem('theme-v2', '1');
-      return 'dark';
+    // v3: premium light theme is the new default — migrate existing visitors once
+    if (!localStorage.getItem('theme-v3')) {
+      localStorage.setItem('theme-v3', '1');
+      localStorage.setItem('theme', 'light');
+      return 'light';
     }
     const saved = localStorage.getItem('theme') as Theme;
-    return saved || 'dark';
+    return saved || 'light';
   });
 
   useEffect(() => {

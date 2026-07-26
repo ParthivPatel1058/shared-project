@@ -82,8 +82,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           "group relative flex items-center gap-3 rounded-2xl transition-all duration-300",
           collapsed ? "justify-center h-11 w-11 mx-auto" : "px-3.5 h-10",
           isActive
-            ? "bg-white/10 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
-            : "text-white/60 hover:text-white hover:bg-white/[0.07]",
+            ? "bg-primary/12 text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground hover:bg-foreground/[0.06]",
         )}
       >
         {/* Active indicator */}
@@ -123,13 +123,13 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
             className="h-9 w-9 object-cover rounded-xl ring-1 ring-white/20 flex-shrink-0"
           />
           {!collapsed && (
-            <span className="font-display text-base font-bold text-white truncate">BhoomiX</span>
+            <span className="font-display text-base font-bold text-foreground truncate">BhoomiX</span>
           )}
         </Link>
         <button
           onClick={onToggle}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="flex items-center justify-center h-8 w-8 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          className="flex items-center justify-center h-8 w-8 rounded-xl text-muted-foreground hover:text-foreground hover:bg-foreground/[0.08] transition-colors"
         >
           {collapsed ? (
             <PanelLeftOpen strokeWidth={1.75} className="h-[17px] w-[17px]" />
@@ -148,7 +148,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           {!collapsed && (
             <div className="flex items-center gap-2 px-3.5 mb-2">
               <Zap strokeWidth={1.75} className="h-3.5 w-3.5 text-cyan-300" />
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                 {en ? "Quick Actions" : "त्वरित कार्य"}
               </span>
             </div>
@@ -163,7 +163,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <button
         onClick={() => navigate("/settings")}
         className={cn(
-          "flex items-center gap-3 m-3 p-2.5 rounded-3xl bg-white/[0.07] hover:bg-white/[0.12] border border-white/10 transition-all duration-300 flex-shrink-0",
+          "flex items-center gap-3 m-3 p-2.5 rounded-3xl bg-foreground/[0.05] hover:bg-foreground/[0.09] border border-border transition-all duration-300 flex-shrink-0",
           collapsed && "justify-center p-2",
         )}
       >
@@ -173,12 +173,12 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {!collapsed && (
           <>
             <div className="min-w-0 text-left flex-1">
-              <p className="text-sm font-semibold text-white truncate capitalize">{name}</p>
-              <p className="text-[11px] text-white/50 truncate">
+              <p className="text-sm font-semibold text-foreground truncate capitalize">{name}</p>
+              <p className="text-[11px] text-muted-foreground truncate">
                 {en ? "Premium Farmer" : "प्रीमियम किसान"}
               </p>
             </div>
-            <ChevronRight strokeWidth={1.75} className="h-4 w-4 text-white/40" />
+            <ChevronRight strokeWidth={1.75} className="h-4 w-4 text-muted-foreground" />
           </>
         )}
       </button>

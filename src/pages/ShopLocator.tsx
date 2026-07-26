@@ -162,7 +162,7 @@ const ShopLocator = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-background">
       <NavigationBar />
       
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-8 pb-16 px-4">
         <div className="container mx-auto">
           {/* Header */}
           <div className="text-center mb-12 animate-fade-in">

@@ -39,7 +39,7 @@ const Settings = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <Navigation />
       
-      <div className="pt-24 pb-12 px-4 container mx-auto">
+      <div className="pt-8 pb-12 px-4 container mx-auto">
         <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
           {t('settingsTitle')}
         </h1>

@@ -137,7 +137,7 @@ const Orders = () => {
     <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-24 pb-12 px-4 container mx-auto">
+      <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             {language === 'en' ? 'My Orders' : 'मेरे ऑर्डर'}

@@ -80,9 +80,9 @@ const Index = () => {
               as="h1"
               key={en ? 'en' : 'hi'}
               text={en ? 'Grow smarter\nwith BhoomiX' : 'BhoomiX के साथ\nस्मार्ट खेती करें'}
-              className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-[1.03]"
+              className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-foreground mb-4 leading-[1.03]"
             />
-            <p className="text-base md:text-lg text-white/75 leading-relaxed mb-7 max-w-md">
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-7 max-w-md">
               {t('tagline')}
             </p>
 
@@ -96,7 +96,7 @@ const Index = () => {
               </Link>
               <Link
                 to="/agri-market"
-                className="glass inline-flex items-center gap-2 h-11 px-5 !rounded-full text-sm font-semibold text-white hover:bg-white/[0.16] hover:scale-[1.03] active:scale-95 transition-all duration-300"
+                className="glass inline-flex items-center gap-2 h-11 px-5 !rounded-full text-sm font-semibold text-foreground hover:border-primary/40 hover:scale-[1.03] active:scale-95 transition-all duration-300"
               >
                 <ShoppingBag strokeWidth={1.75} className="h-4 w-4" />
                 {en ? 'Explore Market' : 'बाज़ार देखें'}
@@ -108,17 +108,17 @@ const Index = () => {
                 {['RS', 'AK', 'MP'].map((ini, i) => (
                   <div
                     key={ini}
-                    className={`h-9 w-9 rounded-full border-2 border-white/20 flex items-center justify-center text-[10px] font-bold text-white ${['gradient-primary', 'gradient-secondary', 'gradient-accent'][i]}`}
+                    className={`h-9 w-9 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white ${['gradient-primary', 'gradient-secondary', 'gradient-accent'][i]}`}
                   >
                     {ini}
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-white/75 leading-tight">
+              <p className="text-sm text-muted-foreground leading-tight">
                 {en ? (
-                  <>Trusted by <span className="text-white font-semibold">25K+</span><br />farmers across India</>
+                  <>Trusted by <span className="text-foreground font-semibold">25K+</span><br />farmers across India</>
                 ) : (
-                  <>भारत भर के <span className="text-white font-semibold">25K+</span><br />किसानों का भरोसा</>
+                  <>भारत भर के <span className="text-foreground font-semibold">25K+</span><br />किसानों का भरोसा</>
                 )}
               </p>
             </div>

@@ -178,8 +178,8 @@ const KisanMart = () => {
     <div className="min-h-screen pb-24">
       <Navigation />
       
-      {/* Fixed Header */}
-      <div className="fixed top-[73px] left-0 right-0 z-40 bg-card/80 backdrop-blur-md border-b border-border">
+      {/* Sticky header — stays in flow so it respects the sidebar offset */}
+      <div className="sticky top-[76px] z-40 mx-3 lg:mx-4 xl:mx-6 mt-4 glass-strong !rounded-2xl">
         <div className="px-4 py-4">
           {/* Top Bar */}
           <div className="flex items-center justify-between mb-4">
@@ -247,7 +247,7 @@ const KisanMart = () => {
       </div>
 
       {/* Products Grid - Mobile App Style */}
-      <div className="pt-[280px] px-4 container mx-auto">
+      <div className="pt-8 px-4 container mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {filteredProducts.map((product) => (
             <div

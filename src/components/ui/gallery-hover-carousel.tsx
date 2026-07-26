@@ -20,7 +20,7 @@ interface GalleryHoverGridProps {
 function HoverCard({ item }: { item: GalleryHoverCarouselItem }) {
   return (
     <Link to={item.url} className="group block relative w-full h-[280px] md:h-[320px]">
-      <Card className="overflow-hidden rounded-3xl h-full w-full border-white/12 bg-card/60 backdrop-blur-xl">
+      <Card className="overflow-hidden rounded-3xl h-full w-full border-border bg-card/70 backdrop-blur-xl">
         {/* Image */}
         <div className="relative h-full w-full transition-all duration-500 group-hover:h-1/2">
           <img
