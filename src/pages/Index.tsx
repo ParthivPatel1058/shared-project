@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
-import FeatureRing from '@/components/FeatureRing';
+import FeatureRingMorph from '@/components/FeatureRingMorph';
 import BlurText from '@/components/BlurText';
 import heroScene from '@/assets/scene-bg.png';
 import imgDisease from '@/assets/cabbage.jpg';
@@ -185,9 +185,9 @@ const Index = () => {
           <SearchBar />
         </div>
 
-        {/* Feature ring — Apple-Photos-style circular shortcuts */}
+        {/* Feature ring — scroll-morph: circle → bottom arc */}
         <section className="mt-16 mb-8">
-          <FeatureRing items={FEATURES} en={en} />
+          <FeatureRingMorph items={FEATURES} en={en} />
         </section>
       </main>
     </div>
