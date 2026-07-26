@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
-import GalleryHoverCarousel from '@/components/ui/gallery-hover-carousel';
+import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
+import GooeyNav from '@/components/GooeyNav';
 import BlurText from '@/components/BlurText';
 
 /* Curated agriculture photography (Unsplash, verified). */
@@ -194,9 +195,33 @@ const Index = () => {
             <SearchBar />
           </div>
 
-          {/* Feature gallery — hover-reveal carousel */}
-          <section className="mt-16 mb-8">
-            <GalleryHoverCarousel
+          {/* Premium gooey quick-nav */}
+          <div className="mt-14 flex justify-center">
+            <div className="glass px-2 py-1.5 !rounded-full">
+              <GooeyNav
+                items={[
+                  { label: en ? 'Crop AI' : 'फसल एआई', href: '/crop-disease' },
+                  { label: en ? 'Market' : 'बाज़ार', href: '/agri-market' },
+                  { label: en ? 'Kisan Mart' : 'किसान मार्ट', href: '/kisan-mart' },
+                  { label: en ? 'Advisory' : 'सलाह', href: '/kisan-help' },
+                  { label: en ? 'Schemes' : 'योजनाएं', href: '/gov-schemes' },
+                ]}
+                particleCount={15}
+                particleDistances={[90, 10]}
+                particleR={100}
+                animationTime={600}
+                timeVariance={300}
+                colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+                initialActiveIndex={0}
+                /* Let the gooey particles play before routing away. */
+                onItemClick={(_, item) => window.setTimeout(() => navigate(item.href), 420)}
+              />
+            </div>
+          </div>
+
+          {/* Feature gallery — hover-reveal 3×3 grid */}
+          <section className="mt-12 mb-8">
+            <GalleryHoverGrid
               heading={en ? 'Everything you need' : 'आपकी हर ज़रूरत'}
               subheading={en ? 'From seed to sale — explore every tool in one place.' : 'बीज से बिक्री तक — हर टूल एक ही जगह।'}
               items={FEATURES.map((f) => ({
