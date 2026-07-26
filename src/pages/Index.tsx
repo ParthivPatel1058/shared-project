@@ -67,9 +67,9 @@ const Index = () => {
     <div className="min-h-screen">
       <Navigation />
 
-      <main className="container mx-auto px-4 pt-4 md:pt-5 pb-16">
-        {/* Hero — text left, large image carousel right */}
-        <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-12 items-center pt-2 md:pt-4">
+      <main className="pt-4 md:pt-5 pb-16">
+        {/* Hero — text left, full-bleed image carousel right */}
+        <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-12 items-center pt-2 md:pt-4 pl-4 md:pl-6 lg:pl-8 pr-4 lg:pr-0">
           {/* Left: editorial copy */}
           <div className="animate-slide-up">
             <span className="glass inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 !rounded-full text-primary text-sm font-medium">
@@ -125,7 +125,7 @@ const Index = () => {
 
           {/* Right: image carousel with scroll buttons */}
           <div className="animate-scale-in">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/12 shadow-[0_24px_70px_rgba(8,15,30,0.5)] h-[58vh] sm:h-[64vh] lg:h-[82vh] lg:max-h-[860px]">
+            <div className="relative overflow-hidden rounded-[28px] lg:rounded-r-none border border-white/12 lg:border-r-0 shadow-[0_24px_70px_rgba(8,15,30,0.5)] h-[58vh] sm:h-[64vh] lg:h-[86vh] lg:max-h-[900px]">
               {/* Cross-fading images */}
               {FEATURES.map((f, i) => (
                 <img
@@ -188,15 +188,17 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Mobile search */}
-        <div className="mt-6 md:hidden">
-          <SearchBar />
-        </div>
+        <div className="container mx-auto px-4">
+          {/* Mobile search */}
+          <div className="mt-6 md:hidden">
+            <SearchBar />
+          </div>
 
-        {/* Feature ring — scroll-morph: circle → bottom arc */}
-        <section className="mt-16 mb-8">
-          <FeatureRingMorph items={FEATURES} en={en} />
-        </section>
+          {/* Feature ring — scroll-morph: circle → bottom arc */}
+          <section className="mt-16 mb-8">
+            <FeatureRingMorph items={FEATURES} en={en} />
+          </section>
+        </div>
       </main>
     </div>
   );
