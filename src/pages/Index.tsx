@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
-import FeatureRingMorph from '@/components/FeatureRingMorph';
+import GalleryHoverCarousel from '@/components/ui/gallery-hover-carousel';
 import BlurText from '@/components/BlurText';
 
 /* Curated agriculture photography (Unsplash, verified). */
@@ -194,9 +194,19 @@ const Index = () => {
             <SearchBar />
           </div>
 
-          {/* Feature ring — scroll-morph: circle → bottom arc */}
+          {/* Feature gallery — hover-reveal carousel */}
           <section className="mt-16 mb-8">
-            <FeatureRingMorph items={FEATURES} en={en} />
+            <GalleryHoverCarousel
+              heading={en ? 'Everything you need' : 'आपकी हर ज़रूरत'}
+              subheading={en ? 'From seed to sale — explore every tool in one place.' : 'बीज से बिक्री तक — हर टूल एक ही जगह।'}
+              items={FEATURES.map((f) => ({
+                id: f.href,
+                title: en ? f.title : f.titleHi,
+                summary: en ? f.description : f.descriptionHi,
+                url: f.href,
+                image: f.img,
+              }))}
+            />
           </section>
         </div>
       </main>
