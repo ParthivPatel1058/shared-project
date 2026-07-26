@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ShoppingBag, HelpCircle, Store, Landmark, Bot, Leaf, Truck, Carrot, ScanSearch, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -6,16 +6,18 @@ import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
 import FeatureRingMorph from '@/components/FeatureRingMorph';
 import BlurText from '@/components/BlurText';
-import heroScene from '@/assets/scene-bg.png';
-import imgDisease from '@/assets/cabbage.jpg';
-import imgMarket from '@/assets/organic-sprayer.jpg';
-import imgMart from '@/assets/milk.jpg';
-import imgAdvisory from '@/assets/spinach.jpg';
-import imgSchemes from '@/assets/india-gate-rice.jpg';
-import imgRobotic from '@/assets/mulch-spreader.jpg';
-import imgOrganic from '@/assets/vermicompost.jpg';
-import imgVegetable from '@/assets/carrots.jpg';
-import imgDelivery from '@/assets/potatoes.jpg';
+
+/* Curated agriculture photography (Unsplash, verified). */
+const W = (id: string) => `https://images.unsplash.com/photo-${id}?w=900&q=80&auto=format&fit=crop`;
+const imgDisease = W('1518977676601-b53f82aba655');   // tomato plant / leaf
+const imgMarket = W('1523348837708-15d4a09cfac2');    // fresh vegetables
+const imgMart = W('1488459716781-31db52582fe9');      // produce market
+const imgAdvisory = W('1625246333195-78d9c38ad449');  // Indian farmer
+const imgSchemes = W('1500382017468-9049fed747ef');   // wheat field
+const imgRobotic = W('1595246140625-573b715d11dc');   // agri drone / tech
+const imgOrganic = W('1574943320219-553eb213f72d');   // organic crop rows
+const imgVegetable = W('1466692476868-aef1dfb1e735'); // green field
+const imgDelivery = W('1530267981375-f0de937f5f13');  // logistics / cargo
 
 interface Feature {
   title: string;
@@ -55,127 +57,133 @@ const Index = () => {
   const current = FEATURES[slide];
   const go = (dir: number) => setSlide((s) => (s + dir + total) % total);
 
+  // Auto-advance the hero carousel; resets whenever the user interacts.
+  useEffect(() => {
+    const id = window.setInterval(() => setSlide((s) => (s + 1) % total), 4500);
+    return () => window.clearInterval(id);
+  }, [slide, total]);
+
   return (
     <div className="min-h-screen">
       <Navigation />
 
       <main className="container mx-auto px-4 pt-4 md:pt-5 pb-16">
-        {/* Hero carousel card */}
-        <section className="relative overflow-hidden rounded-[28px] border border-white/12 shadow-[0_24px_70px_rgba(8,15,30,0.5)] animate-scale-in">
-          {/* Background image */}
-          <img
-            src={heroScene}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          {/* Readability gradients — heavier on the left where text sits */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a1424]/90 via-[#0d1726]/45 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a1120]/85 via-transparent to-[#0a1120]/25" />
+        {/* Hero — text left, image carousel right */}
+        <section className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-12 items-center pt-4 md:pt-8">
+          {/* Left: editorial copy */}
+          <div className="animate-slide-up">
+            <span className="glass inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 !rounded-full text-primary text-sm font-medium">
+              🌱 {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
+            </span>
+            <BlurText
+              as="h1"
+              key={en ? 'en' : 'hi'}
+              text={en ? 'Grow smarter\nwith BhoomiX' : 'BhoomiX के साथ\nस्मार्ट खेती करें'}
+              className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-[1.03]"
+            />
+            <p className="text-base md:text-lg text-white/75 leading-relaxed mb-7 max-w-md">
+              {t('tagline')}
+            </p>
 
-          {/* Content */}
-          <div className="relative flex flex-col justify-between min-h-[420px] md:min-h-[480px] p-6 md:p-10">
-            <div className="max-w-xl">
-              <span className="glass inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 !rounded-full text-primary text-sm font-medium">
-                🌱 {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
-              </span>
-              <BlurText
-                as="h1"
-                key={en ? 'en' : 'hi'}
-                text={en ? 'Grow smarter\nwith BhoomiX' : 'BhoomiX के साथ\nस्मार्ट खेती करें'}
-                className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-[1.03]"
-              />
-              <p className="text-base md:text-lg text-white/75 leading-relaxed mb-6 max-w-md">
-                {t('tagline')}
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 mb-6">
-                <Link
-                  to="/crop-disease"
-                  className="group inline-flex items-center gap-2 h-11 px-5 rounded-full gradient-primary text-white text-sm font-semibold glow-primary shine hover:scale-[1.03] active:scale-95 transition-transform duration-300"
-                >
-                  <ScanSearch strokeWidth={1.75} className="h-4 w-4" />
-                  {en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
-                </Link>
-                <Link
-                  to="/agri-market"
-                  className="glass inline-flex items-center gap-2 h-11 px-5 !rounded-full text-sm font-semibold text-white hover:bg-white/[0.16] hover:scale-[1.03] active:scale-95 transition-all duration-300"
-                >
-                  <ShoppingBag strokeWidth={1.75} className="h-4 w-4" />
-                  {en ? 'Explore Market' : 'बाज़ार देखें'}
-                </Link>
-              </div>
-
-              {/* Trusted by */}
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2.5">
-                  {['RS', 'AK', 'MP'].map((ini, i) => (
-                    <div
-                      key={ini}
-                      className={`h-9 w-9 rounded-full border-2 border-white/20 flex items-center justify-center text-[10px] font-bold text-white ${['gradient-primary', 'gradient-secondary', 'gradient-accent'][i]}`}
-                    >
-                      {ini}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-sm text-white/75 leading-tight">
-                  {en ? (
-                    <>Trusted by <span className="text-white font-semibold">25K+</span><br />farmers across India</>
-                  ) : (
-                    <>भारत भर के <span className="text-white font-semibold">25K+</span><br />किसानों का भरोसा</>
-                  )}
-                </p>
-              </div>
+            <div className="flex flex-wrap items-center gap-3 mb-7">
+              <Link
+                to="/crop-disease"
+                className="group inline-flex items-center gap-2 h-11 px-5 rounded-full gradient-primary text-white text-sm font-semibold glow-primary shine hover:scale-[1.03] active:scale-95 transition-transform duration-300"
+              >
+                <ScanSearch strokeWidth={1.75} className="h-4 w-4" />
+                {en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
+              </Link>
+              <Link
+                to="/agri-market"
+                className="glass inline-flex items-center gap-2 h-11 px-5 !rounded-full text-sm font-semibold text-white hover:bg-white/[0.16] hover:scale-[1.03] active:scale-95 transition-all duration-300"
+              >
+                <ShoppingBag strokeWidth={1.75} className="h-4 w-4" />
+                {en ? 'Explore Market' : 'बाज़ार देखें'}
+              </Link>
             </div>
 
-            {/* Bottom row: carousel arrows + current-feature panel */}
-            <div className="flex items-end justify-between gap-4 mt-8">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => go(-1)}
-                  aria-label="Previous feature"
-                  className="glass flex items-center justify-center h-11 w-11 !rounded-full text-white hover:bg-white/[0.18] hover:scale-105 active:scale-95 transition-all duration-300"
-                >
-                  <ChevronLeft strokeWidth={2} className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => go(1)}
-                  aria-label="Next feature"
-                  className="glass flex items-center justify-center h-11 w-11 !rounded-full text-white hover:bg-white/[0.18] hover:scale-105 active:scale-95 transition-all duration-300"
-                >
-                  <ChevronRight strokeWidth={2} className="h-5 w-5" />
-                </button>
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2.5">
+                {['RS', 'AK', 'MP'].map((ini, i) => (
+                  <div
+                    key={ini}
+                    className={`h-9 w-9 rounded-full border-2 border-white/20 flex items-center justify-center text-[10px] font-bold text-white ${['gradient-primary', 'gradient-secondary', 'gradient-accent'][i]}`}
+                  >
+                    {ini}
+                  </div>
+                ))}
               </div>
+              <p className="text-sm text-white/75 leading-tight">
+                {en ? (
+                  <>Trusted by <span className="text-white font-semibold">25K+</span><br />farmers across India</>
+                ) : (
+                  <>भारत भर के <span className="text-white font-semibold">25K+</span><br />किसानों का भरोसा</>
+                )}
+              </p>
+            </div>
+          </div>
 
+          {/* Right: image carousel with scroll buttons */}
+          <div className="animate-scale-in">
+            <div className="relative overflow-hidden rounded-[28px] border border-white/12 shadow-[0_24px_70px_rgba(8,15,30,0.5)] aspect-[4/5] sm:aspect-[16/11] lg:aspect-[4/5]">
+              {/* Cross-fading images */}
+              {FEATURES.map((f, i) => (
+                <img
+                  key={f.href + i}
+                  src={f.img}
+                  alt={en ? f.title : f.titleHi}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? 'opacity-100' : 'opacity-0'}`}
+                />
+              ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a1120]/85 via-transparent to-transparent" />
+
+              {/* Scroll buttons */}
+              <button
+                onClick={() => go(-1)}
+                aria-label="Previous"
+                className="absolute left-3 top-1/2 -translate-y-1/2 glass flex items-center justify-center h-10 w-10 !rounded-full text-white hover:bg-white/[0.22] hover:scale-105 active:scale-95 transition-all duration-300"
+              >
+                <ChevronLeft strokeWidth={2} className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => go(1)}
+                aria-label="Next"
+                className="absolute right-3 top-1/2 -translate-y-1/2 glass flex items-center justify-center h-10 w-10 !rounded-full text-white hover:bg-white/[0.22] hover:scale-105 active:scale-95 transition-all duration-300"
+              >
+                <ChevronRight strokeWidth={2} className="h-5 w-5" />
+              </button>
+
+              {/* Caption + counter */}
               <button
                 onClick={() => navigate(current.href)}
-                className="glass group flex items-center gap-4 px-3 py-3 !rounded-2xl text-left hover:bg-white/[0.16] transition-all duration-300 min-w-[240px] max-w-sm"
+                className="group absolute bottom-3 left-3 right-3 glass flex items-center gap-3 px-4 py-3 !rounded-2xl text-left hover:bg-white/[0.16] transition-all duration-300"
               >
-                <span className="relative h-12 w-12 flex-shrink-0 rounded-xl overflow-hidden ring-1 ring-white/20">
-                  {FEATURES.map((f, i) => (
-                    <img
-                      key={f.href + i}
-                      src={f.img}
-                      alt=""
-                      aria-hidden
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${i === slide ? 'opacity-100' : 'opacity-0'}`}
-                    />
-                  ))}
-                </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white truncate flex items-center gap-1.5">
                     {en ? current.title : current.titleHi}
                     <ArrowRight strokeWidth={2} className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                   </p>
                   <p className="text-xs text-white/60 truncate">
-                    {en ? 'Everything you need to succeed' : 'सफलता के लिए सब कुछ'}
+                    {en ? current.cta : current.ctaHi}
                   </p>
                 </div>
                 <span className="text-sm font-semibold text-white/80 tabular-nums flex-shrink-0">
                   {String(slide + 1).padStart(2, '0')} <span className="text-white/40">/ {String(total).padStart(2, '0')}</span>
                 </span>
               </button>
+            </div>
+
+            {/* Dot indicators */}
+            <div className="flex items-center justify-center gap-1.5 mt-4">
+              {FEATURES.map((f, i) => (
+                <button
+                  key={f.href + i}
+                  onClick={() => setSlide(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${i === slide ? 'w-6 bg-primary' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
+                />
+              ))}
             </div>
           </div>
         </section>

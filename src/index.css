@@ -178,9 +178,6 @@ All colors MUST be HSL.
 
     --glow-primary: 172 100% 45%;
     --glow-secondary: 217 91% 60%;
-
-    /* Cinematic full-viewport scene. Swap the file to change the backdrop. */
-    --scene-image: url("./assets/scene-bg.png");
   }
 }
 
@@ -209,18 +206,15 @@ All colors MUST be HSL.
     text-rendering: optimizeLegibility;
   }
 
-  /* Cinematic scene: readability gradients (darker left + bottom, train stays
-     visible lower-right) + light blue tint + image + gradient fallback */
+  /* Premium mesh-gradient backdrop — teal/violet/blue blooms on near-black.
+     No image; calm, luxurious, always fills the viewport. */
   .dark body {
     background:
-      linear-gradient(105deg, hsl(216 55% 9% / 0.78) 0%, hsl(216 50% 10% / 0.5) 42%, hsl(214 45% 12% / 0.22) 100%),
-      linear-gradient(180deg, hsl(216 55% 10% / 0.3) 0%, hsl(216 50% 9% / 0.12) 45%, hsl(222 60% 6% / 0.68) 100%),
-      linear-gradient(180deg, hsl(205 85% 60% / 0.1), hsl(215 70% 40% / 0.08)),
-      var(--scene-image),
-      linear-gradient(160deg, hsl(var(--background-start)) 0%, hsl(232 38% 9%) 50%, hsl(var(--background-end)) 100%);
-    background-size: cover, cover, cover, cover, cover;
-    background-position: center, center, center, center 35%, center;
-    background-repeat: no-repeat;
+      radial-gradient(60% 55% at 12% 8%, hsl(172 90% 34% / 0.28) 0%, transparent 60%),
+      radial-gradient(55% 50% at 88% 12%, hsl(258 85% 60% / 0.24) 0%, transparent 60%),
+      radial-gradient(60% 55% at 82% 88%, hsl(200 90% 48% / 0.20) 0%, transparent 62%),
+      radial-gradient(50% 45% at 18% 92%, hsl(190 80% 45% / 0.16) 0%, transparent 60%),
+      radial-gradient(90% 90% at 50% 50%, hsl(220 45% 10%) 0%, hsl(224 55% 6%) 100%);
     background-attachment: fixed;
   }
 
