@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
-import SectionCard from '@/components/SectionCard';
+import FeatureRing from '@/components/FeatureRing';
 import BlurText from '@/components/BlurText';
 import heroScene from '@/assets/scene-bg.png';
 import imgDisease from '@/assets/cabbage.jpg';
@@ -185,32 +185,9 @@ const Index = () => {
           <SearchBar />
         </div>
 
-        {/* Feature grid */}
-        <section className="mt-12">
-          <div className="mb-6">
-            <h2 className="font-display text-2xl font-bold text-foreground">
-              {en ? 'Explore BhoomiX' : 'BhoomiX एक्सप्लोर करें'}
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              {en ? 'Everything you need — from seed to sale' : 'बीज से बिक्री तक — सब कुछ यहाँ'}
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5 stagger">
-            {FEATURES.map((f) => (
-              <SectionCard
-                key={f.href + f.title}
-                title={en ? f.title : f.titleHi}
-                description={en ? f.description : f.descriptionHi}
-                icon={f.icon}
-                emoji={f.emoji}
-                href={f.href}
-                buttonText={en ? f.cta : f.ctaHi}
-                gradient={f.gradient}
-                badge={f.badge ? (en ? f.badge : f.badgeHi) : undefined}
-              />
-            ))}
-          </div>
+        {/* Feature ring — Apple-Photos-style circular shortcuts */}
+        <section className="mt-16 mb-8">
+          <FeatureRing items={FEATURES} en={en} />
         </section>
       </main>
     </div>
