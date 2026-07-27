@@ -311,6 +311,9 @@ All colors MUST be HSL.
     /* Editorial display serif — high-contrast, luxury */
     --font-serif: "Cormorant Garamond", "Instrument Serif", Georgia, serif;
 
+    /* Fixed cinematic backdrop. Swap this URL to change the scene. */
+    --scene-image: url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=2400&q=80&auto=format&fit=crop");
+
     /* Warm luxury accents used by the editorial hero */
     --cream: 40 33% 94%;
     --cream-deep: 38 28% 89%;
@@ -351,9 +354,9 @@ All colors MUST be HSL.
     --input: 0 0% 100% / 0.12;
     --ring: 172 100% 45%;
 
-    --glass-bg: 0 0% 100% / 0.08;
-    --glass-border: 0 0% 100% / 0.15;
-    --glass-highlight: 0 0% 100% / 0.25;
+    --glass-bg: 0 0% 100% / 0.13;
+    --glass-border: 0 0% 100% / 0.26;
+    --glass-highlight: 0 0% 100% / 0.4;
 
     --gradient-primary-start: 164 100% 36%;
     --gradient-primary-end: 190 95% 45%;
@@ -379,29 +382,38 @@ All colors MUST be HSL.
   body {
     position: relative;
     font-family: var(--font-body);
-    /* Warm editorial canvas — cream paper with soft gold light. */
-    background:
-      radial-gradient(60% 50% at 8% 4%, hsl(var(--gold) / 0.10) 0%, transparent 62%),
-      radial-gradient(52% 46% at 94% 12%, hsl(28 60% 70% / 0.10) 0%, transparent 62%),
-      radial-gradient(56% 50% at 88% 92%, hsl(40 55% 62% / 0.10) 0%, transparent 64%),
-      linear-gradient(168deg, hsl(var(--cream)) 0%, hsl(var(--cream-deep)) 55%, hsl(36 26% 87%) 100%);
-    background-attachment: fixed;
+    background-color: hsl(210 45% 7%);
     @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
+  /* Cinematic backdrop pinned to the viewport. A fixed pseudo-element is used
+     instead of background-attachment:fixed, which iOS Safari ignores. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, hsl(210 40% 8% / 0.55) 0%, hsl(205 35% 10% / 0.3) 45%, hsl(210 45% 6% / 0.78) 100%),
+      var(--scene-image);
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+
   /* Premium mesh-gradient backdrop — teal/violet/blue blooms on near-black.
      No image; calm, luxurious, always fills the viewport. */
-  .dark body {
+  .dark body::before {
     background:
-      radial-gradient(60% 55% at 12% 8%, hsl(172 90% 34% / 0.28) 0%, transparent 60%),
-      radial-gradient(55% 50% at 88% 12%, hsl(258 85% 60% / 0.24) 0%, transparent 60%),
-      radial-gradient(60% 55% at 82% 88%, hsl(200 90% 48% / 0.20) 0%, transparent 62%),
-      radial-gradient(50% 45% at 18% 92%, hsl(190 80% 45% / 0.16) 0%, transparent 60%),
-      radial-gradient(90% 90% at 50% 50%, hsl(220 45% 10%) 0%, hsl(224 55% 6%) 100%);
-    background-attachment: fixed;
+      linear-gradient(180deg, hsl(210 45% 6% / 0.7) 0%, hsl(205 40% 8% / 0.45) 45%, hsl(210 50% 4% / 0.85) 100%),
+      var(--scene-image);
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat;
   }
 
   h1, h2, h3 {
