@@ -6,7 +6,6 @@ import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
 import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
 import GooeyNav from '@/components/GooeyNav';
-import BlurText from '@/components/BlurText';
 
 /* Curated agriculture photography (Unsplash, verified). */
 const W = (id: string) => `https://images.unsplash.com/photo-${id}?w=900&q=80&auto=format&fit=crop`;
@@ -69,122 +68,133 @@ const Index = () => {
       <Navigation />
 
       <main className="pt-4 md:pt-5 pb-16">
-        {/* Hero — text left, full-bleed image carousel right */}
-        <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-12 items-center pt-2 md:pt-4 pl-4 md:pl-6 lg:pl-8 pr-4 lg:pr-0">
-          {/* Left: editorial copy */}
-          <div className="animate-slide-up">
-            <span className="glass inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 !rounded-full text-primary text-sm font-medium">
-              🌱 {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
-            </span>
-            <BlurText
-              as="h1"
-              key={en ? 'en' : 'hi'}
-              text={en ? 'Grow smarter\nwith BhoomiX' : 'BhoomiX के साथ\nस्मार्ट खेती करें'}
-              className="font-display text-4xl md:text-6xl font-extrabold tracking-tight text-foreground mb-4 leading-[1.03]"
-            />
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-7 max-w-md">
-              {t('tagline')}
-            </p>
+        {/* Hero — editorial luxury spread */}
+        <section className="editorial-stage relative overflow-hidden mx-4 lg:ml-8 lg:mr-0 rounded-[32px] lg:rounded-r-none animate-editorial">
+          <div className="relative flex flex-col min-h-[88vh] lg:min-h-[86vh]">
 
-            <div className="flex flex-wrap items-center gap-3 mb-7">
-              <Link
-                to="/crop-disease"
-                className="group inline-flex items-center gap-2 h-11 px-5 rounded-full gradient-primary text-white text-sm font-semibold glow-primary shine hover:scale-[1.03] active:scale-95 transition-transform duration-300"
-              >
-                <ScanSearch strokeWidth={1.75} className="h-4 w-4" />
-                {en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
-              </Link>
-              <Link
-                to="/agri-market"
-                className="glass inline-flex items-center gap-2 h-11 px-5 !rounded-full text-sm font-semibold text-foreground hover:border-primary/40 hover:scale-[1.03] active:scale-95 transition-all duration-300"
-              >
-                <ShoppingBag strokeWidth={1.75} className="h-4 w-4" />
-                {en ? 'Explore Market' : 'बाज़ार देखें'}
-              </Link>
+            {/* Top meta rail */}
+            <div className="relative z-20 flex items-center justify-between px-6 lg:px-14 pt-8">
+              <span className="eyebrow text-gold">BhoomiX</span>
+              <span className="eyebrow opacity-45 hidden sm:block">
+                {en ? 'Since 2026 · India' : '2026 से · भारत'}
+              </span>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-2.5">
-                {['RS', 'AK', 'MP'].map((ini, i) => (
-                  <div
-                    key={ini}
-                    className={`h-9 w-9 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white ${['gradient-primary', 'gradient-secondary', 'gradient-accent'][i]}`}
-                  >
-                    {ini}
-                  </div>
+            {/* Stage */}
+            <div className="relative flex-1 flex items-center">
+
+              {/* Photography, right side, dissolving into the stage */}
+              <div className="image-fade-left absolute inset-y-0 right-0 w-full lg:w-[62%] overflow-hidden">
+                {FEATURES.map((f, i) => (
+                  <img
+                    key={f.href + i}
+                    src={f.img}
+                    alt={en ? f.title : f.titleHi}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-out ${i === slide ? 'opacity-100' : 'opacity-0'}`}
+                  />
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground leading-tight">
-                {en ? (
-                  <>Trusted by <span className="text-foreground font-semibold">25K+</span><br />farmers across India</>
-                ) : (
-                  <>भारत भर के <span className="text-foreground font-semibold">25K+</span><br />किसानों का भरोसा</>
-                )}
-              </p>
-            </div>
-          </div>
 
-          {/* Right: image carousel with scroll buttons */}
-          <div className="animate-scale-in">
-            <div className="relative overflow-hidden rounded-[28px] lg:rounded-r-none border border-white/12 lg:border-r-0 shadow-[0_24px_70px_rgba(8,15,30,0.5)] h-[58vh] sm:h-[64vh] lg:h-[86vh] lg:max-h-[900px]">
-              {/* Cross-fading images */}
-              {FEATURES.map((f, i) => (
-                <img
-                  key={f.href + i}
-                  src={f.img}
-                  alt={en ? f.title : f.titleHi}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? 'opacity-100' : 'opacity-0'}`}
-                />
-              ))}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a1120]/85 via-transparent to-transparent" />
-
-              {/* Scroll buttons */}
-              <button
-                onClick={() => go(-1)}
-                aria-label="Previous"
-                className="absolute left-3 top-1/2 -translate-y-1/2 glass flex items-center justify-center h-10 w-10 !rounded-full text-white hover:bg-white/[0.22] hover:scale-105 active:scale-95 transition-all duration-300"
-              >
-                <ChevronLeft strokeWidth={2} className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => go(1)}
-                aria-label="Next"
-                className="absolute right-3 top-1/2 -translate-y-1/2 glass flex items-center justify-center h-10 w-10 !rounded-full text-white hover:bg-white/[0.22] hover:scale-105 active:scale-95 transition-all duration-300"
-              >
-                <ChevronRight strokeWidth={2} className="h-5 w-5" />
-              </button>
-
-              {/* Caption + counter */}
-              <button
-                onClick={() => navigate(current.href)}
-                className="group absolute bottom-3 left-3 right-3 glass flex items-center gap-3 px-4 py-3 !rounded-2xl text-left hover:bg-white/[0.16] transition-all duration-300"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white truncate flex items-center gap-1.5">
-                    {en ? current.title : current.titleHi}
-                    <ArrowRight strokeWidth={2} className="h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                  </p>
-                  <p className="text-xs text-white/60 truncate">
-                    {en ? current.cta : current.ctaHi}
-                  </p>
+              {/* Headline, overlapping the photograph */}
+              <div className="relative z-10 w-full px-6 lg:px-14 py-12">
+                <div className="flex items-center gap-4 mb-7 max-w-md">
+                  <span className="eyebrow opacity-60">
+                    {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-white/80 tabular-nums flex-shrink-0">
-                  {String(slide + 1).padStart(2, '0')} <span className="text-white/40">/ {String(total).padStart(2, '0')}</span>
-                </span>
-              </button>
+
+                <h1 className="font-serif-display uppercase text-[clamp(3.2rem,12vw,11rem)] mb-3">
+                  {en ? (
+                    <>
+                      <span className="block">Grow</span>
+                      <span className="block">Smarter</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="block">स्मार्ट</span>
+                      <span className="block">खेती</span>
+                    </>
+                  )}
+                </h1>
+
+                <p
+                  className="text-gold italic mb-8"
+                  style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.4rem,3.2vw,2.6rem)', lineHeight: 1.1 }}
+                >
+                  {en ? 'with BhoomiX' : 'BhoomiX के साथ'}
+                </p>
+
+                <div className="rule-hairline h-px w-full max-w-xs mb-7" />
+
+                <p className="text-sm md:text-base leading-relaxed opacity-70 max-w-sm mb-9">
+                  {t('tagline')}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    to="/crop-disease"
+                    className="group inline-flex items-center gap-2.5 h-12 px-7 rounded-full text-[13px] font-semibold tracking-wide transition-all duration-500 hover:gap-4"
+                    style={{ background: 'hsl(var(--espresso))', color: 'hsl(var(--cream))' }}
+                  >
+                    <ScanSearch strokeWidth={1.5} className="h-4 w-4" />
+                    {en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
+                    <ArrowRight strokeWidth={1.5} className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-0.5" />
+                  </Link>
+                  <Link
+                    to="/agri-market"
+                    className="group inline-flex items-center gap-2.5 h-12 px-7 rounded-full text-[13px] font-semibold tracking-wide border transition-all duration-500 hover:gap-4"
+                    style={{ borderColor: 'hsl(var(--espresso) / 0.25)' }}
+                  >
+                    <ShoppingBag strokeWidth={1.5} className="h-4 w-4" />
+                    {en ? 'Explore Market' : 'बाज़ार देखें'}
+                  </Link>
+                </div>
+              </div>
             </div>
 
-            {/* Dot indicators */}
-            <div className="flex items-center justify-center gap-1.5 mt-4">
-              {FEATURES.map((f, i) => (
-                <button
-                  key={f.href + i}
-                  onClick={() => setSlide(i)}
-                  aria-label={`Go to slide ${i + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${i === slide ? 'w-6 bg-primary' : 'w-1.5 bg-white/25 hover:bg-white/50'}`}
-                />
-              ))}
+            {/* Bottom rail — current feature + carousel controls */}
+            <div className="relative z-20 px-6 lg:px-14 pb-8">
+              <div className="rule-hairline h-px w-full mb-5" />
+              <div className="flex items-end justify-between gap-6">
+                <button onClick={() => navigate(current.href)} className="group text-left min-w-0">
+                  <span className="eyebrow opacity-45 block mb-1.5">
+                    {en ? 'Featured' : 'विशेष'}
+                  </span>
+                  <span
+                    className="flex items-center gap-2 truncate"
+                    style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.05rem,2vw,1.6rem)' }}
+                  >
+                    {en ? current.title : current.titleHi}
+                    <ArrowRight strokeWidth={1.5} className="h-4 w-4 text-gold opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
+                  </span>
+                </button>
+
+                <div className="flex items-center gap-5 flex-shrink-0">
+                  <span className="eyebrow tabular-nums opacity-70">
+                    {String(slide + 1).padStart(2, '0')}
+                    <span className="opacity-40"> / {String(total).padStart(2, '0')}</span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => go(-1)}
+                      aria-label="Previous"
+                      className="flex items-center justify-center h-11 w-11 rounded-full border transition-all duration-500 hover:scale-105 active:scale-95"
+                      style={{ borderColor: 'hsl(var(--espresso) / 0.22)' }}
+                    >
+                      <ChevronLeft strokeWidth={1.5} className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => go(1)}
+                      aria-label="Next"
+                      className="flex items-center justify-center h-11 w-11 rounded-full border transition-all duration-500 hover:scale-105 active:scale-95"
+                      style={{ borderColor: 'hsl(var(--espresso) / 0.22)' }}
+                    >
+                      <ChevronRight strokeWidth={1.5} className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
