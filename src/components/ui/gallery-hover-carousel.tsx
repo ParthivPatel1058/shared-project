@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import Reveal from "@/components/Reveal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -20,7 +21,7 @@ interface GalleryHoverGridProps {
 function HoverCard({ item }: { item: GalleryHoverCarouselItem }) {
   return (
     <Link to={item.url} className="group block relative w-full h-[280px] md:h-[320px]">
-      <Card className="overflow-hidden rounded-3xl h-full w-full border-border bg-card/70 backdrop-blur-xl">
+      <Card className="lift img-zoom overflow-hidden rounded-3xl h-full w-full border-border bg-card/70 backdrop-blur-xl">
         {/* Image */}
         <div className="relative h-full w-full transition-all duration-500 group-hover:h-1/2">
           <img
@@ -34,7 +35,7 @@ function HoverCard({ item }: { item: GalleryHoverCarouselItem }) {
 
         {/* Text (revealed on hover) */}
         <div className="absolute bottom-0 left-0 w-full px-4 py-3 transition-all duration-500 group-hover:h-1/2 group-hover:flex flex-col justify-center bg-background/95 backdrop-blur-sm opacity-0 group-hover:opacity-100">
-          <h3 className="font-display text-lg md:text-xl font-semibold text-foreground">{item.title}</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-foreground" style={{fontFamily:"var(--font-serif)"}}>{item.title}</h3>
           <p className="text-muted-foreground text-sm line-clamp-2 mt-1">{item.summary}</p>
           <Button
             variant="outline"
@@ -48,7 +49,7 @@ function HoverCard({ item }: { item: GalleryHoverCarouselItem }) {
 
         {/* Idle title strip (before hover) */}
         <div className="absolute bottom-0 left-0 w-full px-4 py-3 bg-gradient-to-t from-black/75 to-transparent transition-opacity duration-500 group-hover:opacity-0">
-          <h3 className="font-display text-base md:text-lg font-semibold text-white">{item.title}</h3>
+          <h3 className="text-base md:text-lg font-medium text-white" style={{fontFamily:"var(--font-serif)"}}>{item.title}</h3>
         </div>
       </Card>
     </Link>
@@ -67,16 +68,18 @@ export default function GalleryHoverGrid({
 }: GalleryHoverGridProps) {
   return (
     <section className="w-full">
-      <div className="mb-8 max-w-2xl">
-        <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+      <Reveal className="mb-8 max-w-2xl" blur distance={22}>
+        <h2 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl text-foreground">
           {heading}
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base mt-2">{subheading}</p>
-      </div>
+      </Reveal>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {items.map((item) => (
-          <HoverCard key={item.id} item={item} />
+        {items.map((item, i) => (
+          <Reveal key={item.id} delay={(i % 3) * 0.08} distance={34}>
+            <HoverCard item={item} />
+          </Reveal>
         ))}
       </div>
     </section>

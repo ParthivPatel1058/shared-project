@@ -6,17 +6,18 @@ import Navigation from '@/components/Navigation';
 import SearchBar from '@/components/SearchBar';
 import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
 import GooeyNav from '@/components/GooeyNav';
+import Reveal, { RevealWords } from '@/components/Reveal';
 
 /* Curated agriculture photography (Unsplash, verified). */
 const W = (id: string) => `https://images.unsplash.com/photo-${id}?w=900&q=80&auto=format&fit=crop`;
-const imgDisease = W('1518977676601-b53f82aba655');   // tomato plant / leaf
+const imgDisease = W('1416879595882-3373a0480b5b');   // greenhouse, warm light
 const imgMarket = W('1523348837708-15d4a09cfac2');    // fresh vegetables
 const imgMart = W('1488459716781-31db52582fe9');      // produce market
 const imgAdvisory = W('1625246333195-78d9c38ad449');  // Indian farmer
 const imgSchemes = W('1500382017468-9049fed747ef');   // wheat field
 const imgRobotic = W('1595246140625-573b715d11dc');   // agri drone / tech
-const imgOrganic = W('1574943320219-553eb213f72d');   // organic crop rows
-const imgVegetable = W('1466692476868-aef1dfb1e735'); // green field
+const imgOrganic = W('1592982537447-7440770cbfc9');   // hands in soil, warm
+const imgVegetable = W('1464226184884-fa280b87c399'); // field at golden hour
 const imgDelivery = W('1530267981375-f0de937f5f13');  // logistics / cargo
 
 interface Feature {
@@ -84,7 +85,7 @@ const Index = () => {
             <div className="relative flex-1 flex items-center">
 
               {/* Photography, right side, dissolving into the stage */}
-              <div className="image-fade-left absolute inset-y-0 right-0 w-full lg:w-[62%] overflow-hidden">
+              <div className="image-fade-left img-zoom absolute inset-y-0 right-0 w-full lg:w-[62%] overflow-hidden">
                 {FEATURES.map((f, i) => (
                   <img
                     key={f.href + i}
@@ -98,43 +99,41 @@ const Index = () => {
 
               {/* Headline, overlapping the photograph */}
               <div className="relative z-10 w-full px-6 lg:px-14 py-12">
-                <div className="flex items-center gap-4 mb-7 max-w-md">
+                <Reveal immediate className="flex items-center gap-4 mb-7 max-w-md" delay={0.05} distance={16}>
                   <span className="eyebrow opacity-60">
                     {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
                   </span>
-                </div>
+                </Reveal>
 
                 <h1 className="font-serif-display uppercase text-[clamp(3.2rem,12vw,11rem)] mb-3">
-                  {en ? (
-                    <>
-                      <span className="block">Grow</span>
-                      <span className="block">Smarter</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="block">स्मार्ट</span>
-                      <span className="block">खेती</span>
-                    </>
-                  )}
+                  <RevealWords
+                    immediate
+                    key={en ? 'en' : 'hi'}
+                    text={en ? `Grow\nSmarter` : `स्मार्ट\nखेती`}
+                    delay={0.15}
+                    stagger={0.14}
+                  />
                 </h1>
 
-                <p
+                <Reveal immediate delay={0.5} distance={18} blur><p
                   className="text-gold italic mb-8"
                   style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.4rem,3.2vw,2.6rem)', lineHeight: 1.1 }}
                 >
                   {en ? 'with BhoomiX' : 'BhoomiX के साथ'}
-                </p>
+                </p></Reveal>
 
-                <div className="rule-hairline h-px w-full max-w-xs mb-7" />
+                <Reveal immediate delay={0.62} distance={0}><div className="rule-hairline h-px w-full max-w-xs mb-7" /></Reveal>
 
-                <p className="text-sm md:text-base leading-relaxed opacity-70 max-w-sm mb-9">
-                  {t('tagline')}
-                </p>
+                <Reveal immediate delay={0.7}>
+                  <p className="text-sm md:text-base leading-relaxed opacity-70 max-w-sm mb-9">
+                    {t('tagline')}
+                  </p>
+                </Reveal>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <Reveal immediate className="flex flex-wrap items-center gap-3" delay={0.8}>
                   <Link
                     to="/crop-disease"
-                    className="group inline-flex items-center gap-2.5 h-12 px-7 rounded-full text-[13px] font-semibold tracking-wide transition-all duration-500 hover:gap-4"
+                    className="btn-sheen group inline-flex items-center gap-2.5 h-12 px-7 rounded-full text-[13px] font-semibold tracking-wide transition-all duration-500 hover:gap-4"
                     style={{ background: 'hsl(var(--espresso))', color: 'hsl(var(--cream))' }}
                   >
                     <ScanSearch strokeWidth={1.5} className="h-4 w-4" />
@@ -143,13 +142,13 @@ const Index = () => {
                   </Link>
                   <Link
                     to="/agri-market"
-                    className="group inline-flex items-center gap-2.5 h-12 px-7 rounded-full text-[13px] font-semibold tracking-wide border transition-all duration-500 hover:gap-4"
+                    className="btn-sheen group inline-flex items-center gap-2.5 h-12 px-7 rounded-full text-[13px] font-semibold tracking-wide border transition-all duration-500 hover:gap-4"
                     style={{ borderColor: 'hsl(var(--espresso) / 0.25)' }}
                   >
                     <ShoppingBag strokeWidth={1.5} className="h-4 w-4" />
                     {en ? 'Explore Market' : 'बाज़ार देखें'}
                   </Link>
-                </div>
+                </Reveal>
               </div>
             </div>
 
@@ -206,7 +205,7 @@ const Index = () => {
           </div>
 
           {/* Premium gooey quick-nav */}
-          <div className="mt-14 flex justify-center">
+          <Reveal className="mt-14 flex justify-center" delay={0.05}>
             <div className="glass px-2 py-1.5 !rounded-full">
               <GooeyNav
                 items={[
@@ -227,7 +226,7 @@ const Index = () => {
                 onItemClick={(_, item) => window.setTimeout(() => navigate(item.href), 420)}
               />
             </div>
-          </div>
+          </Reveal>
 
           {/* Feature gallery — hover-reveal 3×3 grid */}
           <section className="mt-12 mb-8">
