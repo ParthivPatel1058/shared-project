@@ -177,7 +177,7 @@ const ShopLocator = () => {
             
             <Button 
               onClick={handleFindNearby}
-              className="gradient-primary text-white border-0 hover:shadow-lg"
+              className="btn-metal border-0 hover:shadow-lg"
               size="lg"
             >
               <Navigation className="h-5 w-5 mr-2" />
@@ -266,7 +266,7 @@ const ShopLocator = () => {
                       {language === 'en' ? 'Call' : 'कॉल करें'}
                     </Button>
                     <Button 
-                      className="gradient-primary text-white border-0"
+                      className="btn-metal border-0"
                       onClick={() => handleGetDirections(shop)}
                     >
                       <Navigation className="h-4 w-4 mr-2" />

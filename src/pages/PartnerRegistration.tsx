@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -112,6 +113,10 @@ const PartnerRegistration = () => {
   return (
     <div className="min-h-screen">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto max-w-2xl">
         <div className="text-center mb-8">

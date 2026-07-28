@@ -3,6 +3,7 @@ import { Package, Clock, CheckCircle, Truck, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -136,6 +137,10 @@ const Orders = () => {
   return (
     <div className="min-h-screen">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12">

@@ -7,6 +7,7 @@ import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
 import GooeyNav from '@/components/GooeyNav';
 import Reveal, { RevealWords } from '@/components/Reveal';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
+import { LiquidMetalButton } from '@/components/ui/liquid-metal-button';
 
 /* Curated agriculture photography (Unsplash, verified). */
 const W = (id: string) => `https://images.unsplash.com/photo-${id}?w=900&q=80&auto=format&fit=crop`;
@@ -95,9 +96,9 @@ Smarter` : `स्मार्ट
             </Reveal>
 
             <Reveal immediate className="flex flex-wrap items-center gap-4" delay={0.8}>
-              <InteractiveHoverButton
-                variant="solid"
-                text={en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
+              <LiquidMetalButton
+                width={en ? 186 : 168}
+                label={en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
                 onClick={() => navigate('/crop-disease')}
               />
               <InteractiveHoverButton

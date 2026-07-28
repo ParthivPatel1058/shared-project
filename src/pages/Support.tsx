@@ -1,6 +1,7 @@
 import { Phone, Mail, MapPin, MessageCircle, Clock, HelpCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,10 @@ const Support = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-background">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-16 px-4">
         <div className="container mx-auto max-w-6xl">
@@ -113,7 +118,7 @@ const Support = () => {
                 </CardContent>
               </Card>
 
-              <Card className="glass gradient-primary text-white hover:shadow-xl transition-all">
+              <Card className="glass btn-metal hover:shadow-xl transition-all">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <MessageCircle className="h-5 w-5" />
@@ -207,7 +212,7 @@ const Support = () => {
 
                     <Button 
                       type="submit"
-                      className="w-full gradient-primary text-white border-0 hover:shadow-lg"
+                      className="w-full btn-metal border-0 hover:shadow-lg"
                       size="lg"
                     >
                       {language === 'en' ? 'Send Message' : 'संदेश भेजें'}

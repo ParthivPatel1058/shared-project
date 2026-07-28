@@ -2,6 +2,7 @@ import { ShoppingCart, Zap, Search, Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import CartSheet from '@/components/CartSheet';
 import { toast } from 'sonner';
 
@@ -177,6 +178,10 @@ const KisanMart = () => {
   return (
     <div className="min-h-screen pb-24">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       {/* Sticky header — stays in flow so it respects the sidebar offset */}
       <div className="sticky top-[76px] z-40 mx-3 lg:mx-4 xl:mx-6 mt-4 glass-strong !rounded-2xl">
@@ -289,7 +294,7 @@ const KisanMart = () => {
                 ) : (
                   <button
                     onClick={() => addToCart(product.id, language === 'en' ? product.name : product.nameHi)}
-                    className="w-full gradient-primary text-white py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full btn-metal py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     {language === 'en' ? 'Add' : 'जोड़ें'}

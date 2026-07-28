@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -38,6 +39,10 @@ const Settings = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
@@ -232,7 +237,7 @@ const Settings = () => {
                     <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-lg font-semibold mb-2">No orders yet</p>
                     <p className="text-muted-foreground mb-4">Start shopping to see your orders here</p>
-                    <Button className="gradient-primary text-white rounded-2xl">
+                    <Button className="btn-metal rounded-2xl">
                       {t('shopNow')}
                     </Button>
                   </div>

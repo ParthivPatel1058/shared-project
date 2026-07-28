@@ -1,4 +1,5 @@
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Bot, Cog, Wrench, MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -293,6 +294,10 @@ const RoboticFarming = () => {
   }];
   return <div className="min-h-screen">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12 animate-fade-in">

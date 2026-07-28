@@ -156,6 +156,80 @@
   transform: scale(1.06);
 }
 
+
+/* ---- Liquid-metal cream finish -------------------------------------------
+   A CSS rendition of the shader button's cream/beige metal. Used for every
+   repeated button (product grids, cards) where mounting one WebGL context per
+   button would blow past the browser's ~16 context limit. ---------------- */
+
+.btn-metal {
+  position: relative;
+  isolation: isolate;
+  color: #3b3227;
+  background-image: linear-gradient(
+    105deg,
+    #e9dfcd 0%,
+    #fbf7ef 16%,
+    #d9c8ac 32%,
+    #f8f2e6 50%,
+    #d5c4a6 68%,
+    #fbf6ec 84%,
+    #e4d8c2 100%
+  );
+  background-size: 230% 100%;
+  background-position: 0% 50%;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(140, 120, 90, 0.25),
+    0 6px 18px rgba(40, 32, 20, 0.22);
+  transition:
+    background-position 1.1s var(--ease-editorial),
+    box-shadow 0.45s var(--ease-editorial),
+    transform 0.45s var(--ease-editorial);
+}
+
+.btn-metal:hover {
+  background-position: 100% 50%;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(140, 120, 90, 0.3),
+    0 12px 28px rgba(40, 32, 20, 0.3);
+}
+
+.btn-metal:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow:
+    inset 0 2px 5px rgba(90, 74, 50, 0.35),
+    0 3px 10px rgba(40, 32, 20, 0.24);
+}
+
+/* Slow idle drift so the metal always looks liquid */
+@keyframes metal-drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 60% 50%;
+  }
+}
+.btn-metal-live {
+  animation: metal-drift 9s ease-in-out infinite;
+}
+.btn-metal-live:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-metal,
+  .btn-metal-live {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* Slow reveal for editorial headlines */
 @keyframes editorial-rise {
   from {

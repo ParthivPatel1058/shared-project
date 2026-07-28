@@ -1,4 +1,5 @@
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Leaf, Package, ShoppingBag, BookOpen } from 'lucide-react';
 import organicWheatSeeds from '@/assets/organic-wheat-seeds.jpg';
@@ -133,6 +134,10 @@ const OrganicFarming = () => {
   const benefits = ['No synthetic chemicals or pesticides', 'Improves soil health naturally', 'Better nutrition and taste', 'Environmentally sustainable', 'Higher market value', 'Safe for farmers and consumers'];
   return <div className="min-h-screen">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12">

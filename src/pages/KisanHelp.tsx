@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Camera, MessageCircle, Upload, Send } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -124,6 +125,10 @@ const KisanHelp = () => {
   };
   return <div className="min-h-screen">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12">
@@ -207,7 +212,7 @@ const KisanHelp = () => {
               <Button 
                 onClick={handleSendMessage}
                 disabled={isLoading || !inputMessage.trim()}
-                className="gradient-primary text-white"
+                className="btn-metal"
               >
                 <Send className="h-4 w-4" />
               </Button>

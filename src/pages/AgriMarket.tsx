@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import CartSheet from '@/components/CartSheet';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -494,6 +495,10 @@ const AgriMarket = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12 animate-fade-in">
@@ -559,7 +564,7 @@ const AgriMarket = () => {
                   <div className="text-right">
                     <Badge 
                       variant={product.inStock ? "default" : "secondary"}
-                      className={product.inStock ? "gradient-primary text-white border-0" : ""}
+                      className={product.inStock ? "btn-metal border-0" : ""}
                     >
                       {product.inStock 
                         ? (language === 'en' ? 'In Stock' : 'उपलब्ध')
@@ -602,7 +607,7 @@ const AgriMarket = () => {
                 </div>
 
                 <Button 
-                  className="w-full gradient-primary text-white border-0 hover:shadow-lg transition-all rounded-[2rem]"
+                  className="w-full btn-metal border-0 hover:shadow-lg transition-all rounded-[2rem]"
                   disabled={!product.inStock}
                   onClick={() => addToCart(product)}
                 >

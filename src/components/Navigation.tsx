@@ -169,7 +169,7 @@ const Navigation = () => {
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 p-3.5 rounded-2xl transition-all duration-300 ${
                         isActive
-                          ? 'gradient-primary text-primary-foreground shadow-glow-primary'
+                          ? 'btn-metal shadow-glow-primary'
                           : 'hover:bg-foreground/[0.07] text-foreground'
                       }`}
                     >

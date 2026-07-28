@@ -19,6 +19,7 @@ import {
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -278,6 +279,10 @@ const CropDisease = () => {
   return (
     <div className="min-h-screen">
       <Navigation />
+
+      <div className="px-4 lg:px-6 pt-5">
+        <BackButton />
+      </div>
 
       <main className="container mx-auto px-4 pt-8 md:pt-12 pb-16 max-w-5xl">
         {/* Page header */}
