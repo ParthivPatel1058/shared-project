@@ -5,51 +5,63 @@ import { cn } from "@/lib/utils";
 interface InteractiveHoverButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text?: string;
-  /** Filled = solid dot that expands into a light pill. Glass = frosted. */
+  /** solid = opaque light pill, glass = frosted pill for photo backdrops. */
   variant?: "glass" | "solid";
+  /** Optional leading icon, shown at rest. */
+  icon?: React.ReactNode;
 }
 
 /**
- * Interactive hover button: the label slides out to the right while a dot in
- * the corner expands to fill the pill, revealing the label again with an
- * arrow. Built for the frosted-glass surfaces used across the site.
+ * Interactive hover button. At rest it is a clean pill; on hover the label
+ * slides out to the right while a fill expands from the left to cover the
+ * pill, revealing the label again with a trailing arrow.
+ *
+ * The expanding fill starts at scale-0 so nothing is visible at rest — a
+ * statically visible dot would otherwise sit on top of the label.
  */
 const InteractiveHoverButton = React.forwardRef<
   HTMLButtonElement,
   InteractiveHoverButtonProps
->(({ text = "Button", className, variant = "glass", ...props }, ref) => {
+>(({ text = "Button", className, variant = "glass", icon, ...props }, ref) => {
   const solid = variant === "solid";
 
   return (
     <button
       ref={ref}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-full border px-6 py-3 text-center text-[13px] font-semibold tracking-wide",
+        "group relative cursor-pointer overflow-hidden rounded-full border px-7 py-3.5 text-center text-[13px] font-semibold tracking-wide transition-colors duration-300",
         solid
-          ? "border-white/20 bg-white text-neutral-900"
-          : "border-white/25 bg-white/10 text-white backdrop-blur-xl",
+          ? "border-white/25 bg-white text-neutral-900"
+          : "border-white/30 bg-white/10 text-white backdrop-blur-xl",
         className,
       )}
       {...props}
     >
-      <span className="relative z-20 inline-block translate-x-1 transition-all duration-300 group-hover:translate-x-12 group-hover:opacity-0">
-        {text}
-      </span>
-      <div
+      {/* Expanding fill — hidden at rest */}
+      <span
+        aria-hidden
         className={cn(
-          "absolute top-0 z-20 flex h-full w-full translate-x-12 items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:-translate-x-1 group-hover:opacity-100",
-          solid ? "text-neutral-900" : "text-neutral-900",
-        )}
-      >
-        <span>{text}</span>
-        <ArrowRight className="h-4 w-4" />
-      </div>
-      <div
-        className={cn(
-          "absolute left-[20%] top-[40%] z-10 h-2 w-2 scale-[1] rounded-lg transition-all duration-300 group-hover:left-0 group-hover:top-0 group-hover:h-full group-hover:w-full group-hover:scale-[1.8] group-hover:rounded-none",
-          solid ? "bg-neutral-900/80 group-hover:bg-white" : "bg-white group-hover:bg-white",
+          "pointer-events-none absolute left-0 top-1/2 z-0 h-8 w-8 -translate-y-1/2 scale-0 rounded-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[6]",
+          solid ? "bg-neutral-900" : "bg-white",
         )}
       />
+
+      {/* Resting label */}
+      <span className="relative z-10 flex items-center justify-center gap-2 transition-all duration-300 group-hover:translate-x-8 group-hover:opacity-0">
+        {icon}
+        {text}
+      </span>
+
+      {/* Hover label */}
+      <span
+        className={cn(
+          "absolute inset-0 z-10 flex -translate-x-8 items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100",
+          solid ? "text-white" : "text-neutral-900",
+        )}
+      >
+        {text}
+        <ArrowRight className="h-4 w-4" />
+      </span>
     </button>
   );
 });

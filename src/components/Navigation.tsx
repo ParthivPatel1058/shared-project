@@ -67,11 +67,11 @@ const Navigation = () => {
 
         {/* Weather capsules — location · temp · condition */}
         <div className="hidden xl:flex items-center gap-1.5 flex-shrink-0">
-          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-foreground/[0.05] border border-border text-sm text-foreground">
+          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 border border-white/20 text-sm text-white">
             <MapPin strokeWidth={1.75} className="h-3.5 w-3.5 text-primary" />
             {weather.city}
           </span>
-          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-foreground/[0.05] border border-border text-sm text-foreground">
+          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 border border-white/20 text-sm text-white">
             <WeatherIcon icon={weather.conditionIcon} className="h-4 w-4" />
             <span className="font-semibold">{weather.temperature}°C</span>
             <span className="text-muted-foreground text-xs">{weather.condition}</span>
@@ -92,7 +92,7 @@ const Navigation = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={en ? 'Search crops, products, advisory...' : 'फसल, उत्पाद, सलाह खोजें...'}
-            className="w-full h-10 pl-10 pr-4 rounded-full bg-foreground/[0.05] border border-border text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-300 focus:bg-foreground/[0.08] focus:border-primary/40 focus:shadow-[0_0_20px_rgba(45,212,191,0.15)]"
+            className="w-full h-10 pl-10 pr-4 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder:text-white/50 outline-none transition-all duration-300 focus:bg-white/20 focus:border-primary/40 focus:shadow-[0_0_20px_rgba(45,212,191,0.15)]"
           />
         </form>
 

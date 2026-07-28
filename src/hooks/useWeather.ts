@@ -12,6 +12,7 @@ export interface WeatherData {
 }
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+const API_KEY_FALLBACK = import.meta.env.VITE_OPENWEATHER_API_KEY_FALLBACK;
 const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 
 /** Fallback shown when the API is unavailable or geolocation is denied. */
@@ -58,22 +59,32 @@ async function loadWeather(): Promise<Record<string, unknown> | null> {
   if (inFlight) return inFlight;
 
   inFlight = (async () => {
-    if (!API_KEY) return null;
     const coords = await getCoords();
     if (!coords) return null;
-    try {
-      const res = await fetch(
-        `${BASE_URL}?lat=${coords.lat}&lon=${coords.lon}&appid=${API_KEY}&units=metric`,
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      cachedRaw = await res.json();
-      subscribers.forEach((fn) => fn());
-      return cachedRaw;
-    } catch {
-      return null;
-    } finally {
-      inFlight = null;
+
+    // A freshly issued OpenWeather key returns 401 until it activates (can
+    // take a couple of hours), so fall through to the previous key rather
+    // than dropping the user to sample data.
+    const keys = [API_KEY, API_KEY_FALLBACK].filter(Boolean) as string[];
+
+    for (const key of keys) {
+      try {
+        const res = await fetch(
+          `${BASE_URL}?lat=${coords.lat}&lon=${coords.lon}&appid=${key}&units=metric`,
+        );
+        if (res.status === 401) continue; // key not live yet — try the next
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        cachedRaw = await res.json();
+        subscribers.forEach((fn) => fn());
+        inFlight = null;
+        return cachedRaw;
+      } catch {
+        // network/parse failure — try the next key, then give up
+      }
     }
+
+    inFlight = null;
+    return null;
   })();
 
   return inFlight;
