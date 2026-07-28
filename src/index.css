@@ -273,6 +273,185 @@
   .shiny-text { animation: none; }
 }
 
+
+/* ---- React Bits: Magic Bento ---- */
+.bento-card {
+  --glow: 0;
+  --gx: 50%;
+  --gy: 50%;
+  --mx: 50%;
+  --my: 50%;
+  background: hsl(0 0% 100% / 0.04);
+  border: 1px solid hsl(0 0% 100% / 0.12);
+  box-shadow: 0 18px 44px hsl(220 45% 4% / 0.42);
+  transition:
+    transform 0.5s var(--ease-editorial),
+    box-shadow 0.5s var(--ease-editorial);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Border lights up as the pointer nears — masked so only the edge glows */
+.bento-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    280px circle at var(--gx) var(--gy),
+    hsl(42 90% 72% / 0.9),
+    hsl(42 80% 60% / 0.25) 45%,
+    transparent 70%
+  );
+  opacity: var(--glow);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 5;
+}
+
+.bento-card:hover {
+  box-shadow:
+    0 28px 70px hsl(220 45% 4% / 0.55),
+    0 0 0 1px hsl(42 80% 70% / 0.35);
+}
+
+/* Cursor spotlight across the card face */
+.bento-spot {
+  background: radial-gradient(
+    260px circle at var(--mx) var(--my),
+    hsl(45 100% 85% / 0.22),
+    transparent 68%
+  );
+}
+
+/* ---- Liquid glass button ---- */
+.btn-liquid-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    hsl(0 0% 100% / 0.22) 0%,
+    hsl(0 0% 100% / 0.08) 45%,
+    hsl(0 0% 100% / 0.16) 100%
+  );
+  border: 1px solid hsl(0 0% 100% / 0.3);
+  backdrop-filter: blur(18px) saturate(1.7);
+  -webkit-backdrop-filter: blur(18px) saturate(1.7);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.55),
+    inset 0 -1px 0 hsl(0 0% 0% / 0.18),
+    0 8px 22px hsl(220 40% 4% / 0.35);
+  transition:
+    transform 0.45s var(--ease-editorial),
+    box-shadow 0.45s var(--ease-editorial),
+    border-color 0.45s var(--ease-editorial);
+}
+
+/* Travelling refraction highlight */
+.btn-liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: -40% -20%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    hsl(45 100% 88% / 0.5) 40deg,
+    transparent 110deg,
+    transparent 250deg,
+    hsl(190 100% 85% / 0.4) 300deg,
+    transparent 360deg
+  );
+  animation: liquid-spin 7s linear infinite;
+  opacity: 0.5;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.btn-liquid-glass:hover {
+  transform: translateY(-2px);
+  border-color: hsl(0 0% 100% / 0.5);
+  box-shadow:
+    inset 0 1px 0 hsl(0 0% 100% / 0.7),
+    0 14px 34px hsl(220 40% 4% / 0.45);
+}
+.btn-liquid-glass:hover::before {
+  opacity: 0.9;
+}
+.btn-liquid-glass:active {
+  transform: translateY(0) scale(0.985);
+}
+
+@keyframes liquid-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-liquid-glass::before { animation: none; }
+  .bento-card { transition: none; }
+}
+
+
+/* ---- Beige to aqua accent ---- */
+.accent-grad {
+  background-image: linear-gradient(135deg, hsl(var(--beige)) 0%, hsl(var(--aqua)) 100%);
+}
+.accent-grad-v {
+  background-image: linear-gradient(180deg, hsl(var(--beige)) 0%, hsl(var(--aqua)) 100%);
+}
+.accent-solid {
+  background-color: hsl(var(--aqua-deep));
+}
+/* Beige/aqua reads best against a dark ink label rather than white */
+.accent-ink {
+  color: hsl(200 30% 12%);
+}
+
+
+/* ---- User preferences (mirrored onto <html> by useUIPrefs) ---- */
+.prefs-no-motion *,
+.prefs-no-motion *::before,
+.prefs-no-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+.prefs-large-text {
+  font-size: 18px;
+}
+
+.prefs-compact .glass,
+.prefs-compact .bento-card {
+  border-radius: 14px;
+}
+.prefs-compact .container {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.prefs-high-contrast {
+  --border: 34 20% 55%;
+  --muted-foreground: 28 12% 28%;
+}
+.prefs-high-contrast.dark {
+  --border: 0 0% 100% / 0.45;
+  --muted-foreground: 216 20% 88%;
+}
+.prefs-high-contrast .glass,
+.prefs-high-contrast .glass-strong {
+  border-width: 2px;
+}
+
 /* Slow reveal for editorial headlines */
 @keyframes editorial-rise {
   from {
@@ -430,6 +609,12 @@ All colors MUST be HSL.
 
     /* Fixed cinematic backdrop. Swap this URL to change the scene. */
     --scene-image: url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=2400&q=80&auto=format&fit=crop");
+
+    /* Brand accent: warm beige into aqua (replaces the rose/indigo pair) */
+    --beige: 40 44% 78%;
+    --beige-deep: 36 38% 66%;
+    --aqua: 178 48% 52%;
+    --aqua-deep: 186 52% 40%;
 
     /* Warm luxury accents used by the editorial hero */
     --cream: 40 33% 94%;

@@ -5,24 +5,32 @@ import {
   ShoppingBag,
   HelpCircle,
   Store,
+  Package,
   Settings as SettingsIcon,
   Menu,
-  Package,
   LogOut,
   Search,
   Bell,
+  MapPin,
+  Command,
 } from 'lucide-react';
-import { MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWeather } from '@/hooks/useWeather';
 import { WeatherIcon } from './WeatherWidget';
+import GradientText from '@/components/ui/gradient-text';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import logo from '@/assets/bhoomix-logo.jpeg';
 import SettingsSidebar from './SettingsSidebar';
+
+/** Frosted control that adapts to light and dark. */
+const CTRL =
+  'flex items-center justify-center rounded-full border transition-all duration-300 ' +
+  'border-black/10 bg-white/70 text-neutral-600 hover:bg-white hover:text-neutral-900 ' +
+  'dark:border-white/15 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/20 dark:hover:text-white';
 
 const Navigation = () => {
   const location = useLocation();
@@ -30,18 +38,29 @@ const Navigation = () => {
   const { t, language } = useLanguage();
   const { signOut, user } = useAuth();
   const { weather } = useWeather();
-  const [settingsSidebarOpen, setSettingsSidebarOpen] = React.useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
+  const searchRef = React.useRef<HTMLInputElement>(null);
   const en = language === 'en';
 
   const initials = (user?.email ?? 'BX').slice(0, 2).toUpperCase();
 
+  // Cmd/Ctrl-K focuses search, matching the hint shown in the field.
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      navigate(`/agri-market?search=${encodeURIComponent(query.trim())}`);
-    }
+    if (query.trim()) navigate(`/agri-market?search=${encodeURIComponent(query.trim())}`);
   };
 
   const navItems = [
@@ -54,137 +73,140 @@ const Navigation = () => {
 
   return (
     <nav className="sticky top-3 z-50 mx-3 lg:mx-4 xl:mx-6">
-      <div className="glass-strong !rounded-2xl px-3 sm:px-4 h-14 flex items-center justify-between gap-3">
-        {/* Brand — the dock shows it on lg+, so only for mobile/tablet */}
-        <Link to="/" className="flex lg:hidden items-center gap-2.5 group flex-shrink-0">
-          <img
-            src={logo}
-            alt="BhoomiX Logo"
-            className="h-8 w-8 object-cover rounded-lg ring-1 ring-white/20 transition-transform duration-300 group-hover:scale-105"
-          />
-          <span className="hidden sm:inline font-display text-base font-bold text-foreground">BhoomiX</span>
+      <div
+        className="flex h-16 items-center gap-3 rounded-2xl border px-3 backdrop-blur-2xl sm:px-4
+                   border-black/10 bg-white/70 shadow-[0_10px_36px_rgba(30,40,60,0.12)]
+                   dark:border-white/12 dark:bg-white/[0.08] dark:shadow-[0_10px_36px_rgba(0,0,0,0.4)]"
+      >
+        {/* Brand — the dock owns this on lg+ */}
+        <Link to="/" className="flex flex-shrink-0 items-center gap-2.5 lg:hidden">
+          <img src={logo} alt="" className="h-8 w-8 rounded-lg object-cover ring-1 ring-black/10 dark:ring-white/20" />
+          <span className="hidden font-display text-base font-bold sm:inline">
+            <GradientText animationSpeed={9}>BhoomiX</GradientText>
+          </span>
         </Link>
 
-        {/* Weather capsules — location · temp · condition */}
-        <div className="hidden xl:flex items-center gap-1.5 flex-shrink-0">
-          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 border border-white/20 text-sm text-white">
-            <MapPin strokeWidth={1.75} className="h-3.5 w-3.5 text-primary" />
+        {/* Weather — one segmented capsule instead of two loose chips */}
+        <div
+          className="hidden flex-shrink-0 items-center gap-3 rounded-full border py-1.5 pl-3 pr-4 xl:flex
+                     border-black/10 bg-black/[0.03] dark:border-white/12 dark:bg-white/[0.06]"
+        >
+          <span className="flex items-center gap-1.5 text-sm font-medium text-neutral-700 dark:text-white">
+            <MapPin strokeWidth={2} className="h-3.5 w-3.5 text-primary" />
             {weather.city}
           </span>
-          <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/10 border border-white/20 text-sm text-white">
+          <span className="h-4 w-px bg-black/10 dark:bg-white/15" />
+          <span className="flex items-center gap-1.5">
             <WeatherIcon icon={weather.conditionIcon} className="h-4 w-4" />
-            <span className="font-semibold">{weather.temperature}°C</span>
-            <span className="text-muted-foreground text-xs">{weather.condition}</span>
+            <span className="text-sm font-semibold text-neutral-900 dark:text-white">
+              {weather.temperature}°
+            </span>
+            <span className="text-xs text-neutral-500 dark:text-white/60">{weather.condition}</span>
           </span>
         </div>
 
-        {/* Apple-style search — grows on focus */}
+        {/* Search — grows on focus, with a Cmd-K affordance */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex items-center flex-1 max-w-md group relative transition-all duration-500 focus-within:max-w-xl"
+          className="group relative mx-auto hidden w-full max-w-sm transition-[max-width] duration-500 focus-within:max-w-xl md:flex"
         >
           <Search
-            strokeWidth={1.75}
-            className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none transition-colors group-focus-within:text-primary"
+            strokeWidth={2}
+            className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400 transition-colors group-focus-within:text-primary dark:text-white/45"
           />
           <input
-            type="text"
+            ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={en ? 'Search crops, products, advisory...' : 'फसल, उत्पाद, सलाह खोजें...'}
-            className="w-full h-10 pl-10 pr-4 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder:text-white/50 outline-none transition-all duration-300 focus:bg-white/20 focus:border-primary/40 focus:shadow-[0_0_20px_rgba(45,212,191,0.15)]"
+            placeholder={en ? 'Search crops, products, advisory…' : 'फसल, उत्पाद, सलाह खोजें…'}
+            className="h-11 w-full rounded-full border pl-11 pr-16 text-sm outline-none transition-all duration-300
+                       border-black/10 bg-black/[0.03] text-neutral-900 placeholder:text-neutral-400
+                       focus:border-primary/40 focus:bg-white
+                       dark:border-white/12 dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/45
+                       dark:focus:border-primary/50 dark:focus:bg-white/[0.12]"
           />
+          <kbd
+            className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border px-1.5 py-0.5 text-[10px] font-medium lg:flex
+                       border-black/10 text-neutral-400 dark:border-white/15 dark:text-white/40"
+          >
+            <Command className="h-2.5 w-2.5" />K
+          </kbd>
         </form>
 
-        {/* Right controls — glass capsules */}
-        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full h-9 w-9 hidden sm:flex"
+        {/* Right cluster */}
+        <div className="ml-auto flex flex-shrink-0 items-center gap-1.5 sm:gap-2">
+          <button
             onClick={() =>
               toast(en ? 'No new notifications' : 'कोई नई सूचना नहीं', {
                 description: en ? "You're all caught up 🌾" : 'आप अप-टू-डेट हैं 🌾',
               })
             }
+            aria-label="Notifications"
+            className={`${CTRL} relative hidden h-9 w-9 sm:flex`}
           >
-            <Bell strokeWidth={1.75} className="h-4 w-4" />
-          </Button>
+            <Bell strokeWidth={2} className="h-4 w-4" />
+            <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full accent-solid" />
+          </button>
 
           <div className="hidden sm:block">
             <LanguageSwitcher />
           </div>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full h-9 w-9"
-            onClick={() => setSettingsSidebarOpen(true)}
-          >
-            <SettingsIcon strokeWidth={1.75} className="h-4 w-4" />
-          </Button>
+          <button onClick={() => setSettingsOpen(true)} aria-label="Settings" className={`${CTRL} h-9 w-9`}>
+            <SettingsIcon strokeWidth={2} className="h-4 w-4" />
+          </button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full h-9 w-9 hidden sm:flex"
-            onClick={signOut}
-          >
-            <LogOut strokeWidth={1.75} className="h-4 w-4" />
-          </Button>
+          <button onClick={signOut} aria-label="Sign out" className={`${CTRL} hidden h-9 w-9 sm:flex`}>
+            <LogOut strokeWidth={2} className="h-4 w-4" />
+          </button>
 
-          {/* Profile capsule */}
           <button
             onClick={() => navigate('/settings')}
-            className="h-9 w-9 rounded-full gradient-primary flex items-center justify-center text-[11px] font-bold text-white shadow-[0_0_14px_rgba(45,212,191,0.35)] hover:scale-105 transition-transform duration-200"
             title={user?.email ?? undefined}
+            className="flex h-9 w-9 items-center justify-center rounded-full accent-grad accent-ink text-[11px] font-bold ring-2 ring-white/20 transition-transform duration-300 hover:scale-105"
           >
             {initials}
           </button>
 
           {/* Mobile menu */}
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full lg:hidden h-9 w-9">
-                <Menu strokeWidth={1.75} className="h-4 w-4" />
-              </Button>
+              <button aria-label="Menu" className={`${CTRL} h-9 w-9 lg:hidden`}>
+                <Menu strokeWidth={2} className="h-4 w-4" />
+              </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[85vw] max-w-sm glass-strong border-l border-border">
+            <SheetContent side="right" className="w-[85vw] max-w-sm border-l border-border">
               <SheetHeader className="mb-6">
-                <SheetTitle className="font-display text-xl font-bold text-gradient">
-                  {t('menu')}
+                <SheetTitle className="font-display text-xl font-bold">
+                  <GradientText>{t('menu')}</GradientText>
                 </SheetTitle>
               </SheetHeader>
-              <div className="space-y-3">
-                <div className="sm:hidden mb-4 pb-4 border-b border-border">
+              <div className="space-y-2">
+                <div className="mb-4 border-b border-border pb-4 sm:hidden">
                   <LanguageSwitcher />
                 </div>
-                {navItems.map(item => {
+                {navItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
+                  const active = location.pathname === item.path;
                   return (
                     <Link
                       key={item.path}
                       to={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 p-3.5 rounded-2xl transition-all duration-300 ${
-                        isActive
-                          ? 'btn-metal shadow-glow-primary'
-                          : 'hover:bg-foreground/[0.07] text-foreground'
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-3 rounded-2xl p-3.5 transition-all duration-300 ${
+                        active
+                          ? 'bg-foreground/10 font-semibold text-foreground'
+                          : 'text-muted-foreground hover:bg-foreground/[0.06] hover:text-foreground'
                       }`}
                     >
-                      <Icon strokeWidth={1.75} className="h-5 w-5" />
-                      <span className="font-semibold">{item.label}</span>
+                      <Icon strokeWidth={2} className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
                     </Link>
                   );
                 })}
-                <Button
-                  variant="outline"
-                  onClick={signOut}
-                  className="w-full justify-start gap-3 p-3.5 rounded-2xl mt-4"
-                >
-                  <LogOut strokeWidth={1.75} className="h-5 w-5" />
-                  <span className="font-semibold">Sign Out</span>
+                <Button variant="outline" onClick={signOut} className="mt-4 w-full justify-start gap-3 p-3.5">
+                  <LogOut strokeWidth={2} className="h-5 w-5" />
+                  <span className="font-semibold">{en ? 'Sign Out' : 'साइन आउट'}</span>
                 </Button>
               </div>
             </SheetContent>
@@ -192,10 +214,7 @@ const Navigation = () => {
         </div>
       </div>
 
-      <SettingsSidebar
-        open={settingsSidebarOpen}
-        onOpenChange={setSettingsSidebarOpen}
-      />
+      <SettingsSidebar open={settingsOpen} onOpenChange={setSettingsOpen} />
     </nav>
   );
 };

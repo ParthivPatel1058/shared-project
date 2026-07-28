@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AppShell from "@/components/AppShell";
 import ClickSpark from "@/components/ui/click-spark";
+import { useUIPrefs } from "@/hooks/useUIPrefs";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import AgriMarket from "./pages/AgriMarket";
@@ -32,7 +33,10 @@ import Login from "./pages/auth/Login";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Mirror saved preferences onto <html> before the tree renders.
+  useUIPrefs();
+  return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <LanguageProvider>
@@ -83,6 +87,7 @@ const App = () => (
       </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

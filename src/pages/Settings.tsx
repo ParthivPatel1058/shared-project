@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIPrefs } from '@/hooks/useUIPrefs';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +19,13 @@ import {
   Package,
   Moon,
   Sun,
+  Sparkles,
+  Rows3,
+  Type,
+  Contrast,
+  PanelLeftClose,
+  MapPin,
+  RotateCcw,
   Mail,
   Phone,
   MessageSquare
@@ -26,6 +34,8 @@ import {
 const Settings = () => {
   const { t, language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
+  const { prefs, set, reset } = useUIPrefs();
+  const en = language === 'en';
   const [activeTab, setActiveTab] = useState('appearance');
 
   const tabs = [
@@ -37,7 +47,7 @@ const Settings = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+    <div className="min-h-screen">
       <Navigation />
 
       <div className="px-4 lg:px-6 pt-5">
@@ -45,7 +55,7 @@ const Settings = () => {
       </div>
       
       <div className="pt-8 pb-12 px-4 container mx-auto">
-        <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+        <h1 className="font-serif-display mb-8 text-4xl text-foreground md:text-5xl">
           {t('settingsTitle')}
         </h1>
 
@@ -62,7 +72,7 @@ const Settings = () => {
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
                         activeTab === tab.id
-                          ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
+                          ? 'accent-grad accent-ink shadow-lg'
                           : 'hover:bg-accent/50 text-foreground'
                       }`}
                     >
@@ -84,7 +94,7 @@ const Settings = () => {
                     <Palette className="h-6 w-6 text-primary" />
                     {t('appearance')}
                   </CardTitle>
-                  <CardDescription>Customize how KisanSmart looks</CardDescription>
+                  <CardDescription>{en ? 'Customize how BhoomiX looks and feels' : 'BhoomiX का रूप और अनुभव अनुकूलित करें'}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Theme Toggle */}
@@ -110,7 +120,7 @@ const Settings = () => {
                             : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        <Moon className="h-8 w-8 mx-auto mb-3 text-indigo-500" />
+                        <Moon className="h-8 w-8 mx-auto mb-3 text-[hsl(var(--aqua-deep))]" />
                         <p className="font-semibold">{t('dark')}</p>
                       </button>
                     </div>
@@ -133,7 +143,7 @@ const Settings = () => {
                             : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        <p className="text-3xl mb-2">🇬🇧</p>
+                        <p className="mb-2 text-2xl font-bold tracking-widest text-primary">EN</p>
                         <p className="font-semibold">{t('english')}</p>
                       </button>
                       <button
@@ -144,10 +154,54 @@ const Settings = () => {
                             : 'border-border hover:border-primary/50'
                         }`}
                       >
-                        <p className="text-3xl mb-2">🇮🇳</p>
+                        <p className="mb-2 text-2xl font-bold tracking-widest text-primary">हिं</p>
                         <p className="font-semibold">{t('hindi')}</p>
                       </button>
                     </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Interface preferences */}
+                  <div className="space-y-3">
+                    <Label className="flex items-center gap-2 text-lg font-semibold">
+                      <Sparkles className="h-5 w-5" />
+                      {en ? 'Interface' : 'इंटरफ़ेस'}
+                    </Label>
+
+                    {[
+                      { key: 'motion' as const, icon: Sparkles, en: 'Animations', hi: 'एनिमेशन', dEn: 'Entrance and hover motion across the app', dHi: 'ऐप में प्रवेश और हॉवर एनिमेशन' },
+                      { key: 'compact' as const, icon: Rows3, en: 'Compact layout', hi: 'संक्षिप्त लेआउट', dEn: 'Tighter spacing, fits more on screen', dHi: 'कम जगह, स्क्रीन पर अधिक सामग्री' },
+                      { key: 'largeText' as const, icon: Type, en: 'Larger text', hi: 'बड़ा टेक्स्ट', dEn: 'Easier to read outdoors', dHi: 'बाहर पढ़ने में आसान' },
+                      { key: 'highContrast' as const, icon: Contrast, en: 'High contrast', hi: 'उच्च कंट्रास्ट', dEn: 'Stronger borders and clearer text', dHi: 'गहरी सीमाएं और स्पष्ट टेक्स्ट' },
+                      { key: 'sidebarCollapsed' as const, icon: PanelLeftClose, en: 'Start with sidebar collapsed', hi: 'साइडबार बंद रखें', dEn: 'Opens as an icon rail on load', dHi: 'शुरुआत में आइकन रेल के रूप में खुले' },
+                      { key: 'useLocation' as const, icon: MapPin, en: 'Use my location', hi: 'मेरा स्थान उपयोग करें', dEn: 'Shows weather for where you are', dHi: 'आपके स्थान का मौसम दिखाए' },
+                    ].map((row) => {
+                      const RowIcon = row.icon;
+                      return (
+                        <div key={row.key} className="glass flex items-center justify-between gap-4 rounded-2xl p-4">
+                          <div className="flex min-w-0 items-start gap-3">
+                            <RowIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                            <div className="min-w-0 space-y-0.5">
+                              <Label htmlFor={row.key} className="cursor-pointer">
+                                {en ? row.en : row.hi}
+                              </Label>
+                              <p className="text-sm text-muted-foreground">{en ? row.dEn : row.dHi}</p>
+                            </div>
+                          </div>
+                          <Switch
+                            id={row.key}
+                            checked={prefs[row.key]}
+                            onCheckedChange={(v) => set(row.key, v)}
+                          />
+                        </div>
+                      );
+                    })}
+
+                    <Button variant="outline" onClick={reset} className="mt-2 gap-2">
+                      <RotateCcw className="h-4 w-4" />
+                      {en ? 'Reset to defaults' : 'डिफ़ॉल्ट पर रीसेट करें'}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

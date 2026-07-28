@@ -294,7 +294,7 @@ const KisanMart = () => {
                 ) : (
                   <button
                     onClick={() => addToCart(product.id, language === 'en' ? product.name : product.nameHi)}
-                    className="w-full btn-metal py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full btn-liquid-glass py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     {language === 'en' ? 'Add' : 'जोड़ें'}

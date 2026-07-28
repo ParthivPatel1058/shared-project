@@ -564,7 +564,7 @@ const AgriMarket = () => {
                   <div className="text-right">
                     <Badge 
                       variant={product.inStock ? "default" : "secondary"}
-                      className={product.inStock ? "btn-metal border-0" : ""}
+                      className={product.inStock ? "btn-liquid-glass border-0" : ""}
                     >
                       {product.inStock 
                         ? (language === 'en' ? 'In Stock' : 'उपलब्ध')
@@ -607,7 +607,7 @@ const AgriMarket = () => {
                 </div>
 
                 <Button 
-                  className="w-full btn-metal border-0 hover:shadow-lg transition-all rounded-[2rem]"
+                  className="w-full btn-liquid-glass border-0 hover:shadow-lg transition-all rounded-[2rem]"
                   disabled={!product.inStock}
                   onClick={() => addToCart(product)}
                 >
