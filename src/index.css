@@ -452,6 +452,87 @@
   border-width: 2px;
 }
 
+
+/* ---- React Bits: glare hover ---- */
+.glare-hover {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glare-hover::after {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--glare-angle, 115deg),
+    transparent 38%,
+    var(--glare-color, rgba(255, 255, 255, 0.55)) 50%,
+    transparent 62%
+  );
+  opacity: 0;
+  transform: translateX(-120%);
+  transition:
+    transform var(--glare-duration, 0.75s) var(--ease-editorial),
+    opacity 0.25s ease;
+}
+.glare-hover:hover::after {
+  opacity: var(--glare-opacity, 1);
+  transform: translateX(120%);
+}
+
+/* ---- React Bits: star border ---- */
+.star-border {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 9999px;
+  isolation: isolate;
+}
+.star-border-trail {
+  position: absolute;
+  width: 300%;
+  height: 50%;
+  opacity: 0.6;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, var(--star-color) 0%, transparent 12%);
+}
+.star-border-trail--bottom {
+  bottom: -12px;
+  right: -250%;
+  animation: star-trail-r var(--star-speed, 6s) linear infinite alternate;
+}
+.star-border-trail--top {
+  top: -12px;
+  left: -250%;
+  animation: star-trail-l var(--star-speed, 6s) linear infinite alternate;
+}
+.star-border-inner {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+@keyframes star-trail-r {
+  0%   { transform: translateX(0); opacity: 0.65; }
+  100% { transform: translateX(-100%); opacity: 0.15; }
+}
+@keyframes star-trail-l {
+  0%   { transform: translateX(0); opacity: 0.65; }
+  100% { transform: translateX(100%); opacity: 0.15; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-border-trail { animation: none; }
+  .glare-hover::after { transition: none; }
+}
+
 /* Slow reveal for editorial headlines */
 @keyframes editorial-rise {
   from {

@@ -20,6 +20,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWeather } from '@/hooks/useWeather';
 import { WeatherIcon } from './WeatherWidget';
 import GradientText from '@/components/ui/gradient-text';
+import GlareHover from '@/components/ui/glare-hover';
+import StarBorder from '@/components/ui/star-border';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -74,9 +76,9 @@ const Navigation = () => {
   return (
     <nav className="sticky top-3 z-50 mx-3 lg:mx-4 xl:mx-6">
       <div
-        className="flex h-16 items-center gap-3 rounded-2xl border px-3 backdrop-blur-2xl sm:px-4
-                   border-black/10 bg-white/70 shadow-[0_10px_36px_rgba(30,40,60,0.12)]
-                   dark:border-white/12 dark:bg-white/[0.08] dark:shadow-[0_10px_36px_rgba(0,0,0,0.4)]"
+        className="flex h-[68px] items-center gap-2.5 rounded-[22px] border px-2.5 backdrop-blur-2xl sm:gap-3 sm:px-3.5
+                   border-black/[0.07] bg-white/75 shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_14px_44px_rgba(30,40,60,0.14)]
+                   dark:border-white/[0.14] dark:bg-white/[0.07] dark:shadow-[0_1px_0_rgba(255,255,255,0.14)_inset,0_14px_44px_rgba(0,0,0,0.45)]"
       >
         {/* Brand — the dock owns this on lg+ */}
         <Link to="/" className="flex flex-shrink-0 items-center gap-2.5 lg:hidden">
@@ -88,11 +90,14 @@ const Navigation = () => {
 
         {/* Weather — one segmented capsule instead of two loose chips */}
         <div
-          className="hidden flex-shrink-0 items-center gap-3 rounded-full border py-1.5 pl-3 pr-4 xl:flex
-                     border-black/10 bg-black/[0.03] dark:border-white/12 dark:bg-white/[0.06]"
+          className="hidden flex-shrink-0 items-center gap-2.5 rounded-full border py-2 pl-3.5 pr-4 xl:flex
+                     border-black/[0.07] bg-black/[0.035] dark:border-white/[0.12] dark:bg-white/[0.06]"
         >
           <span className="flex items-center gap-1.5 text-sm font-medium text-neutral-700 dark:text-white">
-            <MapPin strokeWidth={2} className="h-3.5 w-3.5 text-primary" />
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
             {weather.city}
           </span>
           <span className="h-4 w-px bg-black/10 dark:bg-white/15" />
@@ -119,11 +124,11 @@ const Navigation = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={en ? 'Search crops, products, advisory…' : 'फसल, उत्पाद, सलाह खोजें…'}
-            className="h-11 w-full rounded-full border pl-11 pr-16 text-sm outline-none transition-all duration-300
-                       border-black/10 bg-black/[0.03] text-neutral-900 placeholder:text-neutral-400
-                       focus:border-primary/40 focus:bg-white
-                       dark:border-white/12 dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/45
-                       dark:focus:border-primary/50 dark:focus:bg-white/[0.12]"
+            className="h-12 w-full rounded-full border pl-11 pr-16 text-sm outline-none transition-all duration-500
+                       border-black/[0.07] bg-black/[0.035] text-neutral-900 placeholder:text-neutral-400
+                       focus:border-primary/45 focus:bg-white focus:shadow-[0_0_0_4px_hsl(var(--aqua)/0.14)]
+                       dark:border-white/[0.12] dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/45
+                       dark:focus:border-primary/55 dark:focus:bg-white/[0.12]"
           />
           <kbd
             className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border px-1.5 py-0.5 text-[10px] font-medium lg:flex
@@ -135,43 +140,53 @@ const Navigation = () => {
 
         {/* Right cluster */}
         <div className="ml-auto flex flex-shrink-0 items-center gap-1.5 sm:gap-2">
-          <button
-            onClick={() =>
-              toast(en ? 'No new notifications' : 'कोई नई सूचना नहीं', {
-                description: en ? "You're all caught up 🌾" : 'आप अप-टू-डेट हैं 🌾',
-              })
-            }
-            aria-label="Notifications"
-            className={`${CTRL} relative hidden h-9 w-9 sm:flex`}
-          >
-            <Bell strokeWidth={2} className="h-4 w-4" />
-            <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full accent-solid" />
-          </button>
+          <GlareHover className="hidden rounded-full sm:inline-flex">
+            <button
+              onClick={() =>
+                toast(en ? 'No new notifications' : 'कोई नई सूचना नहीं', {
+                  description: en ? "You're all caught up 🌾" : 'आप अप-टू-डेट हैं 🌾',
+                })
+              }
+              aria-label="Notifications"
+              className={`${CTRL} relative h-10 w-10`}
+            >
+              <Bell strokeWidth={2} className="h-4 w-4" />
+              <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full accent-solid" />
+            </button>
+          </GlareHover>
 
           <div className="hidden sm:block">
             <LanguageSwitcher />
           </div>
 
-          <button onClick={() => setSettingsOpen(true)} aria-label="Settings" className={`${CTRL} h-9 w-9`}>
-            <SettingsIcon strokeWidth={2} className="h-4 w-4" />
-          </button>
+          <GlareHover className="rounded-full">
+            <button onClick={() => setSettingsOpen(true)} aria-label="Settings" className={`${CTRL} h-10 w-10`}>
+              <SettingsIcon strokeWidth={2} className="h-4 w-4 transition-transform duration-500 hover:rotate-90" />
+            </button>
+          </GlareHover>
 
-          <button onClick={signOut} aria-label="Sign out" className={`${CTRL} hidden h-9 w-9 sm:flex`}>
-            <LogOut strokeWidth={2} className="h-4 w-4" />
-          </button>
+          <GlareHover className="hidden rounded-full sm:inline-flex">
+            <button onClick={signOut} aria-label="Sign out" className={`${CTRL} h-10 w-10`}>
+              <LogOut strokeWidth={2} className="h-4 w-4" />
+            </button>
+          </GlareHover>
 
-          <button
+          <StarBorder
+            as="button"
             onClick={() => navigate('/settings')}
             title={user?.email ?? undefined}
-            className="flex h-9 w-9 items-center justify-center rounded-full accent-grad accent-ink text-[11px] font-bold ring-2 ring-white/20 transition-transform duration-300 hover:scale-105"
+            speed="5s"
+            className="transition-transform duration-300 hover:scale-105"
           >
-            {initials}
-          </button>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full accent-grad accent-ink text-[11px] font-bold">
+              {initials}
+            </span>
+          </StarBorder>
 
           {/* Mobile menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <button aria-label="Menu" className={`${CTRL} h-9 w-9 lg:hidden`}>
+              <button aria-label="Menu" className={`${CTRL} h-10 w-10 lg:hidden`}>
                 <Menu strokeWidth={2} className="h-4 w-4" />
               </button>
             </SheetTrigger>
