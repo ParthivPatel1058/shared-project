@@ -1,8 +1,9 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Reveal from "@/components/Reveal";
+import SpotlightCard from "@/components/ui/spotlight-card";
+import ShinyText from "@/components/ui/shiny-text";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export interface GalleryHoverCarouselItem {
   id: string;
@@ -21,45 +22,49 @@ interface GalleryHoverGridProps {
 function HoverCard({ item }: { item: GalleryHoverCarouselItem }) {
   return (
     <Link to={item.url} className="group block relative w-full h-[280px] md:h-[320px]">
-      <Card className="lift img-zoom overflow-hidden rounded-3xl h-full w-full border-border bg-card/70 backdrop-blur-xl">
-        {/* Image */}
-        <div className="relative h-full w-full transition-all duration-500 group-hover:h-1/2">
+      <SpotlightCard className="h-full w-full rounded-3xl">
+        <Card className="lift img-zoom relative h-full w-full overflow-hidden rounded-3xl border-white/15 bg-white/5 backdrop-blur-xl">
           <img
             src={item.image}
             alt={item.title}
             loading="lazy"
             className="h-full w-full object-cover object-center"
           />
-          <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        </div>
 
-        {/* Text (revealed on hover) */}
-        <div className="absolute bottom-0 left-0 w-full px-4 py-3 transition-all duration-500 group-hover:h-1/2 group-hover:flex flex-col justify-center bg-background/95 backdrop-blur-sm opacity-0 group-hover:opacity-100">
-          <h3 className="text-lg md:text-xl font-semibold text-foreground" style={{fontFamily:"var(--font-serif)"}}>{item.title}</h3>
-          <p className="text-muted-foreground text-sm line-clamp-2 mt-1">{item.summary}</p>
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute bottom-3 right-3 rounded-full hover:-rotate-45 transition-all duration-500 text-primary"
-            aria-label={`Open ${item.title}`}
-          >
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
+          {/* Always-on legibility gradient */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
-        {/* Idle title strip (before hover) */}
-        <div className="absolute bottom-0 left-0 w-full px-4 py-3 bg-gradient-to-t from-black/75 to-transparent transition-opacity duration-500 group-hover:opacity-0">
-          <h3 className="text-base md:text-lg font-medium text-white" style={{fontFamily:"var(--font-serif)"}}>{item.title}</h3>
-        </div>
-      </Card>
+          {/* Copy */}
+          <div className="absolute inset-x-0 bottom-0 z-10 p-5">
+            <div className="flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <h3
+                  className="truncate text-lg font-medium text-white md:text-xl"
+                  style={{ fontFamily: "var(--font-serif)" }}
+                >
+                  {item.title}
+                </h3>
+                {/* Summary slides up on hover */}
+                <p className="mt-1 max-h-0 overflow-hidden text-sm leading-relaxed text-white/75 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:max-h-24 group-hover:opacity-100">
+                  {item.summary}
+                </p>
+              </div>
+
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-500 group-hover:rotate-45 group-hover:border-white/60 group-hover:bg-white group-hover:text-neutral-900">
+                <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
+              </span>
+            </div>
+          </div>
+        </Card>
+      </SpotlightCard>
     </Link>
   );
 }
 
 /**
- * Hover-reveal feature gallery laid out as a responsive grid (3×3 on large
- * screens). On hover a card's image shrinks to the top half and the summary
- * slides up in the bottom half.
+ * Feature gallery: a responsive grid (3x3 on desktop) of spotlight cards.
+ * Sits on a scrim so the type stays legible wherever the fixed scene behind
+ * it happens to be bright.
  */
 export default function GalleryHoverGrid({
   heading = "Everything you need",
@@ -67,15 +72,15 @@ export default function GalleryHoverGrid({
   items,
 }: GalleryHoverGridProps) {
   return (
-    <section className="w-full">
+    <section className="section-scrim w-full rounded-[32px] p-6 md:p-10">
       <Reveal className="mb-8 max-w-2xl" blur distance={22}>
-        <h2 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl text-foreground">
-          {heading}
+        <h2 className="font-serif-display text-3xl text-white sm:text-4xl lg:text-5xl">
+          <ShinyText text={heading} speed={6} />
         </h2>
-        <p className="text-muted-foreground text-sm sm:text-base mt-2">{subheading}</p>
+        <p className="mt-2 text-sm text-white/70 sm:text-base">{subheading}</p>
       </Reveal>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item, i) => (
           <Reveal key={item.id} delay={(i % 3) * 0.08} distance={34}>
             <HoverCard item={item} />
