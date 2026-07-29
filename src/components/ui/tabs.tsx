@@ -27,7 +27,14 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold ring-offset-background transition-all duration-300 data-[state=active]:gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      // Active state is a frosted pill with an aqua rim and soft glow rather
+      // than a filled block, so it sits on the glass surfaces without shouting.
+      "relative inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2 text-sm font-semibold ring-offset-background transition-all duration-500 " +
+        "text-muted-foreground hover:text-foreground " +
+        "data-[state=active]:text-foreground " +
+        "data-[state=active]:bg-[hsl(var(--aqua)/0.14)] " +
+        "data-[state=active]:shadow-[inset_0_0_0_1px_hsl(var(--aqua)/0.55),0_6px_20px_hsl(var(--aqua)/0.22)] " +
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
       className,
     )}
     {...props}

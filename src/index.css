@@ -672,12 +672,12 @@ All colors MUST be HSL.
     --glass-highlight: 0 0% 100% / 0.85;
 
     /* Gradient colors — professional teal → cyan → violet system */
-    --gradient-primary-start: 170 75% 28%;
-    --gradient-primary-end: 192 80% 38%;
-    --gradient-secondary-start: 38 95% 52%;
-    --gradient-secondary-end: 22 90% 55%;
-    --gradient-accent-start: 258 72% 56%;
-    --gradient-accent-end: 192 80% 42%;
+    --gradient-primary-start: 40 44% 78%;
+    --gradient-primary-end: 178 48% 52%;
+    --gradient-secondary-start: 36 38% 66%;
+    --gradient-secondary-end: 186 52% 40%;
+    --gradient-accent-start: 178 48% 52%;
+    --gradient-accent-end: 40 44% 78%;
 
     /* Glow shadows */
     --glow-primary: 175 75% 36%;
@@ -741,12 +741,12 @@ All colors MUST be HSL.
     --glass-border: 0 0% 100% / 0.26;
     --glass-highlight: 0 0% 100% / 0.4;
 
-    --gradient-primary-start: 164 100% 36%;
-    --gradient-primary-end: 190 95% 45%;
-    --gradient-secondary-start: 217 91% 60%;
-    --gradient-secondary-end: 258 90% 66%;
-    --gradient-accent-start: 258 90% 66%;
-    --gradient-accent-end: 190 95% 50%;
+    --gradient-primary-start: 40 50% 80%;
+    --gradient-primary-end: 178 55% 55%;
+    --gradient-secondary-start: 36 42% 70%;
+    --gradient-secondary-end: 186 58% 46%;
+    --gradient-accent-start: 178 55% 55%;
+    --gradient-accent-end: 40 50% 80%;
 
     --glow-primary: 172 100% 45%;
     --glow-secondary: 217 91% 60%;
@@ -918,14 +918,17 @@ All colors MUST be HSL.
 
   .gradient-primary {
     background: linear-gradient(135deg, hsl(var(--gradient-primary-start)), hsl(var(--gradient-primary-end)));
+    color: hsl(200 30% 12%);
   }
 
   .gradient-secondary {
     background: linear-gradient(135deg, hsl(var(--gradient-secondary-start)), hsl(var(--gradient-secondary-end)));
+    color: hsl(200 30% 12%);
   }
 
   .gradient-accent {
     background: linear-gradient(135deg, hsl(var(--gradient-accent-start)), hsl(var(--gradient-accent-end)));
+    color: hsl(200 30% 12%);
   }
 
   /* Gradient headline text */
