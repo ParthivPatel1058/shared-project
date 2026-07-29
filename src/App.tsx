@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import AppShell from "@/components/AppShell";
 import ClickSpark from "@/components/ui/click-spark";
 import { ThemeSwitchDefs } from "@/components/ui/theme-switch";
@@ -49,6 +50,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <AuthProvider>
+              <CartProvider>
               <Routes>
                 {/* Auth Routes (no shell) */}
                 <Route path="/auth/welcome" element={<PublicOnlyRoute><Welcome /></PublicOnlyRoute>} />
@@ -84,6 +86,7 @@ const App = () => {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </CartProvider>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

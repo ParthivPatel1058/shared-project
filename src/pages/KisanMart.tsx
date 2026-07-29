@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
-import CartSheet from '@/components/CartSheet';
+import CartBar from '@/components/CartBar';
+import QuantityStepper from '@/components/ui/quantity-stepper';
 import { toast } from 'sonner';
 
 // Import real brand product images
@@ -275,31 +276,15 @@ const KisanMart = () => {
                 </h3>
                 <div className="text-lg font-bold text-primary mb-3">₹{product.price}</div>
                 
-                {cart[product.id] ? (
-                  <div className="flex items-center justify-between glass rounded-xl p-2">
-                    <button
-                      onClick={() => removeFromCart(product.id)}
-                      className="w-8 h-8 rounded-lg bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary font-bold transition-all"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </button>
-                    <span className="font-bold text-foreground">{cart[product.id]}</span>
-                    <button
-                      onClick={() => addToCart(product.id, language === 'en' ? product.name : product.nameHi)}
-                      className="w-8 h-8 rounded-lg bg-primary hover:bg-primary/90 flex items-center justify-center text-primary-foreground font-bold transition-all"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => addToCart(product.id, language === 'en' ? product.name : product.nameHi)}
-                    className="w-full btn-liquid-glass py-2.5 rounded-xl text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    {language === 'en' ? 'Add' : 'जोड़ें'}
-                  </button>
-                )}
+                <QuantityStepper
+                  className="w-full"
+                  store="mart"
+                  productId={product.id}
+                  name={product.name}
+                  nameHi={product.nameHi}
+                  price={product.price}
+                  image={product.image}
+                />
               </div>
             </div>
           ))}
@@ -317,29 +302,7 @@ const KisanMart = () => {
         )}
       </div>
 
-      {/* Floating Cart Button */}
-      {getCartCount() > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <button 
-            onClick={() => setIsCartOpen(true)}
-            className="gradient-secondary text-white px-8 py-4 rounded-full font-bold text-lg shadow-2xl hover:scale-105 transition-all flex items-center gap-3"
-          >
-            <ShoppingCart className="h-6 w-6" />
-            {language === 'en' 
-              ? `View Cart (${getCartCount()} items)` 
-              : `कार्ट देखें (${getCartCount()} आइटम)`}
-          </button>
-        </div>
-      )}
-
-      {/* Cart Sheet */}
-      <CartSheet
-        open={isCartOpen}
-        onOpenChange={setIsCartOpen}
-        cartItems={getCartItems()}
-        onUpdateQuantity={handleUpdateCartQuantity}
-        onRemoveItem={handleRemoveFromCart}
-      />
+      <CartBar />
     </div>
   );
 };

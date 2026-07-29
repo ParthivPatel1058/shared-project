@@ -4,7 +4,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
-import { FancyButton } from '@/components/ui/fancy-button';
+import QuantityStepper from '@/components/ui/quantity-stepper';
+import CartBar from '@/components/CartBar';
 import CartSheet from '@/components/CartSheet';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -607,12 +608,15 @@ const AgriMarket = () => {
                   <span className="text-sm text-muted-foreground">{product.unit}</span>
                 </div>
 
-                <FancyButton
+                <QuantityStepper
                   className="w-full"
+                  store="agri"
+                  productId={product.id}
+                  name={product.name}
+                  nameHi={product.nameHi}
+                  price={parseInt(product.price.replace(/[^0-9]/g, ''), 10)}
+                  image={product.image}
                   disabled={!product.inStock}
-                  onClick={() => addToCart(product)}
-                  icon={<ShoppingBag className="h-4 w-4" />}
-                  label={language === 'en' ? 'Add to Cart' : 'कार्ट में डालें'}
                 />
               </CardContent>
             </Card>
@@ -643,6 +647,7 @@ const AgriMarket = () => {
         </button>
       )}
 
+      <CartBar />
       <CartSheet
         open={cartOpen}
         onOpenChange={setCartOpen}
