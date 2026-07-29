@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
+import { FancyButton } from '@/components/ui/fancy-button';
 import CartSheet from '@/components/CartSheet';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -606,14 +607,13 @@ const AgriMarket = () => {
                   <span className="text-sm text-muted-foreground">{product.unit}</span>
                 </div>
 
-                <Button 
-                  className="w-full btn-liquid-glass border-0 hover:shadow-lg transition-all rounded-[2rem]"
+                <FancyButton
+                  className="w-full"
                   disabled={!product.inStock}
                   onClick={() => addToCart(product)}
-                >
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  {language === 'en' ? 'Add to Cart' : 'कार्ट में डालें'}
-                </Button>
+                  icon={<ShoppingBag className="h-4 w-4" />}
+                  label={language === 'en' ? 'Add to Cart' : 'कार्ट में डालें'}
+                />
               </CardContent>
             </Card>
           ))}

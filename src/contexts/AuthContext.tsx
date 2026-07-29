@@ -46,8 +46,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth/welcome');
+    // Navigate regardless of the network result: if the call fails the local
+    // session is still cleared, and stranding the user on a protected page
+    // is worse than a stale server-side session.
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      /* ignore — local state is cleared by onAuthStateChange */
+    } finally {
+      setUser(null);
+      setSession(null);
+      navigate('/auth/welcome', { replace: true });
+    }
   };
 
   return (

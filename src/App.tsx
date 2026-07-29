@@ -11,6 +11,7 @@ import AppShell from "@/components/AppShell";
 import ClickSpark from "@/components/ui/click-spark";
 import { useUIPrefs } from "@/hooks/useUIPrefs";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import PublicOnlyRoute from "@/components/PublicOnlyRoute";
 import Index from "./pages/Index";
 import AgriMarket from "./pages/AgriMarket";
 import KisanHelp from "./pages/KisanHelp";
@@ -48,9 +49,9 @@ const App = () => {
             <AuthProvider>
               <Routes>
                 {/* Auth Routes (no shell) */}
-                <Route path="/auth/welcome" element={<Welcome />} />
-                <Route path="/auth/signup" element={<Signup />} />
-                <Route path="/auth/login" element={<Login />} />
+                <Route path="/auth/welcome" element={<PublicOnlyRoute><Welcome /></PublicOnlyRoute>} />
+                <Route path="/auth/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+                <Route path="/auth/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
 
                 {/* Protected Routes — all rendered inside AppShell so the
                     desktop Sidebar persists across navigation. */}

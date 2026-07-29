@@ -533,6 +533,141 @@
   .glare-hover::after { transition: none; }
 }
 
+
+/* ---- Fancy neumorphic action button ---- */
+.fancy-btn {
+  --fb-accent: hsl(var(--aqua-deep));
+  --fb-n1: #f7f8f7;
+  --fb-n2: #e3e0d8;
+  --fb-radius: 14px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--fb-radius);
+  padding: 0 22px;
+  height: 52px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #2a231d;
+  background: transparent;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow:
+    0 0.5px 0.5px 1px rgba(255, 255, 255, 0.2),
+    0 8px 18px rgba(40, 32, 20, 0.18),
+    0 4px 5px 0 rgba(0, 0, 0, 0.05);
+}
+.dark .fancy-btn {
+  --fb-n1: #2a2f36;
+  --fb-n2: #1d2127;
+  color: #f2efe9;
+}
+
+.fancy-btn:hover {
+  transform: scale(1.02);
+}
+.fancy-btn:active {
+  transform: scale(0.99);
+}
+
+/* Raised plate */
+.fancy-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--fb-radius);
+  border: 2.5px solid transparent;
+  background:
+    linear-gradient(var(--fb-n1), var(--fb-n2)) padding-box,
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) border-box;
+  z-index: 0;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.fancy-btn:hover::after {
+  transform: scale(1.03, 1.07);
+  box-shadow: inset 0 -1px 3px 0 rgba(255, 255, 255, 0.9);
+}
+/* Inner highlight */
+.fancy-btn::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 10px;
+  background: linear-gradient(to top, var(--fb-n1), var(--fb-n2));
+  filter: blur(0.5px);
+  z-index: 1;
+}
+
+/* Sweeping rim light */
+.fancy-btn__outline {
+  position: absolute;
+  inset: -2px -3px;
+  border-radius: inherit;
+  overflow: hidden;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.fancy-btn__outline::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(from 180deg, transparent 60%, var(--fb-accent) 82%, transparent 100%);
+  animation: fb-spin 2s linear infinite;
+  animation-play-state: paused;
+}
+.fancy-btn:hover .fancy-btn__outline { opacity: 1; }
+.fancy-btn:hover .fancy-btn__outline::before { animation-play-state: running; }
+@keyframes fb-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Content */
+.fancy-btn__state {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.fancy-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.35s ease;
+}
+.fancy-btn:hover .fancy-btn__icon {
+  transform: translateX(-1px) scale(1.08);
+}
+.fancy-btn__label {
+  display: inline-flex;
+  white-space: pre;
+}
+.fancy-btn__label span {
+  display: block;
+}
+.fancy-btn:hover .fancy-btn__label span {
+  animation: fb-wave 0.5s ease forwards calc(var(--i) * 0.025s);
+}
+@keyframes fb-wave {
+  30%  { transform: translateY(3px); }
+  50%  { transform: translateY(-3px); color: var(--fb-accent); }
+  100% { transform: translateY(0); }
+}
+
+.fancy-btn__state--sent { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fancy-btn,
+  .fancy-btn::after,
+  .fancy-btn__icon { transition: none; }
+  .fancy-btn:hover .fancy-btn__label span { animation: none; }
+  .fancy-btn__outline::before { animation: none; }
+}
+
 /* Slow reveal for editorial headlines */
 @keyframes editorial-rise {
   from {
