@@ -29,6 +29,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useOrderCount } from "@/hooks/useOrderCount";
+import ThemeSwitch from "@/components/ui/theme-switch";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/bhoomix-logo.jpeg";
 
@@ -300,36 +301,26 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
       </div>
 
-      {/* Theme switch */}
+      {/* Theme switch — the illustrated toggle needs ~79px of width, so the
+          icon-rail keeps a compact button instead. */}
       <div className={cn("pb-4", collapsed ? "px-3" : "px-4")}>
-        <div
-          className={cn(
-            "flex rounded-full p-1 bg-black/[0.05] dark:bg-white/[0.06]",
-            collapsed ? "flex-col gap-1" : "gap-1",
-          )}
-        >
-          {(["light", "dark"] as const).map((mode) => {
-            const on = theme === mode;
-            const Icon = mode === "light" ? Sun : Moon;
-            return (
-              <button
-                key={mode}
-                onClick={() => setTheme(mode)}
-                aria-label={mode}
-                className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-full py-2 text-xs font-semibold transition-all duration-300",
-                  collapsed ? "w-full" : "flex-1",
-                  on
-                    ? "accent-grad accent-ink shadow"
-                    : "text-neutral-500 hover:text-neutral-900 dark:text-white/55 dark:hover:text-white",
-                )}
-              >
-                <Icon strokeWidth={2} className="h-3.5 w-3.5" />
-                {!collapsed && <span className="capitalize">{mode}</span>}
-              </button>
-            );
-          })}
-        </div>
+        {collapsed ? (
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            className="flex h-11 w-11 items-center justify-center rounded-xl transition-colors text-neutral-500 hover:bg-black/[0.04] hover:text-neutral-900 dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white"
+          >
+            {theme === "dark" ? (
+              <Moon strokeWidth={2} className="h-[18px] w-[18px]" />
+            ) : (
+              <Sun strokeWidth={2} className="h-[18px] w-[18px]" />
+            )}
+          </button>
+        ) : (
+          <div className="flex justify-center">
+            <ThemeSwitch size={13} />
+          </div>
+        )}
       </div>
     </aside>
   );

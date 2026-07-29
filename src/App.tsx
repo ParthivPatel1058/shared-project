@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AppShell from "@/components/AppShell";
 import ClickSpark from "@/components/ui/click-spark";
+import { ThemeSwitchDefs } from "@/components/ui/theme-switch";
 import { useUIPrefs } from "@/hooks/useUIPrefs";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PublicOnlyRoute from "@/components/PublicOnlyRoute";
@@ -43,6 +44,7 @@ const App = () => {
       <LanguageProvider>
         <TooltipProvider>
           <ClickSpark />
+          <ThemeSwitchDefs />
           <Toaster />
           <Sonner />
           <BrowserRouter>
