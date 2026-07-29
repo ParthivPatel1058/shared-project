@@ -1,14 +1,29 @@
-import { useState, useEffect } from 'react';
-import { Package, Clock, CheckCircle, Truck, X } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import {
+  Package,
+  Clock,
+  CheckCircle2,
+  Truck,
+  XCircle,
+  Trash2,
+  RotateCcw,
+  MapPin,
+  Phone,
+  ChevronDown,
+  ShoppingBag,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import CartBar from '@/components/CartBar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { imageForKey, storeForKey } from '@/data/catalog';
+import { cn } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,255 +34,409 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+
+interface OrderItem {
+  product_id?: number;
+  name: string;
+  name_hi?: string;
+  price: number;
+  quantity: number;
+  image?: string;
+}
 
 interface Order {
   id: string;
   order_number: string;
-  items: any[];
+  items: OrderItem[];
   total_amount: number;
   status: string;
   created_at: string;
+  delivery_address?: string | null;
+  phone_number?: string | null;
 }
+
+/** Stages an active order moves through, in order. */
+const FLOW = ['pending', 'accepted', 'out_for_delivery', 'delivered'] as const;
+
+const STATUS_META: Record<
+  string,
+  { icon: typeof Clock; en: string; hi: string; tone: string }
+> = {
+  pending: { icon: Clock, en: 'Placed', hi: 'दर्ज', tone: 'text-amber-600 bg-amber-500/12' },
+  accepted: { icon: CheckCircle2, en: 'Accepted', hi: 'स्वीकृत', tone: 'text-sky-600 bg-sky-500/12' },
+  out_for_delivery: { icon: Truck, en: 'On the way', hi: 'रास्ते में', tone: 'text-violet-600 bg-violet-500/12' },
+  delivered: { icon: CheckCircle2, en: 'Delivered', hi: 'पहुँचा', tone: 'text-emerald-600 bg-emerald-500/12' },
+  cancelled: { icon: XCircle, en: 'Cancelled', hi: 'रद्द', tone: 'text-rose-600 bg-rose-500/12' },
+};
 
 const Orders = () => {
   const { language } = useLanguage();
   const { user } = useAuth();
+  const { add } = useCart();
+  const en = language === 'en';
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [tab, setTab] = useState<'active' | 'past'>('active');
 
   useEffect(() => {
-    if (user) {
-      loadOrders();
-      
-      // Set up real-time subscription for order updates
-      const channel = supabase
-        .channel('orders-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'orders',
-            filter: `user_id=eq.${user.id}`
-          },
-          (payload) => {
-            console.log('Order update received:', payload);
-            loadOrders();
-          }
-        )
-        .subscribe();
-      
-      return () => {
-        supabase.removeChannel(channel);
-      };
+    if (!user) {
+      setOrders([]);
+      setIsLoading(false);
+      return;
     }
-  }, [user]);
-
-  const loadOrders = async () => {
-    if (!user) return;
-
-    try {
+    let active = true;
+    (async () => {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setOrders((data || []) as Order[]);
-    } catch (error) {
-      console.error('Error loading orders:', error);
-      toast.error(language === 'en' 
-        ? 'Failed to load orders' 
-        : 'ऑर्डर लोड करने में विफल'
-      );
-    } finally {
+      if (!active) return;
+      if (!error && data) setOrders(data as unknown as Order[]);
       setIsLoading(false);
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending': return <Clock className="h-4 w-4" />;
-      case 'delivered': return <CheckCircle className="h-4 w-4" />;
-      case 'in_transit': return <Truck className="h-4 w-4" />;
-      default: return <Package className="h-4 w-4" />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    if (language === 'en') {
-      return status.replace('_', ' ').toUpperCase();
-    }
-    const statusMap: Record<string, string> = {
-      pending: 'लंबित',
-      accepted: 'स्वीकृत',
-      in_transit: 'ट्रांज़िट में',
-      delivered: 'डिलीवर किया गया',
-      cancelled: 'रद्द'
+    })();
+    return () => {
+      active = false;
     };
-    return statusMap[status] || status;
+  }, [user]);
+
+  const { activeOrders, pastOrders } = useMemo(
+    () => ({
+      activeOrders: orders.filter((o) => !['delivered', 'cancelled'].includes(o.status)),
+      pastOrders: orders.filter((o) => ['delivered', 'cancelled'].includes(o.status)),
+    }),
+    [orders],
+  );
+
+  const cancelOrder = async (id: string) => {
+    const snapshot = orders;
+    setOrders((os) => os.map((o) => (o.id === id ? { ...o, status: 'cancelled' } : o)));
+    const { error } = await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id);
+    if (error) {
+      setOrders(snapshot);
+      toast.error(en ? 'Could not cancel the order' : 'ऑर्डर रद्द नहीं हो सका');
+      return;
+    }
+    toast.success(en ? 'Order cancelled' : 'ऑर्डर रद्द कर दिया गया');
+    setTab('past');
   };
 
-  const handleCancelOrder = async (orderId: string) => {
-    try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: 'cancelled' })
-        .eq('id', orderId);
-
-      if (error) throw error;
-
-      toast.success(language === 'en' 
-        ? 'Order cancelled successfully' 
-        : 'ऑर्डर सफलतापूर्वक रद्द किया गया'
-      );
-      loadOrders();
-    } catch (error) {
-      console.error('Error cancelling order:', error);
-      toast.error(language === 'en' 
-        ? 'Failed to cancel order' 
-        : 'ऑर्डर रद्द करने में विफल'
-      );
+  /** Remove a finished order from the history entirely. */
+  const deleteOrder = async (id: string) => {
+    const snapshot = orders;
+    setOrders((os) => os.filter((o) => o.id !== id));
+    const { error } = await supabase.from('orders').delete().eq('id', id);
+    if (error) {
+      setOrders(snapshot);
+      toast.error(en ? 'Could not remove the order' : 'ऑर्डर हटाया नहीं जा सका');
+      return;
     }
+    toast.success(en ? 'Order removed' : 'ऑर्डर हटा दिया गया');
+  };
+
+  const reorder = async (order: Order) => {
+    let added = 0;
+    for (const it of order.items) {
+      if (typeof it.product_id !== 'number') continue;
+      const store = storeForKey(it.product_id);
+      const productId = store === 'mart' ? it.product_id - 100_000 : it.product_id;
+      try {
+        for (let i = 0; i < it.quantity; i++) {
+          await add({
+            store,
+            productId,
+            name: it.name,
+            nameHi: it.name_hi ?? it.name,
+            price: it.price,
+            image: imageForKey(it.product_id, it.image) ?? '',
+          });
+        }
+        added += 1;
+      } catch {
+        /* skip lines that fail */
+      }
+    }
+    if (added) toast.success(en ? 'Items added to cart' : 'आइटम कार्ट में जोड़े गए');
+    else toast.error(en ? 'Could not re-add these items' : 'ये आइटम दोबारा नहीं जुड़े');
+  };
+
+  const shown = tab === 'active' ? activeOrders : pastOrders;
+
+  const OrderCard = ({ order }: { order: Order }) => {
+    const meta = STATUS_META[order.status] ?? STATUS_META.pending;
+    const StatusIcon = meta.icon;
+    const isOpen = expanded === order.id;
+    const cancellable = order.status === 'pending' || order.status === 'accepted';
+    const finished = order.status === 'delivered' || order.status === 'cancelled';
+    const stageIndex = FLOW.indexOf(order.status as (typeof FLOW)[number]);
+
+    return (
+      <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+          <div className="min-w-0">
+            <p className="font-semibold text-foreground">#{order.order_number}</p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(order.created_at).toLocaleString(en ? 'en-IN' : 'hi-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </p>
+          </div>
+          <span
+            className={cn(
+              'flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold',
+              meta.tone,
+            )}
+          >
+            <StatusIcon className="h-3.5 w-3.5" />
+            {en ? meta.en : meta.hi}
+          </span>
+        </div>
+
+        {/* Progress — only while the order is live */}
+        {!finished && (
+          <div className="flex items-center gap-1 px-4 pt-4">
+            {FLOW.map((s, i) => (
+              <div key={s} className="flex flex-1 flex-col gap-1.5">
+                <span
+                  className={cn(
+                    'h-1.5 rounded-full transition-colors',
+                    i <= stageIndex ? 'accent-solid' : 'bg-border',
+                  )}
+                />
+                <span
+                  className={cn(
+                    'text-[10px] font-medium',
+                    i <= stageIndex ? 'text-foreground' : 'text-muted-foreground',
+                  )}
+                >
+                  {en ? STATUS_META[s].en : STATUS_META[s].hi}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Items */}
+        <div className="space-y-3 p-4">
+          {(isOpen ? order.items : order.items.slice(0, 2)).map((item, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <img
+                src={imageForKey(item.product_id, item.image)}
+                alt={en ? item.name : item.name_hi ?? item.name}
+                loading="lazy"
+                className="h-12 w-12 flex-shrink-0 rounded-lg border border-border object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-foreground">
+                  {en ? item.name : item.name_hi ?? item.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {en ? 'Qty' : 'मात्रा'}: {item.quantity}
+                </p>
+              </div>
+              <p className="text-sm font-semibold text-foreground">
+                ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+              </p>
+            </div>
+          ))}
+
+          {order.items.length > 2 && (
+            <button
+              onClick={() => setExpanded(isOpen ? null : order.id)}
+              className="flex items-center gap-1 text-xs font-semibold text-primary"
+            >
+              {isOpen
+                ? en
+                  ? 'Show less'
+                  : 'कम दिखाएं'
+                : en
+                  ? `+${order.items.length - 2} more items`
+                  : `+${order.items.length - 2} और आइटम`}
+              <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', isOpen && 'rotate-180')} />
+            </button>
+          )}
+        </div>
+
+        {/* Delivery details */}
+        {(order.delivery_address || order.phone_number) && (
+          <div className="space-y-1 border-t border-border px-4 py-3 text-xs text-muted-foreground">
+            {order.delivery_address && (
+              <p className="flex items-start gap-1.5">
+                <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
+                {order.delivery_address}
+              </p>
+            )}
+            {order.phone_number && (
+              <p className="flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5" />
+                {order.phone_number}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-muted/30 p-4">
+          <div>
+            <p className="text-xs text-muted-foreground">{en ? 'Total' : 'कुल'}</p>
+            <p className="text-lg font-bold text-primary">
+              ₹{order.total_amount.toLocaleString('en-IN')}
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => reorder(order)} className="gap-1.5">
+              <RotateCcw className="h-3.5 w-3.5" />
+              {en ? 'Reorder' : 'फिर से ऑर्डर'}
+            </Button>
+
+            {cancellable && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-1.5 text-destructive">
+                    <XCircle className="h-3.5 w-3.5" />
+                    {en ? 'Cancel' : 'रद्द करें'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {en ? 'Cancel this order?' : 'यह ऑर्डर रद्द करें?'}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {en
+                        ? 'This cannot be undone. The order moves to your past orders.'
+                        : 'यह वापस नहीं किया जा सकता। ऑर्डर पिछले ऑर्डर में चला जाएगा।'}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{en ? 'Keep order' : 'रहने दें'}</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => cancelOrder(order.id)}>
+                      {en ? 'Yes, cancel' : 'हां, रद्द करें'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+
+            {finished && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {en ? 'Remove' : 'हटाएं'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {en ? 'Remove from history?' : 'इतिहास से हटाएं?'}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {en
+                        ? 'This order will be deleted permanently.'
+                        : 'यह ऑर्डर स्थायी रूप से हटा दिया जाएगा।'}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{en ? 'Keep' : 'रहने दें'}</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => deleteOrder(order.id)}>
+                      {en ? 'Remove' : 'हटाएं'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
+        </div>
+      </article>
+    );
   };
 
   return (
-    <div className="min-h-screen">
+    /* Opaque surface: the fixed scene behind the app makes long receipt-style
+       lists hard to read, so the orders window sits on its own background. */
+    <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="px-4 lg:px-6 pt-5">
-        <BackButton />
-      </div>
-      
-      <div className="pt-8 pb-12 px-4 container mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            {language === 'en' ? 'My Orders' : 'मेरे ऑर्डर'}
+      <div className="container mx-auto max-w-3xl px-4 lg:px-6">
+        <div className="pt-5">
+          <BackButton />
+        </div>
+
+        <header className="pb-6 pt-8">
+          <h1 className="font-serif-display text-4xl text-foreground md:text-5xl">
+            {en ? 'My Orders' : 'मेरे ऑर्डर'}
           </h1>
-          <p className="text-xl text-muted-foreground">
-            {language === 'en' ? 'Track your order history' : 'अपने ऑर्डर का इतिहास देखें'}
+          <p className="mt-1 text-muted-foreground">
+            {en ? 'Track, reorder and manage your orders' : 'ट्रैक करें, दोबारा ऑर्डर करें और प्रबंधित करें'}
           </p>
+        </header>
+
+        {/* Tabs */}
+        <div className="mb-6 flex gap-1 rounded-xl border border-border bg-muted/40 p-1">
+          {(['active', 'past'] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={cn(
+                'flex-1 rounded-lg py-2 text-sm font-semibold transition-colors',
+                tab === k
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {k === 'active'
+                ? `${en ? 'Active' : 'सक्रिय'} (${activeOrders.length})`
+                : `${en ? 'Past' : 'पिछले'} (${pastOrders.length})`}
+            </button>
+          ))}
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto" />
-            <p className="text-muted-foreground mt-4">
-              {language === 'en' ? 'Loading orders...' : 'ऑर्डर लोड हो रहे हैं...'}
-            </p>
+          <div className="py-16 text-center">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
-        ) : orders.length === 0 ? (
-          <div className="text-center py-12">
-            <Package className="h-24 w-24 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-lg font-semibold text-muted-foreground mb-2">
-              {language === 'en' ? 'No orders yet' : 'अभी तक कोई ऑर्डर नहीं'}
+        ) : shown.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-card py-16 text-center">
+            <Package className="mx-auto mb-4 h-16 w-16 text-muted-foreground/25" />
+            <p className="mb-1 font-semibold text-foreground">
+              {tab === 'active'
+                ? en
+                  ? 'No active orders'
+                  : 'कोई सक्रिय ऑर्डर नहीं'
+                : en
+                  ? 'No past orders'
+                  : 'कोई पिछला ऑर्डर नहीं'}
             </p>
-            <p className="text-sm text-muted-foreground">
-              {language === 'en' 
-                ? 'Start shopping to see your orders here' 
-                : 'अपने ऑर्डर देखने के लिए खरीदारी शुरू करें'}
+            <p className="mb-5 text-sm text-muted-foreground">
+              {en ? 'Start shopping to see orders here' : 'ऑर्डर देखने के लिए खरीदारी शुरू करें'}
             </p>
+            <Button asChild>
+              <Link to="/kisan-mart">
+                <ShoppingBag className="h-4 w-4" />
+                {en ? 'Start shopping' : 'खरीदारी करें'}
+              </Link>
+            </Button>
           </div>
         ) : (
-          <div className="space-y-4 max-w-4xl mx-auto">
-            {orders.map((order) => (
-              <Card key={order.id} className="glass p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-bold text-lg text-foreground">
-                      {language === 'en' ? 'Order' : 'ऑर्डर'} #{order.order_number}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(order.created_at).toLocaleDateString(language === 'en' ? 'en-IN' : 'hi-IN', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(order.status)}
-                      <Badge variant="secondary" className="text-xs">
-                        {getStatusText(order.status)}
-                      </Badge>
-                    </div>
-                    
-                    {(order.status === 'pending' || order.status === 'accepted') && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="ml-auto text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                          >
-                            <X className="h-4 w-4 mr-1" />
-                            {language === 'en' ? 'Cancel' : 'रद्द करें'}
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              {language === 'en' ? 'Cancel Order?' : 'ऑर्डर रद्द करें?'}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {language === 'en' 
-                                ? 'Are you sure you want to cancel this order? This action cannot be undone.' 
-                                : 'क्या आप वाकई इस ऑर्डर को रद्द करना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।'}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              {language === 'en' ? 'No, keep order' : 'नहीं, ऑर्डर रखें'}
-                            </AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => handleCancelOrder(order.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              {language === 'en' ? 'Yes, cancel order' : 'हां, ऑर्डर रद्द करें'}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  {order.items.map((item: any, idx: number) => (
-                    <div key={idx} className="flex items-center gap-3 text-sm">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-12 h-12 object-contain rounded bg-white" 
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">
-                          {language === 'en' ? item.name : item.nameHi}
-                        </p>
-                        <p className="text-muted-foreground">
-                          {language === 'en' ? 'Qty' : 'मात्रा'}: {item.quantity}
-                        </p>
-                      </div>
-                      <p className="font-bold text-foreground">₹{item.price * item.quantity}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-border pt-4 flex justify-between items-center">
-                  <span className="font-semibold text-foreground">
-                    {language === 'en' ? 'Total Amount' : 'कुल राशि'}
-                  </span>
-                  <span className="text-2xl font-bold text-primary">₹{order.total_amount}</span>
-                </div>
-              </Card>
+          <div className="space-y-4 pb-28">
+            {shown.map((o) => (
+              <OrderCard key={o.id} order={o} />
             ))}
           </div>
         )}
       </div>
+
+      <CartBar />
     </div>
   );
 };

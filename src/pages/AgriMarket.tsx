@@ -42,7 +42,7 @@ const categories = [
   { id: 'pesticides', name: 'Pesticides', nameHi: 'कीटनाशक', icon: Bug, color: 'from-red-500 to-rose-600' },
 ];
 
-interface Product {
+export interface Product {
   id: number;
   name: string;
   nameHi: string;
@@ -57,7 +57,7 @@ interface Product {
   image: string;
 }
 
-const products: Product[] = [
+export const products: Product[] = [
   // Seeds
   {
     id: 1,
