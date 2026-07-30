@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCart, STORE_OFFSET, type StoreKey } from '@/contexts/CartContext';
+import { unitForKey, imageForKey } from '@/data/catalog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -114,7 +115,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
               {lines.map((l) => (
                 <div key={l.key} className="glass flex gap-3 rounded-2xl p-3">
                   <img
-                    src={l.image}
+                    src={imageForKey(l.key, l.image)}
                     alt={en ? l.name : l.nameHi}
                     className="h-16 w-16 flex-shrink-0 rounded-xl object-cover"
                   />
@@ -122,7 +123,14 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                     <p className="truncate text-sm font-semibold text-foreground">
                       {en ? l.name : l.nameHi}
                     </p>
-                    <p className="text-sm font-bold text-primary">₹{l.price}</p>
+                    <p className="flex items-baseline gap-1.5 text-sm">
+                      <span className="font-bold text-primary">₹{l.price}</span>
+                      {unitForKey(l.key, en) && (
+                        <span className="text-xs font-medium text-muted-foreground">
+                          · {unitForKey(l.key, en)}
+                        </span>
+                      )}
+                    </p>
 
                     <div className="mt-2 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1 rounded-lg border border-border">

@@ -22,7 +22,7 @@ import CartBar from '@/components/CartBar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { imageForKey, storeForKey } from '@/data/catalog';
+import { imageForKey, storeForKey, unitForKey } from '@/data/catalog';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -239,6 +239,9 @@ const Orders = () => {
                   {en ? item.name : item.name_hi ?? item.name}
                 </p>
                 <p className="text-xs text-muted-foreground">
+                  {unitForKey(item.product_id, en) && (
+                    <span className="mr-1.5">{unitForKey(item.product_id, en)} ·</span>
+                  )}
                   {en ? 'Qty' : 'मात्रा'}: {item.quantity}
                 </p>
               </div>
