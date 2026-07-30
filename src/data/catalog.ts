@@ -1,6 +1,6 @@
 import { STORE_OFFSET, cartKey } from '@/contexts/CartContext';
 import { MART_PRODUCTS } from '@/data/martProducts';
-import { products as AGRI_PRODUCTS } from '@/pages/AgriMarket';
+import { AGRI_PRODUCTS } from '@/data/agriProducts';
 
 interface CatalogEntry {
   image: string;
