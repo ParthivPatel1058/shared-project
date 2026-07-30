@@ -10,6 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import AppShell from "@/components/AppShell";
 import ClickSpark from "@/components/ui/click-spark";
+import RouteAnalytics from "@/components/RouteAnalytics";
 import { ThemeSwitchDefs } from "@/components/ui/theme-switch";
 import { useUIPrefs } from "@/hooks/useUIPrefs";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -49,6 +50,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <RouteAnalytics />
             <AuthProvider>
               <CartProvider>
               <Routes>

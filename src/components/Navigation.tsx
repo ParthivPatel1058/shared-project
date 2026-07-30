@@ -15,6 +15,7 @@ import {
   Command,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackSearch } from '@/lib/analytics';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWeather } from '@/hooks/useWeather';
@@ -62,7 +63,9 @@ const Navigation = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) navigate(`/agri-market?search=${encodeURIComponent(query.trim())}`);
+    if (!query.trim()) return;
+    trackSearch(query.trim());
+    navigate(`/agri-market?search=${encodeURIComponent(query.trim())}`);
   };
 
   const navItems = [

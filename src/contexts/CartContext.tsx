@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { trackAddToCart } from '@/lib/analytics';
 
 /**
  * Both stores number their products from 1, and the cart keys on product_id,
@@ -135,6 +136,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         image: item.image,
       };
       setLines((ls) => [...ls, line]);
+      trackAddToCart({ id: key, name: item.name, price: item.price });
       const { error } = await supabase.from('cart_items').insert({
         user_id: user.id,
         product_id: key,

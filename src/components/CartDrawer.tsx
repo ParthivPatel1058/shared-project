@@ -11,6 +11,7 @@ import { unitForKey, imageForKey } from '@/data/catalog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { trackPurchase } from '@/lib/analytics';
 
 const DELIVERY_FEE = 25;
 const FREE_DELIVERY_OVER = 500;
@@ -69,6 +70,12 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         phone_number: phone.trim(),
       });
       if (error) throw error;
+
+      trackPurchase({
+        orderNumber,
+        total: grand,
+        items: lines.map((l) => ({ id: l.key, name: l.name, price: l.price, quantity: l.quantity })),
+      });
 
       await clear();
       toast.success(
