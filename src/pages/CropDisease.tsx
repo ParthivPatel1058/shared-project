@@ -24,53 +24,112 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
 /* Shared photo-scan panel (used by Crop Detection and Disease scan)  */
 /* ------------------------------------------------------------------ */
 
+/** Shape returned by the `crop-vision` edge function. */
+interface VisionResult {
+  isPlant: boolean;
+  crop: string;
+  confidence: number;
+  summary: string;
+  advisory: string[];
+  /* crop mode */
+  stage?: string;
+  health?: string;
+  /* disease mode */
+  disease?: string;
+  severity?: string;
+  symptoms?: string;
+  treatment?: string[];
+}
+
+const HEALTH_TONE: Record<string, string> = {
+  Healthy: 'bg-primary/10 text-primary',
+  Stressed: 'bg-secondary/20 text-secondary-foreground',
+  Diseased: 'bg-destructive/10 text-destructive',
+  Unknown: 'bg-muted text-muted-foreground',
+};
+
+const SEVERITY_TONE: Record<string, string> = {
+  High: 'bg-destructive/10 text-destructive',
+  Medium: 'bg-secondary/20 text-secondary-foreground',
+  Low: 'bg-primary/10 text-primary',
+  None: 'bg-primary/10 text-primary',
+};
+
+/** Read as a data URL — the API needs the bytes, not an object URL. */
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(String(fr.result));
+    fr.onerror = () => reject(fr.error);
+    fr.readAsDataURL(file);
+  });
+}
+
 interface PhotoScanProps {
   id: string;
+  mode: 'crop' | 'disease';
   title: string;
   hint: string;
   analyzeLabel: string;
-  resultTitle: string;
-  resultBody: string;
-  resultAction?: { label: string; onClick: () => void };
 }
 
-function PhotoScan({ id, title, hint, analyzeLabel, resultTitle, resultBody, resultAction }: PhotoScanProps) {
+function PhotoScan({ id, mode, title, hint, analyzeLabel }: PhotoScanProps) {
+  const { language } = useLanguage();
+  const en = language === 'en';
+
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
-  const [analyzed, setAnalyzed] = useState(false);
+  const [result, setResult] = useState<VisionResult | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onFileSelected = (file: File | undefined) => {
+  const onFileSelected = async (file: File | undefined) => {
     if (!file || !file.type.startsWith('image/')) return;
-    const url = URL.createObjectURL(file);
-    setPreview((old) => {
-      if (old) URL.revokeObjectURL(old);
-      return url;
-    });
-    setAnalyzed(false);
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(en ? 'Photo must be under 5 MB' : 'फोटो 5 MB से कम होनी चाहिए');
+      return;
+    }
+    try {
+      setPreview(await readAsDataUrl(file));
+      setResult(null);
+    } catch {
+      toast.error(en ? 'Could not read that photo' : 'यह फोटो पढ़ी नहीं जा सकी');
+    }
   };
 
   const clearImage = () => {
-    if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
-    setAnalyzed(false);
+    setResult(null);
     if (inputRef.current) inputRef.current.value = '';
   };
 
-  const analyze = () => {
+  const analyze = async () => {
+    if (!preview) return;
     setAnalyzing(true);
-    setAnalyzed(false);
-    window.setTimeout(() => {
+    setResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('crop-vision', {
+        body: { image: preview, mode, language },
+      });
+      if (error) throw error;
+      if (!data?.result) throw new Error('empty response');
+      setResult(data.result as VisionResult);
+    } catch {
+      toast.error(
+        en ? 'Could not analyse the photo. Please try again.' : 'फोटो का विश्लेषण नहीं हो सका। दोबारा कोशिश करें।',
+      );
+    } finally {
       setAnalyzing(false);
-      setAnalyzed(true);
-    }, 1600);
+    }
   };
+
+  const pct = result ? Math.round((result.confidence ?? 0) * 100) : 0;
 
   return (
     <div className="glass p-6 md:p-8">
@@ -108,12 +167,12 @@ function PhotoScan({ id, title, hint, analyzeLabel, resultTitle, resultBody, res
             </button>
           </div>
           <div className="flex flex-col gap-4">
-            {!analyzed ? (
+            {!result ? (
               <Button onClick={analyze} disabled={analyzing} className="w-full sm:w-auto">
                 {analyzing ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Analyzing…
+                    {en ? 'Analysing…' : 'विश्लेषण हो रहा है…'}
                   </>
                 ) : (
                   <>
@@ -122,16 +181,134 @@ function PhotoScan({ id, title, hint, analyzeLabel, resultTitle, resultBody, res
                   </>
                 )}
               </Button>
+            ) : !result.isPlant ? (
+              <div className="rounded-xl border border-border bg-muted/40 p-5">
+                <p className="font-semibold text-foreground mb-1">
+                  {en ? 'No crop found in this photo' : 'इस फोटो में कोई फसल नहीं मिली'}
+                </p>
+                <p className="text-sm text-muted-foreground mb-4">{result.summary}</p>
+                <Button variant="outline" size="sm" onClick={clearImage}>
+                  {en ? 'Try another photo' : 'दूसरी फोटो आज़माएं'}
+                </Button>
+              </div>
             ) : (
-              <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
-                <p className="font-semibold text-foreground mb-1">{resultTitle}</p>
-                <p className="text-sm text-muted-foreground mb-4">{resultBody}</p>
-                {resultAction && (
-                  <Button variant="outline" size="sm" onClick={resultAction.onClick}>
-                    {resultAction.label}
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 space-y-4">
+                {/* Headline finding */}
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground mb-0.5">
+                    {mode === 'crop'
+                      ? en ? 'Crop identified' : 'पहचानी गई फसल'
+                      : en ? 'Likely diagnosis' : 'संभावित निदान'}
+                  </p>
+                  <p className="font-display text-lg font-bold text-foreground leading-tight">
+                    {mode === 'crop' ? result.crop : result.disease}
+                  </p>
+                  {mode === 'disease' && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {en ? 'On' : 'फसल'}: {result.crop}
+                    </p>
+                  )}
+                </div>
+
+                {/* Chips */}
+                <div className="flex flex-wrap gap-2">
+                  {mode === 'crop' && result.stage && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
+                      <Leaf className="h-3 w-3" />
+                      {result.stage}
+                    </span>
+                  )}
+                  {mode === 'crop' && result.health && (
+                    <span
+                      className={cn(
+                        'text-xs font-medium px-2.5 py-1 rounded-full',
+                        HEALTH_TONE[result.health] ?? HEALTH_TONE.Unknown,
+                      )}
+                    >
+                      {result.health}
+                    </span>
+                  )}
+                  {mode === 'disease' && result.severity && (
+                    <span
+                      className={cn(
+                        'text-xs font-medium px-2.5 py-1 rounded-full',
+                        SEVERITY_TONE[result.severity] ?? SEVERITY_TONE.None,
+                      )}
+                    >
+                      {en ? 'Severity' : 'गंभीरता'}: {result.severity}
+                    </span>
+                  )}
+                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
+                    {en ? 'Confidence' : 'विश्वास'} {pct}%
+                  </span>
+                </div>
+
+                <p className="text-sm text-muted-foreground">{result.summary}</p>
+
+                {mode === 'disease' && result.symptoms && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                      {en ? 'Symptoms seen' : 'दिखे लक्षण'}
+                    </p>
+                    <p className="text-sm text-foreground">{result.symptoms}</p>
+                  </div>
                 )}
+
+                {mode === 'disease' && result.treatment?.length ? (
+                  <div>
+                    <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">
+                      <FlaskConical className="h-3.5 w-3.5" />
+                      {en ? 'Treatment' : 'उपचार'}
+                    </p>
+                    <ol className="space-y-1.5">
+                      {result.treatment.map((t, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-foreground">
+                          <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 text-primary text-[11px] font-bold grid place-items-center mt-0.5">
+                            {i + 1}
+                          </span>
+                          {t}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ) : null}
+
+                {result.advisory?.length ? (
+                  <div>
+                    <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      {mode === 'crop'
+                        ? en ? 'Advisory' : 'सलाह'
+                        : en ? 'Prevent it next season' : 'अगली बार रोकथाम'}
+                    </p>
+                    <ul className="space-y-1.5">
+                      {result.advisory.map((a, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-foreground">
+                          <Leaf className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-1" />
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button variant="outline" size="sm" onClick={clearImage}>
+                    {en ? 'Scan another photo' : 'दूसरी फोटो स्कैन करें'}
+                  </Button>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/kisan-help">
+                      {en ? 'Ask the AI assistant' : 'एआई सहायक से पूछें'}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+
+                <p className="text-[11px] leading-snug text-muted-foreground border-t border-border pt-3">
+                  {en
+                    ? 'AI guidance based on one photo — confirm with your local agriculture officer before spraying.'
+                    : 'एक फोटो पर आधारित एआई सलाह — छिड़काव से पहले अपने कृषि अधिकारी से पुष्टि करें।'}
+                </p>
               </div>
             )}
           </div>
@@ -324,6 +501,7 @@ const CropDisease = () => {
           <TabsContent value="crop">
             <PhotoScan
               id="crop-detect-photo"
+              mode="crop"
               title={en ? 'Upload a photo of the crop' : 'फसल की फोटो अपलोड करें'}
               hint={
                 en
@@ -331,12 +509,6 @@ const CropDisease = () => {
                   : 'एआई साफ फोटो से फसल और उसकी वृद्धि अवस्था पहचानता है'
               }
               analyzeLabel={en ? 'Detect Crop' : 'फसल पहचानें'}
-              resultTitle={en ? 'AI crop detection coming soon' : 'एआई फसल पहचान जल्द आ रही है'}
-              resultBody={
-                en
-                  ? 'The detection model is being connected. Your photo format works — check back soon.'
-                  : 'पहचान मॉडल जोड़ा जा रहा है। आपकी फोटो सही है — जल्द वापस देखें।'
-              }
             />
           </TabsContent>
 
@@ -398,6 +570,7 @@ const CropDisease = () => {
           <TabsContent value="disease" className="space-y-10">
             <PhotoScan
               id="disease-photo"
+              mode="disease"
               title={en ? 'Upload a photo of the affected crop' : 'प्रभावित फसल की फोटो अपलोड करें'}
               hint={
                 en
@@ -405,12 +578,6 @@ const CropDisease = () => {
                   : 'प्रभावित पत्ती या पौधे की साफ, नज़दीकी फोटो सबसे अच्छी रहती है'
               }
               analyzeLabel={en ? 'Detect Disease' : 'रोग पहचानें'}
-              resultTitle={en ? 'AI disease analysis coming soon' : 'एआई रोग विश्लेषण जल्द आ रहा है'}
-              resultBody={
-                en
-                  ? 'The AI model is being connected. Meanwhile, match your crop’s symptoms in the library below.'
-                  : 'एआई मॉडल जोड़ा जा रहा है। तब तक नीचे पुस्तकालय में लक्षण मिलाएं।'
-              }
             />
 
             {/* Disease library */}

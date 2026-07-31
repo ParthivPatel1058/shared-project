@@ -32,3 +32,8 @@ enable_confirmations = false
 
 [functions.kisan-ai-chat]
 verify_jwt = false
+
+# Image analysis is only reachable from signed-in pages, and it spends Gemini
+# quota per call — so require a JWT rather than leaving it open to anyone.
+[functions.crop-vision]
+verify_jwt = true
