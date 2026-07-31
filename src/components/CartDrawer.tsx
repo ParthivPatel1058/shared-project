@@ -16,6 +16,29 @@ import { trackPurchase } from '@/lib/analytics';
 const DELIVERY_FEE = 25;
 const FREE_DELIVERY_OVER = 500;
 
+/**
+ * Best-effort GPS fix for the delivery partner's navigation link.
+ *
+ * Resolves null rather than rejecting on every failure path — no geolocation
+ * support, permission denied, or a device that never answers — so checkout is
+ * never held up by more than the timeout below.
+ */
+async function captureLocation(): Promise<{ lat: number; lng: number } | null> {
+  if (!('geolocation' in navigator)) return null;
+  try {
+    const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 60_000,
+      });
+    });
+    return { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  } catch {
+    return null;
+  }
+}
+
 interface CartDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -52,6 +75,11 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
     }
     setPlacing(true);
     try {
+      // Coordinates let the delivery partner open turn-by-turn directions.
+      // Optional: a denied or slow permission prompt must not block checkout,
+      // the typed address is what the order actually relies on.
+      const coords = await captureLocation();
+
       const orderNumber = `BX${Date.now().toString().slice(-8)}`;
       const { error } = await supabase.from('orders').insert({
         user_id: user.id,
@@ -68,6 +96,8 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         status: 'pending',
         delivery_address: address.trim(),
         phone_number: phone.trim(),
+        gps_lat: coords?.lat ?? null,
+        gps_lng: coords?.lng ?? null,
       });
       if (error) throw error;
 

@@ -6,8 +6,16 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Navigation from '@/components/Navigation';
-import { MapPin, Package, Phone, Navigation as NavIcon, CheckCircle } from 'lucide-react';
+import { MapPin, Package, Phone, Navigation as NavIcon, CheckCircle, Truck, PackageCheck } from 'lucide-react';
 import { toast } from 'sonner';
+
+/** Must stay in step with the customer-facing labels in pages/Orders.tsx. */
+const STATUS_LABEL: Record<string, { en: string; hi: string }> = {
+  pending: { en: '🔔 New', hi: '🔔 नया' },
+  accepted: { en: '✅ Accepted', hi: '✅ स्वीकृत' },
+  out_for_delivery: { en: '🚚 On the way', hi: '🚚 रास्ते में' },
+  delivered: { en: '📦 Delivered', hi: '📦 पहुँचा' },
+};
 
 interface Order {
   id: string;
@@ -75,17 +83,17 @@ const PartnerOrders = () => {
     try {
       const { error } = await supabase
         .from('orders')
-        .update({ 
+        .update({
           status: 'accepted',
-          assigned_partner: user?.id 
+          assigned_partner: user?.id
         })
         .eq('id', orderId);
 
       if (error) throw error;
 
       toast.success(
-        language === 'en' 
-          ? 'Order accepted! Starting delivery...' 
+        language === 'en'
+          ? 'Order accepted! Starting delivery...'
           : 'ऑर्डर स्वीकार किया गया! डिलीवरी शुरू हो रही है...'
       );
     } catch (error) {
@@ -93,9 +101,42 @@ const PartnerOrders = () => {
         console.error('Error accepting order:', error);
       }
       toast.error(
-        language === 'en' 
-          ? 'Failed to accept order' 
+        language === 'en'
+          ? 'Failed to accept order'
           : 'ऑर्डर स्वीकार करने में विफल'
+      );
+    }
+  };
+
+  /**
+   * Moves an order the partner already owns to its next stage. Without these
+   * the flow dead-ended at `accepted` — nothing in the app ever wrote
+   * `out_for_delivery` or `delivered`, so no order could be completed.
+   */
+  const advanceStatus = async (orderId: string, next: 'out_for_delivery' | 'delivered') => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: next })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      // A delivered order drops out of get_partner_orders, so refresh rather
+      // than waiting on a realtime event for a row we can no longer read.
+      await loadOrders();
+
+      toast.success(
+        next === 'out_for_delivery'
+          ? language === 'en' ? 'Marked as picked up' : 'उठाया गया के रूप में चिह्नित'
+          : language === 'en' ? 'Order delivered 🎉' : 'ऑर्डर डिलीवर हो गया 🎉'
+      );
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error updating order:', error);
+      }
+      toast.error(
+        language === 'en' ? 'Failed to update order' : 'ऑर्डर अपडेट करने में विफल'
       );
     }
   };
@@ -158,9 +199,8 @@ const PartnerOrders = () => {
                         {language === 'en' ? 'Order' : 'ऑर्डर'} #{order.order_number}
                       </h3>
                       <Badge variant={order.status === 'pending' ? 'default' : 'secondary'}>
-                        {order.status === 'pending' 
-                          ? (language === 'en' ? '🔔 New' : '🔔 नया')
-                          : (language === 'en' ? '✅ Accepted' : '✅ स्वीकृत')}
+                        {STATUS_LABEL[order.status]?.[language === 'en' ? 'en' : 'hi']
+                          ?? order.status}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
@@ -241,17 +281,37 @@ const PartnerOrders = () => {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 mt-4">
-                  {order.status === 'pending' ? (
-                    <Button 
+                <div className="flex flex-wrap gap-3 mt-4">
+                  {order.status === 'pending' && (
+                    <Button
                       className="flex-1 gradient-primary"
                       onClick={() => handleAcceptOrder(order.id)}
                     >
                       <CheckCircle className="mr-2 h-5 w-5" />
                       {language === 'en' ? 'Accept Order' : 'ऑर्डर स्वीकार करें'}
                     </Button>
-                  ) : null}
-                  
+                  )}
+
+                  {order.status === 'accepted' && (
+                    <Button
+                      className="flex-1 gradient-primary"
+                      onClick={() => advanceStatus(order.id, 'out_for_delivery')}
+                    >
+                      <Truck className="mr-2 h-5 w-5" />
+                      {language === 'en' ? 'Picked up' : 'सामान उठा लिया'}
+                    </Button>
+                  )}
+
+                  {order.status === 'out_for_delivery' && (
+                    <Button
+                      className="flex-1 gradient-primary"
+                      onClick={() => advanceStatus(order.id, 'delivered')}
+                    >
+                      <PackageCheck className="mr-2 h-5 w-5" />
+                      {language === 'en' ? 'Mark delivered' : 'डिलीवर हो गया'}
+                    </Button>
+                  )}
+
                   {order.gps_lat && order.gps_lng && (
                     <Button 
                       variant="outline"

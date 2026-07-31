@@ -88,7 +88,8 @@ const Orders = () => {
       return;
     }
     let active = true;
-    (async () => {
+
+    const load = async () => {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -97,9 +98,30 @@ const Orders = () => {
       if (!active) return;
       if (!error && data) setOrders(data as unknown as Order[]);
       setIsLoading(false);
-    })();
+    };
+
+    load();
+
+    // A delivery partner moves the order through accepted -> out_for_delivery
+    // -> delivered from their own device. Without this the customer would sit
+    // on a stale "Placed" badge until they reloaded the page by hand.
+    const channel = supabase
+      .channel(`my-orders-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => load(),
+      )
+      .subscribe();
+
     return () => {
       active = false;
+      supabase.removeChannel(channel);
     };
   }, [user]);
 
