@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Minus, Plus, Trash2, Loader2, PackageCheck, ShoppingCart } from 'lucide-react';
+import { Minus, Plus, Trash2, Loader2, PackageCheck, ShoppingCart, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import AddressPicker from '@/components/address/AddressPicker';
+import { useAddresses, formatAddress } from '@/hooks/useAddresses';
 import { useCart, STORE_OFFSET, type StoreKey } from '@/contexts/CartContext';
 import { unitForKey, imageForKey } from '@/data/catalog';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -55,9 +55,13 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const navigate = useNavigate();
   const en = language === 'en';
 
+  const { addresses, defaultAddress } = useAddresses();
   const [placing, setPlacing] = useState(false);
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [chosenId, setChosenId] = useState<string | null>(null);
+
+  // Fall back to the default address until the user picks another.
+  const selected = addresses.find((a) => a.id === chosenId) ?? defaultAddress;
 
   const delivery = totalPrice >= FREE_DELIVERY_OVER || totalPrice === 0 ? 0 : DELIVERY_FEE;
   const grand = totalPrice + delivery;
@@ -69,16 +73,20 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
   const placeOrder = async () => {
     if (!user || lines.length === 0) return;
-    if (!address.trim() || !phone.trim()) {
-      toast.error(en ? 'Add a delivery address and phone number' : 'पता और फ़ोन नंबर भरें');
+    if (!selected) {
+      toast.error(en ? 'Choose a delivery address first' : 'पहले डिलीवरी पता चुनें');
+      setPickerOpen(true);
       return;
     }
     setPlacing(true);
     try {
-      // Coordinates let the delivery partner open turn-by-turn directions.
-      // Optional: a denied or slow permission prompt must not block checkout,
-      // the typed address is what the order actually relies on.
-      const coords = await captureLocation();
+      // Prefer the coordinates saved with the address; only ask the device when
+      // the address was typed rather than pinned. A denied or slow permission
+      // prompt must never block checkout.
+      const coords =
+        selected.lat != null && selected.lng != null
+          ? { lat: Number(selected.lat), lng: Number(selected.lng) }
+          : await captureLocation();
 
       const orderNumber = `BX${Date.now().toString().slice(-8)}`;
       const { error } = await supabase.from('orders').insert({
@@ -94,8 +102,11 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         })),
         total_amount: grand,
         status: 'pending',
-        delivery_address: address.trim(),
-        phone_number: phone.trim(),
+        // Snapshot the address text onto the order: editing or deleting the
+        // saved address later must not rewrite where a past order went.
+        delivery_address: formatAddress(selected),
+        phone_number: selected.phone,
+        address_id: selected.id,
         gps_lat: coords?.lat ?? null,
         gps_lng: coords?.lng ?? null,
       });
@@ -209,25 +220,47 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
             {/* Checkout */}
             <div className="space-y-3 border-t border-border p-5">
-              <div className="space-y-2">
-                <Label htmlFor="addr">{en ? 'Delivery address' : 'डिलीवरी पता'}</Label>
-                <Input
-                  id="addr"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder={en ? 'Village, district, PIN' : 'गाँव, जिला, पिन'}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ph">{en ? 'Phone number' : 'फ़ोन नंबर'}</Label>
-                <Input
-                  id="ph"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  inputMode="tel"
-                  placeholder="98765 43210"
-                />
-              </div>
+              {/* Deliver-to block */}
+              {selected ? (
+                <button
+                  onClick={() => setPickerOpen(true)}
+                  className="flex w-full items-start gap-2.5 rounded-xl border border-border p-3 text-left transition-colors hover:border-primary/50"
+                >
+                  <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground">
+                        {en ? 'Deliver to' : 'यहाँ भेजें'} · {selected.label}
+                      </span>
+                      <span className="text-xs font-semibold text-primary">
+                        {en ? 'Change' : 'बदलें'}
+                      </span>
+                    </span>
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {formatAddress(selected)}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {selected.receiver_name} · {selected.phone}
+                    </span>
+                  </span>
+                </button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="h-auto w-full justify-start gap-2.5 py-3"
+                  onClick={() => setPickerOpen(true)}
+                >
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span className="text-left">
+                    <span className="block text-sm font-semibold">
+                      {en ? 'Add a delivery address' : 'डिलीवरी पता जोड़ें'}
+                    </span>
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {en ? 'Required to place the order' : 'ऑर्डर देने के लिए ज़रूरी'}
+                    </span>
+                  </span>
+                </Button>
+              )}
 
               <dl className="space-y-1 pt-1 text-sm">
                 <div className="flex justify-between">
@@ -274,6 +307,13 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           </>
         )}
       </SheetContent>
+
+      <AddressPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        selectedId={selected?.id ?? null}
+        onSelect={(a) => setChosenId(a.id)}
+      />
     </Sheet>
   );
 }

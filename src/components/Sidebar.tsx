@@ -60,6 +60,7 @@ const NAV: Item[] = [
   },
   { path: "/gov-schemes", icon: Landmark, label: { en: "Schemes", hi: "योजनाएं" } },
   { path: "/orders", icon: Package, label: { en: "Orders", hi: "ऑर्डर" }, badgeKey: "orders" },
+  { path: "/addresses", icon: MapPin, label: { en: "Addresses", hi: "पते" } },
   {
     path: "#delivery",
     icon: Truck,

@@ -23,6 +23,7 @@ import GovSchemes from "./pages/GovSchemes";
 import RoboticFarming from "./pages/RoboticFarming";
 import ShopLocator from "./pages/ShopLocator";
 import Orders from "./pages/Orders";
+import Addresses from "./pages/Addresses";
 import PartnerOrders from "./pages/PartnerOrders";
 import PartnerRegistration from "./pages/PartnerRegistration";
 import Support from "./pages/Support";
@@ -76,6 +77,7 @@ const App = () => {
                   <Route path="/robotic-farming" element={<RoboticFarming />} />
                   <Route path="/shop-locator" element={<ShopLocator />} />
                   <Route path="/orders" element={<Orders />} />
+                  <Route path="/addresses" element={<Addresses />} />
                   <Route path="/partner-orders" element={<PartnerOrders />} />
                   <Route path="/partner-registration" element={<PartnerRegistration />} />
                   <Route path="/support" element={<Support />} />

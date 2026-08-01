@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          area: string
+          city: string
+          created_at: string
+          house: string
+          id: string
+          is_default: boolean
+          label: string
+          landmark: string | null
+          lat: number | null
+          lng: number | null
+          phone: string
+          pincode: string
+          receiver_name: string
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area: string
+          city: string
+          created_at?: string
+          house: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          landmark?: string | null
+          lat?: number | null
+          lng?: number | null
+          phone: string
+          pincode: string
+          receiver_name: string
+          state: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area?: string
+          city?: string
+          created_at?: string
+          house?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          landmark?: string | null
+          lat?: number | null
+          lng?: number | null
+          phone?: string
+          pincode?: string
+          receiver_name?: string
+          state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      "BHOOMix ai": {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      booomixspace: {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -55,6 +142,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          address_id: string | null
           assigned_partner: string | null
           created_at: string
           delivery_address: string | null
@@ -70,6 +158,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          address_id?: string | null
           assigned_partner?: string | null
           created_at?: string
           delivery_address?: string | null
@@ -85,6 +174,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          address_id?: string | null
           assigned_partner?: string | null
           created_at?: string
           delivery_address?: string | null
@@ -99,7 +189,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_address_id_fkey"
+            columns: ["address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       partners: {
         Row: {
@@ -161,6 +259,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -182,10 +301,17 @@ export type Database = {
           total_amount: number
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_partner: { Args: { check_user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -312,6 +438,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

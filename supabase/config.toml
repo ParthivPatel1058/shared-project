@@ -37,3 +37,7 @@ verify_jwt = false
 # quota per call — so require a JWT rather than leaving it open to anyone.
 [functions.crop-vision]
 verify_jwt = true
+
+# Address lookup for signed-in checkout only.
+[functions.geocode]
+verify_jwt = true
