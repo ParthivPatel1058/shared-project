@@ -33,7 +33,7 @@ export default function Welcome() {
           src={heroImage}
           alt={tx('Young crop seedlings', 'नई फसल के पौधे')}
           cell={9}
-          levels={5}
+          levels={9}
           className="h-56 w-full md:h-full"
         />
 
