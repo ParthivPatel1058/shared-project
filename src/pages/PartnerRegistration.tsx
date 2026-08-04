@@ -16,7 +16,7 @@ import { Slider } from '@/components/ui/slider';
 
 const PartnerRegistration = () => {
   const { user } = useAuth();
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [hoursPerDay, setHoursPerDay] = useState([6]);
@@ -37,13 +37,13 @@ const PartnerRegistration = () => {
     e.preventDefault();
     
     if (!user) {
-      toast.error(language === 'en' ? 'Please login first' : 'कृपया पहले लॉगिन करें');
+      toast.error(tx('Please login first', 'कृपया पहले लॉगिन करें'));
       navigate('/auth/login');
       return;
     }
 
     if (!formData.full_name || !formData.phone_number || !formData.vehicle_type) {
-      toast.error(language === 'en' ? 'Please fill all fields' : 'कृपया सभी फ़ील्ड भरें');
+      toast.error(tx('Please fill all fields', 'कृपया सभी फ़ील्ड भरें'));
       return;
     }
 
@@ -62,9 +62,7 @@ const PartnerRegistration = () => {
 
       if (error) throw error;
 
-      toast.success(language === 'en' 
-        ? 'Registration successful! Welcome to BhoomiX Partners' 
-        : 'पंजीकरण सफल! BhoomiX पार्टनर्स में आपका स्वागत है'
+      toast.success(tx('Registration successful! Welcome to BhoomiX Partners', 'पंजीकरण सफल! BhoomiX पार्टनर्स में आपका स्वागत है')
       );
       
       navigate('/partner-orders');
@@ -72,14 +70,10 @@ const PartnerRegistration = () => {
       console.error('Error registering partner:', error);
       
       if (error.code === '23505') {
-        toast.error(language === 'en' 
-          ? 'You are already registered as a partner' 
-          : 'आप पहले से ही पार्टनर के रूप में पंजीकृत हैं'
+        toast.error(tx('You are already registered as a partner', 'आप पहले से ही पार्टनर के रूप में पंजीकृत हैं')
         );
       } else {
-        toast.error(language === 'en' 
-          ? 'Registration failed. Please try again.' 
-          : 'पंजीकरण विफल। कृपया पुनः प्रयास करें।'
+        toast.error(tx('Registration failed. Please try again.', 'पंजीकरण विफल। कृपया पुनः प्रयास करें।')
         );
       }
     } finally {
@@ -90,22 +84,22 @@ const PartnerRegistration = () => {
   const features = [
     {
       icon: Wallet,
-      label: language === 'en' ? 'Great Earnings' : 'अच्छी कमाई',
+      label: tx('Great Earnings', 'अच्छी कमाई'),
       delay: '0.1s'
     },
     {
       icon: Clock,
-      label: language === 'en' ? 'Flexible Hours' : 'लचीला समय',
+      label: tx('Flexible Hours', 'लचीला समय'),
       delay: '0.2s'
     },
     {
       icon: MapPin,
-      label: language === 'en' ? 'Easy Navigation' : 'आसान नेविगेशन',
+      label: tx('Easy Navigation', 'आसान नेविगेशन'),
       delay: '0.3s'
     },
     {
       icon: Zap,
-      label: language === 'en' ? 'Fast Payments' : 'तेज़ भुगतान',
+      label: tx('Fast Payments', 'तेज़ भुगतान'),
       delay: '0.4s'
     }
   ];
@@ -128,12 +122,10 @@ const PartnerRegistration = () => {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            {language === 'en' ? 'Become a Delivery Partner' : 'डिलीवरी पार्टनर बनें'}
+            {tx('Become a Delivery Partner', 'डिलीवरी पार्टनर बनें')}
           </h1>
           <p className="text-xl text-muted-foreground">
-            {language === 'en' 
-              ? 'Join our delivery network and start earning' 
-              : 'हमारे डिलीवरी नेटवर्क में शामिल हों और कमाई शुरू करें'}
+            {tx('Join our delivery network and start earning', 'हमारे डिलीवरी नेटवर्क में शामिल हों और कमाई शुरू करें')}
           </p>
         </div>
 
@@ -160,7 +152,7 @@ const PartnerRegistration = () => {
           <div className="flex items-center gap-2 mb-4">
             <Calculator className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-semibold text-foreground">
-              {language === 'en' ? 'Earnings Calculator' : 'कमाई कैलकुलेटर'}
+              {tx('Earnings Calculator', 'कमाई कैलकुलेटर')}
             </h3>
           </div>
           
@@ -168,9 +160,9 @@ const PartnerRegistration = () => {
             <div>
               <div className="flex justify-between mb-2">
                 <Label className="text-muted-foreground">
-                  {language === 'en' ? 'Hours per day' : 'प्रतिदिन घंटे'}
+                  {tx('Hours per day', 'प्रतिदिन घंटे')}
                 </Label>
-                <span className="font-bold text-primary">{hoursPerDay[0]} {language === 'en' ? 'hrs' : 'घंटे'}</span>
+                <span className="font-bold text-primary">{hoursPerDay[0]} {tx('hrs', 'घंटे')}</span>
               </div>
               <Slider
                 value={hoursPerDay}
@@ -185,7 +177,7 @@ const PartnerRegistration = () => {
             <div className="grid grid-cols-3 gap-3 pt-4">
               <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
                 <p className="text-xs text-muted-foreground mb-1">
-                  {language === 'en' ? 'Daily' : 'दैनिक'}
+                  {tx('Daily', 'दैनिक')}
                 </p>
                 <div className="flex items-center justify-center gap-1">
                   <IndianRupee className="w-4 h-4 text-primary" />
@@ -194,7 +186,7 @@ const PartnerRegistration = () => {
               </div>
               <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
                 <p className="text-xs text-muted-foreground mb-1">
-                  {language === 'en' ? 'Weekly' : 'साप्ताहिक'}
+                  {tx('Weekly', 'साप्ताहिक')}
                 </p>
                 <div className="flex items-center justify-center gap-1">
                   <IndianRupee className="w-4 h-4 text-primary" />
@@ -203,7 +195,7 @@ const PartnerRegistration = () => {
               </div>
               <div className="text-center p-3 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30">
                 <p className="text-xs text-muted-foreground mb-1">
-                  {language === 'en' ? 'Monthly' : 'मासिक'}
+                  {tx('Monthly', 'मासिक')}
                 </p>
                 <div className="flex items-center justify-center gap-1">
                   <IndianRupee className="w-4 h-4 text-primary" />
@@ -213,9 +205,7 @@ const PartnerRegistration = () => {
             </div>
 
             <p className="text-xs text-muted-foreground text-center pt-2">
-              {language === 'en' 
-                ? '* Based on avg. 2 deliveries/hour at ₹50 each' 
-                : '* औसत 2 डिलीवरी/घंटे ₹50 प्रति के आधार पर'}
+              {tx('* Based on avg. 2 deliveries/hour at ₹50 each', '* औसत 2 डिलीवरी/घंटे ₹50 प्रति के आधार पर')}
             </p>
           </div>
         </Card>
@@ -224,12 +214,12 @@ const PartnerRegistration = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="full_name">
-                {language === 'en' ? 'Full Name' : 'पूरा नाम'}
+                {tx('Full Name', 'पूरा नाम')}
               </Label>
               <Input
                 id="full_name"
                 type="text"
-                placeholder={language === 'en' ? 'Enter your full name' : 'अपना पूरा नाम दर्ज करें'}
+                placeholder={tx('Enter your full name', 'अपना पूरा नाम दर्ज करें')}
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                 required
@@ -238,12 +228,12 @@ const PartnerRegistration = () => {
 
             <div className="space-y-2">
               <Label htmlFor="phone_number">
-                {language === 'en' ? 'Phone Number' : 'फ़ोन नंबर'}
+                {tx('Phone Number', 'फ़ोन नंबर')}
               </Label>
               <Input
                 id="phone_number"
                 type="tel"
-                placeholder={language === 'en' ? 'Enter your phone number' : 'अपना फ़ोन नंबर दर्ज करें'}
+                placeholder={tx('Enter your phone number', 'अपना फ़ोन नंबर दर्ज करें')}
                 value={formData.phone_number}
                 onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                 required
@@ -252,7 +242,7 @@ const PartnerRegistration = () => {
 
             <div className="space-y-2">
               <Label htmlFor="vehicle_type">
-                {language === 'en' ? 'Vehicle Type' : 'वाहन का प्रकार'}
+                {tx('Vehicle Type', 'वाहन का प्रकार')}
               </Label>
               <Select
                 value={formData.vehicle_type}
@@ -260,23 +250,23 @@ const PartnerRegistration = () => {
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={language === 'en' ? 'Select vehicle type' : 'वाहन का प्रकार चुनें'} />
+                  <SelectValue placeholder={tx('Select vehicle type', 'वाहन का प्रकार चुनें')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="bike">
-                    {language === 'en' ? 'Bike / Motorcycle' : 'बाइक / मोटरसाइकिल'}
+                    {tx('Bike / Motorcycle', 'बाइक / मोटरसाइकिल')}
                   </SelectItem>
                   <SelectItem value="scooter">
-                    {language === 'en' ? 'Scooter' : 'स्कूटर'}
+                    {tx('Scooter', 'स्कूटर')}
                   </SelectItem>
                   <SelectItem value="car">
-                    {language === 'en' ? 'Car' : 'कार'}
+                    {tx('Car', 'कार')}
                   </SelectItem>
                   <SelectItem value="van">
-                    {language === 'en' ? 'Van / Tempo' : 'वैन / टेम्पो'}
+                    {tx('Van / Tempo', 'वैन / टेम्पो')}
                   </SelectItem>
                   <SelectItem value="bicycle">
-                    {language === 'en' ? 'Bicycle' : 'साइकिल'}
+                    {tx('Bicycle', 'साइकिल')}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -289,20 +279,20 @@ const PartnerRegistration = () => {
               disabled={isLoading}
             >
               {isLoading 
-                ? (language === 'en' ? 'Registering...' : 'पंजीकरण हो रहा है...')
-                : (language === 'en' ? 'Register as Partner' : 'पार्टनर के रूप में पंजीकरण करें')
+                ? (tx('Registering...', 'पंजीकरण हो रहा है...'))
+                : (tx('Register as Partner', 'पार्टनर के रूप में पंजीकरण करें'))
               }
             </Button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-border text-center">
             <p className="text-muted-foreground">
-              {language === 'en' ? 'Already a partner?' : 'पहले से पार्टनर हैं?'}{' '}
+              {tx('Already a partner?', 'पहले से पार्टनर हैं?')}{' '}
               <button
                 onClick={() => navigate('/partner-orders')}
                 className="text-primary font-semibold hover:underline"
               >
-                {language === 'en' ? 'Go to Dashboard' : 'डैशबोर्ड पर जाएं'}
+                {tx('Go to Dashboard', 'डैशबोर्ड पर जाएं')}
               </button>
             </p>
           </div>

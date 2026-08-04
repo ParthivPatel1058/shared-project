@@ -34,19 +34,18 @@ export default function QuantityStepper({
   className,
 }: QuantityStepperProps) {
   const { quantityOf, add, setQuantity } = useCart();
-  const { language } = useLanguage();
+  const { tx } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const en = language === 'en';
 
   const qty = quantityOf(store, productId);
 
   const requireAuth = () => {
     if (user) return true;
-    toast.error(en ? 'Please sign in to add items' : 'आइटम जोड़ने के लिए साइन इन करें', {
+    toast.error(tx('Please sign in to add items', 'आइटम जोड़ने के लिए साइन इन करें'), {
       action: {
-        label: en ? 'Sign in' : 'साइन इन',
+        label: tx('Sign in', 'साइन इन'),
         onClick: () => navigate('/auth/login?next=' + encodeURIComponent(location.pathname)),
       },
     });
@@ -59,10 +58,10 @@ export default function QuantityStepper({
     try {
       await add({ store, productId, name, nameHi, price, image });
       toast.success(
-        en ? `${name} added to cart` : `${nameHi} कार्ट में जोड़ा गया`,
+        tx('{item} added to cart', '{item} कार्ट में जोड़ा गया').replace('{item}', tx(name, nameHi)),
       );
     } catch {
-      toast.error(en ? 'Could not add to cart' : 'कार्ट में नहीं जोड़ा जा सका');
+      toast.error(tx('Could not add to cart', 'कार्ट में नहीं जोड़ा जा सका'));
     } finally {
       setBusy(false);
     }
@@ -74,7 +73,7 @@ export default function QuantityStepper({
     try {
       await setQuantity(store, productId, delta);
     } catch {
-      toast.error(en ? 'Could not update cart' : 'कार्ट अपडेट नहीं हो सका');
+      toast.error(tx('Could not update cart', 'कार्ट अपडेट नहीं हो सका'));
     } finally {
       setBusy(false);
     }
@@ -88,7 +87,7 @@ export default function QuantityStepper({
           className,
         )}
       >
-        {en ? 'Out of stock' : 'स्टॉक में नहीं'}
+        {tx('Out of stock', 'स्टॉक में नहीं')}
       </div>
     );
   }
@@ -110,7 +109,7 @@ export default function QuantityStepper({
         ) : (
           <ShoppingBag strokeWidth={2.4} className="h-4 w-4" />
         )}
-        {en ? 'Add' : 'जोड़ें'}
+        {tx('Add', 'जोड़ें')}
       </button>
     );
   }
@@ -125,7 +124,7 @@ export default function QuantityStepper({
       <button
         onClick={() => step(-1)}
         disabled={busy}
-        aria-label={en ? 'Decrease quantity' : 'मात्रा घटाएं'}
+        aria-label={tx('Decrease quantity', 'मात्रा घटाएं')}
         className="flex h-full w-11 items-center justify-center rounded-l-xl transition-colors hover:bg-black/10 active:bg-black/20 disabled:opacity-60"
       >
         <Minus strokeWidth={3} className="h-4 w-4" />
@@ -138,7 +137,7 @@ export default function QuantityStepper({
       <button
         onClick={() => step(1)}
         disabled={busy}
-        aria-label={en ? 'Increase quantity' : 'मात्रा बढ़ाएं'}
+        aria-label={tx('Increase quantity', 'मात्रा बढ़ाएं')}
         className="flex h-full w-11 items-center justify-center rounded-r-xl transition-colors hover:bg-black/10 active:bg-black/20 disabled:opacity-60"
       >
         <Plus strokeWidth={3} className="h-4 w-4" />

@@ -37,7 +37,7 @@ interface CartItem {
 }
 
 const AgriMarket = () => {
-  const { t, language } = useLanguage();
+  const { t, language, tx } = useLanguage();
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -94,9 +94,7 @@ const AgriMarket = () => {
 
   const addToCart = async (product: Product) => {
     if (!user) {
-      toast.error(language === 'en' 
-        ? 'Please login to add items to cart' 
-        : 'कार्ट में आइटम जोड़ने के लिए कृपया लॉगिन करें'
+      toast.error(tx('Please login to add items to cart', 'कार्ट में आइटम जोड़ने के लिए कृपया लॉगिन करें')
       );
       return;
     }
@@ -150,9 +148,7 @@ const AgriMarket = () => {
       );
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error(language === 'en' 
-        ? 'Failed to add item to cart' 
-        : 'कार्ट में आइटम जोड़ने में विफल'
+      toast.error(tx('Failed to add item to cart', 'कार्ट में आइटम जोड़ने में विफल')
       );
     }
   };
@@ -184,9 +180,7 @@ const AgriMarket = () => {
       ));
     } catch (error) {
       console.error('Error updating cart:', error);
-      toast.error(language === 'en' 
-        ? 'Failed to update cart' 
-        : 'कार्ट अपडेट करने में विफल'
+      toast.error(tx('Failed to update cart', 'कार्ट अपडेट करने में विफल')
       );
     }
   };
@@ -204,12 +198,10 @@ const AgriMarket = () => {
       if (error) throw error;
 
       setCartItems(cartItems.filter(item => item.id !== id));
-      toast.success(language === 'en' ? 'Item removed from cart' : 'कार्ट से आइटम हटाया गया');
+      toast.success(tx('Item removed from cart', 'कार्ट से आइटम हटाया गया'));
     } catch (error) {
       console.error('Error removing from cart:', error);
-      toast.error(language === 'en' 
-        ? 'Failed to remove item' 
-        : 'आइटम हटाने में विफल'
+      toast.error(tx('Failed to remove item', 'आइटम हटाने में विफल')
       );
     }
   };
@@ -237,7 +229,7 @@ const AgriMarket = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder={language === 'en' ? 'Search products...' : 'उत्पाद खोजें...'}
+                placeholder={tx('Search products...', 'उत्पाद खोजें...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-12 rounded-full glass border-primary/20"
@@ -263,7 +255,7 @@ const AgriMarket = () => {
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <div className="font-semibold text-foreground text-sm">
-                  {language === 'en' ? category.name : category.nameHi}
+                  {tx(category.name, category.nameHi)}
                 </div>
               </button>
             );
@@ -282,7 +274,7 @@ const AgriMarket = () => {
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <img 
                     src={product.image} 
-                    alt={language === 'en' ? product.name : product.nameHi}
+                    alt={tx(product.name, product.nameHi)}
                     className="w-24 h-24 object-cover rounded-2xl shadow-lg"
                   />
                   <div className="text-right">
@@ -291,18 +283,18 @@ const AgriMarket = () => {
                       className={product.inStock ? "btn-liquid-glass border-0" : ""}
                     >
                       {product.inStock 
-                        ? (language === 'en' ? 'In Stock' : 'उपलब्ध')
-                        : (language === 'en' ? 'Out of Stock' : 'स्टॉक खत्म')}
+                        ? (tx('In Stock', 'उपलब्ध'))
+                        : (tx('Out of Stock', 'स्टॉक खत्म'))}
                     </Badge>
                   </div>
                 </div>
                 
                 <CardTitle className="text-xl leading-tight">
-                  {language === 'en' ? product.name : product.nameHi}
+                  {tx(product.name, product.nameHi)}
                 </CardTitle>
                 
                 <CardDescription className="text-sm line-clamp-2">
-                  {language === 'en' ? product.description : product.descriptionHi}
+                  {tx(product.description, product.descriptionHi)}
                 </CardDescription>
               </CardHeader>
               
@@ -321,7 +313,7 @@ const AgriMarket = () => {
                     ))}
                   </div>
                   <span className="text-muted-foreground ml-2">
-                    {product.rating} ({product.reviews} {language === 'en' ? 'reviews' : 'समीक्षा'})
+                    {product.rating} ({product.reviews} {tx('reviews', 'समीक्षा')})
                   </span>
                 </div>
 
@@ -348,7 +340,7 @@ const AgriMarket = () => {
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {language === 'en' ? 'No products found' : 'कोई उत्पाद नहीं मिला'}
+              {tx('No products found', 'कोई उत्पाद नहीं मिला')}
             </p>
           </div>
         )}

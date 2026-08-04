@@ -3,8 +3,7 @@ import BackButton from '@/components/BackButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ExternalLink, Building2, MapPin } from 'lucide-react';
 const GovSchemes = () => {
-  const { language } = useLanguage();
-  const en = language === 'en';
+  const { tx } = useLanguage();
   const centralSchemes = [{
     name: 'PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)',
     description: '₹6,000 annual income support to all farmer families in 3 equal installments',
@@ -265,12 +264,10 @@ const GovSchemes = () => {
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="max-w-3xl pb-10">
           <h1 className="font-serif-display mb-3 text-4xl text-foreground md:text-5xl lg:text-6xl">
-            {en ? 'Government Schemes' : 'सरकारी योजनाएं'}
+            {tx('Government Schemes', 'सरकारी योजनाएं')}
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-            {en
-              ? 'Central and state schemes for farmers — eligibility, benefits, and direct links to apply.'
-              : 'किसानों के लिए केंद्र और राज्य की योजनाएं — पात्रता, लाभ और आवेदन के सीधे लिंक।'}
+            {tx('Central and state schemes for farmers — eligibility, benefits, and direct links to apply.', 'किसानों के लिए केंद्र और राज्य की योजनाएं — पात्रता, लाभ और आवेदन के सीधे लिंक।')}
           </p>
         </div>
 
@@ -278,27 +275,27 @@ const GovSchemes = () => {
         <div className="mb-16">
           <h2 className="text-3xl font-bold mb-8 text-foreground flex items-center gap-3">
             <Building2 className="h-8 w-8 text-primary" />
-            {en ? 'Central Government Schemes' : 'केंद्र सरकार की योजनाएं'}
+            {tx('Central Government Schemes', 'केंद्र सरकार की योजनाएं')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {centralSchemes.map((scheme, idx) => <div key={idx} className="glass rounded-2xl p-6 hover:shadow-xl transition-all">
                 <h3 className="text-xl font-bold text-foreground mb-3">{scheme.name}</h3>
-                <p className="text-muted-foreground mb-4 text-sm">{en ? scheme.description : (scheme as any).descriptionHi ?? scheme.description}</p>
+                <p className="text-muted-foreground mb-4 text-sm">{tx(scheme.description, (scheme as any).descriptionHi ?? scheme.description)}</p>
                 
                 <div className="space-y-2 mb-4">
                   <div>
-                    <p className="text-sm font-semibold text-primary">{en ? 'Eligibility:' : 'पात्रता:'}</p>
-                    <p className="text-sm text-muted-foreground">{en ? scheme.eligibility : (scheme as any).eligibilityHi ?? scheme.eligibility}</p>
+                    <p className="text-sm font-semibold text-primary">{tx('Eligibility:', 'पात्रता:')}</p>
+                    <p className="text-sm text-muted-foreground">{tx(scheme.eligibility, (scheme as any).eligibilityHi ?? scheme.eligibility)}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-primary">{en ? 'Benefits:' : 'लाभ:'}</p>
-                    <p className="text-sm text-muted-foreground">{en ? scheme.benefits : (scheme as any).benefitsHi ?? scheme.benefits}</p>
+                    <p className="text-sm font-semibold text-primary">{tx('Benefits:', 'लाभ:')}</p>
+                    <p className="text-sm text-muted-foreground">{tx(scheme.benefits, (scheme as any).benefitsHi ?? scheme.benefits)}</p>
                   </div>
                 </div>
                 
                 <a href={scheme.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-semibold">
                   <ExternalLink className="h-4 w-4" />
-                  {en ? 'Apply Now' : 'अभी आवेदन करें'}
+                  {tx('Apply Now', 'अभी आवेदन करें')}
                 </a>
               </div>)}
           </div>
@@ -308,7 +305,7 @@ const GovSchemes = () => {
         <div>
           <h2 className="text-3xl font-bold mb-8 text-foreground flex items-center gap-3">
             <MapPin className="h-8 w-8 text-primary" />
-            {en ? 'State Government Schemes' : 'राज्य सरकार की योजनाएं'}
+            {tx('State Government Schemes', 'राज्य सरकार की योजनाएं')}
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             {stateSchemes.map((stateData, idx) => <div key={idx} className="glass rounded-2xl p-6">
@@ -322,7 +319,7 @@ const GovSchemes = () => {
                       <p className="text-sm text-muted-foreground mb-3">{scheme.benefit}</p>
                       <a href={scheme.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-semibold">
                         <ExternalLink className="h-4 w-4" />
-                        {en ? 'Apply Now' : 'अभी आवेदन करें'}
+                        {tx('Apply Now', 'अभी आवेदन करें')}
                       </a>
                     </div>)}
                 </div>

@@ -50,7 +50,7 @@ const FEATURES: Feature[] = [
 ];
 
 const Index = () => {
-  const { t, language } = useLanguage();
+  const { t, language, tx } = useLanguage();
   const navigate = useNavigate();
   const en = language === 'en';
 
@@ -64,17 +64,17 @@ const Index = () => {
           <div className="max-w-3xl">
             <Reveal immediate delay={0.05} distance={16}>
               <span className="eyebrow text-white/70">
-                {en ? 'Tools & advisory for every farming decision' : 'हर कृषि निर्णय के लिए उपकरण और सलाह'}
+                {tx('Tools & advisory for every farming decision', 'हर कृषि निर्णय के लिए उपकरण और सलाह')}
               </span>
             </Reveal>
 
             <h1 className="font-serif-display uppercase text-[clamp(3rem,10vw,9rem)] text-white mt-6 mb-3 drop-shadow-[0_2px_30px_rgba(0,0,0,0.45)]">
               <RevealWords
                 immediate
-                key={en ? 'en' : 'hi'}
-                text={en ? `Grow
-Smarter` : `स्मार्ट
-खेती`}
+                key={language}
+                text={tx(`Grow
+Smarter`, `स्मार्ट
+खेती`)}
                 delay={0.15}
                 stagger={0.14}
               />
@@ -85,7 +85,7 @@ Smarter` : `स्मार्ट
                 className="text-gold italic mb-9"
                 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.4rem,3vw,2.4rem)', lineHeight: 1.1 }}
               >
-                {en ? 'with BhoomiX' : 'BhoomiX के साथ'}
+                {tx('with BhoomiX', 'BhoomiX के साथ')}
               </p>
             </Reveal>
 
@@ -97,12 +97,12 @@ Smarter` : `स्मार्ट
 
             <Reveal immediate className="flex flex-wrap items-center gap-4" delay={0.8}>
               <LiquidMetalButton
-                width={en ? 186 : 168}
-                label={en ? 'Scan Crop Disease' : 'फसल रोग स्कैन'}
+                width={language === 'en' ? 186 : 168}
+                label={tx('Scan Crop Disease', 'फसल रोग स्कैन')}
                 onClick={() => navigate('/crop-disease')}
               />
               <InteractiveHoverButton
-                text={en ? 'Explore Market' : 'बाज़ार देखें'}
+                text={tx('Explore Market', 'बाज़ार देखें')}
                 onClick={() => navigate('/agri-market')}
               />
             </Reveal>
@@ -115,12 +115,10 @@ Smarter` : `स्मार्ट
                 className="text-white text-2xl mb-2"
                 style={{ fontFamily: 'var(--font-serif)', lineHeight: 1.15 }}
               >
-                {en ? 'Trusted by 25,000+ farmers' : '25,000+ किसानों का भरोसा'}
+                {tx('Trusted by 25,000+ farmers', '25,000+ किसानों का भरोसा')}
               </p>
               <p className="text-sm text-white/70 leading-relaxed">
-                {en
-                  ? 'AI crop diagnosis, live mandi prices, and direct market access — across India.'
-                  : 'AI फसल निदान, लाइव मंडी भाव और सीधी बाज़ार पहुँच — पूरे भारत में।'}
+                {tx('AI crop diagnosis, live mandi prices, and direct market access — across India.', 'AI फसल निदान, लाइव मंडी भाव और सीधी बाज़ार पहुँच — पूरे भारत में।')}
               </p>
             </div>
           </Reveal>
@@ -133,15 +131,19 @@ Smarter` : `स्मार्ट
           </div>
 
           {/* Premium gooey quick-nav */}
-          <Reveal className="mt-14 flex justify-center" delay={0.05}>
-            <div className="glass px-2 py-1.5 !rounded-full">
+          {/*
+            Five pills do not fit a phone screen. Scroll the strip itself rather
+            than letting it push the whole page sideways.
+          */}
+          <Reveal className="mt-14 flex justify-center overflow-x-auto px-4" delay={0.05}>
+            <div className="glass shrink-0 px-2 py-1.5 !rounded-full">
               <GooeyNav
                 items={[
-                  { label: en ? 'Crop AI' : 'फसल एआई', href: '/crop-disease' },
-                  { label: en ? 'Market' : 'बाज़ार', href: '/agri-market' },
-                  { label: en ? 'Kisan Mart' : 'किसान मार्ट', href: '/kisan-mart' },
-                  { label: en ? 'Advisory' : 'सलाह', href: '/kisan-help' },
-                  { label: en ? 'Schemes' : 'योजनाएं', href: '/gov-schemes' },
+                  { label: tx('Crop AI', 'फसल एआई'), href: '/crop-disease' },
+                  { label: tx('Market', 'बाज़ार'), href: '/agri-market' },
+                  { label: tx('Kisan Mart', 'किसान मार्ट'), href: '/kisan-mart' },
+                  { label: tx('Advisory', 'सलाह'), href: '/kisan-help' },
+                  { label: tx('Schemes', 'योजनाएं'), href: '/gov-schemes' },
                 ]}
                 particleCount={15}
                 particleDistances={[90, 10]}
@@ -159,12 +161,12 @@ Smarter` : `स्मार्ट
           {/* Feature gallery — hover-reveal 3×3 grid */}
           <section className="mt-12 mb-8">
             <GalleryHoverGrid
-              heading={en ? 'Everything you need' : 'आपकी हर ज़रूरत'}
-              subheading={en ? 'From seed to sale — explore every tool in one place.' : 'बीज से बिक्री तक — हर टूल एक ही जगह।'}
+              heading={tx('Everything you need', 'आपकी हर ज़रूरत')}
+              subheading={tx('From seed to sale — explore every tool in one place.', 'बीज से बिक्री तक — हर टूल एक ही जगह।')}
               items={FEATURES.map((f) => ({
                 id: f.href,
-                title: en ? f.title : f.titleHi,
-                summary: en ? f.description : f.descriptionHi,
+                title: tx(f.title, f.titleHi),
+                summary: tx(f.description, f.descriptionHi),
                 url: f.href,
                 image: f.img,
               }))}

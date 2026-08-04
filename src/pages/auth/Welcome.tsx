@@ -7,14 +7,14 @@ import GlassOrb from '@/components/GlassOrb';
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, tx } = useLanguage();
   const en = language === 'en';
 
   const features = [
-    { icon: Leaf, label: en ? 'Organic Farming' : 'जैविक खेती', gradient: 'gradient-primary', delay: '0.1s' },
-    { icon: ShoppingCart, label: en ? 'Kisan Mart' : 'किसान मार्ट', gradient: 'gradient-secondary', delay: '0.2s' },
-    { icon: Bot, label: en ? 'AI Assistant' : 'AI सहायक', gradient: 'gradient-accent', delay: '0.3s' },
-    { icon: TrendingUp, label: en ? 'Market Prices' : 'बाजार मूल्य', gradient: 'gradient-primary', delay: '0.4s' },
+    { icon: Leaf, label: tx('Organic Farming', 'जैविक खेती'), gradient: 'gradient-primary', delay: '0.1s' },
+    { icon: ShoppingCart, label: tx('Kisan Mart', 'किसान मार्ट'), gradient: 'gradient-secondary', delay: '0.2s' },
+    { icon: Bot, label: tx('AI Assistant', 'AI सहायक'), gradient: 'gradient-accent', delay: '0.3s' },
+    { icon: TrendingUp, label: tx('Market Prices', 'बाजार मूल्य'), gradient: 'gradient-primary', delay: '0.4s' },
   ];
 
   return (
@@ -22,11 +22,11 @@ export default function Welcome() {
       {/* Language Switcher — liquid glass pill */}
       <div className="absolute top-6 right-6 z-10">
         <button
-          onClick={() => setLanguage(en ? 'hi' : 'en')}
+          onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
           className="glass flex items-center gap-2 px-4 py-2 !rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
         >
           <Globe className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium">{en ? 'हिंदी' : 'English'}</span>
+          <span className="text-sm font-medium">{tx('हिंदी', 'English')}</span>
         </button>
       </div>
 
@@ -50,7 +50,7 @@ export default function Welcome() {
         <div className="text-center mb-8">
           <h1 className="font-display text-4xl font-extrabold text-gradient mb-2">BhoomiX</h1>
           <p className="text-muted-foreground">
-            {en ? 'Your farming companion' : 'आपका खेती साथी'}
+            {tx('Your farming companion', 'आपका खेती साथी')}
           </p>
         </div>
 
@@ -82,17 +82,17 @@ export default function Welcome() {
             className="group w-full h-12 text-base font-semibold glow-primary shine"
             size="lg"
           >
-            {en ? 'Get Started' : 'शुरू करें'}
+            {tx('Get Started', 'शुरू करें')}
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            {en ? 'Already have an account?' : 'पहले से खाता है?'}{' '}
+            {tx('Already have an account?', 'पहले से खाता है?')}{' '}
             <button
               onClick={() => navigate('/auth/login')}
               className="text-primary font-semibold hover:underline"
             >
-              {en ? 'Sign In' : 'साइन इन करें'}
+              {tx('Sign In', 'साइन इन करें')}
             </button>
           </p>
         </div>

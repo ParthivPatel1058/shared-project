@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import LanguagePicker from '@/components/LanguagePicker';
+import { LANGUAGE_MAP } from '@/i18n/languages';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUIPrefs } from '@/hooks/useUIPrefs';
 import Navigation from '@/components/Navigation';
@@ -32,7 +34,7 @@ import {
 } from 'lucide-react';
 
 const Settings = () => {
-  const { t, language, setLanguage } = useLanguage();
+  const { t, language, setLanguage, tx } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { prefs, set, reset } = useUIPrefs();
   const en = language === 'en';
@@ -94,7 +96,7 @@ const Settings = () => {
                     <Palette className="h-6 w-6 text-primary" />
                     {t('appearance')}
                   </CardTitle>
-                  <CardDescription>{en ? 'Customize how BhoomiX looks and feels' : 'BhoomiX का रूप और अनुभव अनुकूलित करें'}</CardDescription>
+                  <CardDescription>{tx('Customize how BhoomiX looks and feels', 'BhoomiX का रूप और अनुभव अनुकूलित करें')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Theme Toggle */}
@@ -134,30 +136,21 @@ const Settings = () => {
                       <Globe className="h-5 w-5" />
                       {t('language')}
                     </Label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => setLanguage('en')}
-                        className={`glass rounded-2xl p-6 border-2 transition-all ${
-                          language === 'en'
-                            ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <p className="mb-2 text-2xl font-bold tracking-widest text-primary">EN</p>
-                        <p className="font-semibold">{t('english')}</p>
-                      </button>
-                      <button
-                        onClick={() => setLanguage('hi')}
-                        className={`glass rounded-2xl p-6 border-2 transition-all ${
-                          language === 'hi'
-                            ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <p className="mb-2 text-2xl font-bold tracking-widest text-primary">हिं</p>
-                        <p className="font-semibold">{t('hindi')}</p>
-                      </button>
-                    </div>
+                    <LanguagePicker
+                      trigger={
+                        <button className="glass flex w-full items-center justify-between gap-4 rounded-2xl border-2 border-primary/40 p-6 text-left transition-all hover:border-primary">
+                          <span>
+                            <span className="mb-1 block text-2xl font-bold text-primary">
+                              {LANGUAGE_MAP[language]?.native ?? language}
+                            </span>
+                            <span className="block text-sm text-muted-foreground">
+                              {tx('Tap to change — 23 languages available', 'बदलने के लिए टैप करें — 23 भाषाएँ उपलब्ध')}
+                            </span>
+                          </span>
+                          <Globe className="h-6 w-6 flex-shrink-0 text-primary" />
+                        </button>
+                      }
+                    />
                   </div>
 
                   <Separator />
@@ -166,7 +159,7 @@ const Settings = () => {
                   <div className="space-y-3">
                     <Label className="flex items-center gap-2 text-lg font-semibold">
                       <Sparkles className="h-5 w-5" />
-                      {en ? 'Interface' : 'इंटरफ़ेस'}
+                      {tx('Interface', 'इंटरफ़ेस')}
                     </Label>
 
                     {[
@@ -184,9 +177,9 @@ const Settings = () => {
                             <RowIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                             <div className="min-w-0 space-y-0.5">
                               <Label htmlFor={row.key} className="cursor-pointer">
-                                {en ? row.en : row.hi}
+                                {tx(row.en, row.hi)}
                               </Label>
-                              <p className="text-sm text-muted-foreground">{en ? row.dEn : row.dHi}</p>
+                              <p className="text-sm text-muted-foreground">{tx(row.dEn, row.dHi)}</p>
                             </div>
                           </div>
                           <Switch
@@ -200,7 +193,7 @@ const Settings = () => {
 
                     <Button variant="outline" onClick={reset} className="mt-2 gap-2">
                       <RotateCcw className="h-4 w-4" />
-                      {en ? 'Reset to defaults' : 'डिफ़ॉल्ट पर रीसेट करें'}
+                      {tx('Reset to defaults', 'डिफ़ॉल्ट पर रीसेट करें')}
                     </Button>
                   </div>
                 </CardContent>
@@ -327,7 +320,7 @@ const Settings = () => {
                       <li>✅ AI-powered crop disease detection</li>
                       <li>✅ Quality agricultural products marketplace</li>
                       <li>✅ Quick grocery delivery</li>
-                      <li>✅ Multi-language support (English & Hindi)</li>
+                      <li>✅ Multi-language support (23 Indian languages)</li>
                       <li>✅ Weather updates and farming tips</li>
                       <li>✅ Government schemes information</li>
                     </ul>

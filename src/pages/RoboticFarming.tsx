@@ -5,8 +5,7 @@ import { Bot, Cog, Wrench, MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 const RoboticFarming = () => {
   const {
-    t, language
-  } = useLanguage();
+    t, language, tx } = useLanguage();
   
   const robotsByState = [{
     state: 'Punjab',
@@ -302,10 +301,10 @@ const RoboticFarming = () => {
       <div className="pt-8 pb-12 px-4 container mx-auto">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            {language === 'en' ? 'Agricultural Robotics' : 'कृषि रोबोटिक्स'}
+            {tx('Agricultural Robotics', 'कृषि रोबोटिक्स')}
           </h1>
           <p className="text-xl text-muted-foreground">
-            {language === 'en' ? 'Modern Agricultural Machinery & Automation' : 'आधुनिक कृषि मशीनरी और स्वचालन'}
+            {tx('Modern Agricultural Machinery & Automation', 'आधुनिक कृषि मशीनरी और स्वचालन')}
           </p>
         </div>
 

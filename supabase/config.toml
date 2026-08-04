@@ -41,3 +41,7 @@ verify_jwt = true
 # Address lookup for signed-in checkout only.
 [functions.geocode]
 verify_jwt = true
+
+# UI translation runs before sign-in (the welcome screen is localised too).
+[functions.translate]
+verify_jwt = false

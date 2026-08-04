@@ -78,7 +78,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         .select('*')
         .eq('user_id', user.id);
       if (!active) return;
-      if (!error && data) {
+      if (error) {
+        // Leave whatever is on screen rather than blanking the cart: showing an
+        // empty cart on a failed read looks like the items were lost.
+        console.error('cart load failed', error.message);
+      } else if (data) {
         setLines(
           data.map((r) => ({
             key: r.product_id,

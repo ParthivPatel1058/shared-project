@@ -50,7 +50,7 @@ interface CartDrawerProps {
  */
 export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const { lines, totalItems, totalPrice, setQuantity, remove, clear } = useCart();
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const en = language === 'en';
@@ -74,7 +74,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const placeOrder = async () => {
     if (!user || lines.length === 0) return;
     if (!selected) {
-      toast.error(en ? 'Choose a delivery address first' : 'पहले डिलीवरी पता चुनें');
+      toast.error(tx('Choose a delivery address first', 'पहले डिलीवरी पता चुनें'));
       setPickerOpen(true);
       return;
     }
@@ -120,12 +120,12 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
       await clear();
       toast.success(
-        en ? `Order ${orderNumber} placed!` : `ऑर्डर ${orderNumber} दर्ज हो गया!`,
+        tx('Order {id} placed!', 'ऑर्डर {id} दर्ज हो गया!').replace('{id}', orderNumber),
       );
       onOpenChange(false);
       navigate('/orders');
     } catch (e) {
-      toast.error(en ? 'Could not place the order' : 'ऑर्डर दर्ज नहीं हो सका');
+      toast.error(tx('Could not place the order', 'ऑर्डर दर्ज नहीं हो सका'));
     } finally {
       setPlacing(false);
     }
@@ -137,7 +137,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         <SheetHeader className="border-b border-border p-5">
           <SheetTitle className="flex items-center gap-2 text-xl">
             <ShoppingCart className="h-5 w-5 text-primary" />
-            {en ? 'Your cart' : 'आपका कार्ट'}
+            {tx('Your cart', 'आपका कार्ट')}
             {totalItems > 0 && (
               <span className="rounded-full accent-solid px-2 py-0.5 text-xs font-bold text-white">
                 {totalItems}
@@ -150,10 +150,10 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
             <ShoppingCart className="h-12 w-12 text-muted-foreground/40" />
             <p className="font-semibold text-foreground">
-              {en ? 'Your cart is empty' : 'आपका कार्ट खाली है'}
+              {tx('Your cart is empty', 'आपका कार्ट खाली है')}
             </p>
             <p className="text-sm text-muted-foreground">
-              {en ? 'Add items from the market to get started.' : 'शुरू करने के लिए बाज़ार से आइटम जोड़ें।'}
+              {tx('Add items from the market to get started.', 'शुरू करने के लिए बाज़ार से आइटम जोड़ें।')}
             </p>
           </div>
         ) : (
@@ -164,18 +164,18 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <div key={l.key} className="glass flex gap-3 rounded-2xl p-3">
                   <img
                     src={imageForKey(l.key, l.image)}
-                    alt={en ? l.name : l.nameHi}
+                    alt={tx(l.name, l.nameHi)}
                     className="h-16 w-16 flex-shrink-0 rounded-xl object-cover"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-foreground">
-                      {en ? l.name : l.nameHi}
+                      {tx(l.name, l.nameHi)}
                     </p>
                     <p className="flex items-baseline gap-1.5 text-sm">
                       <span className="font-bold text-primary">₹{l.price}</span>
-                      {unitForKey(l.key, en) && (
+                      {unitForKey(l.key, tx) && (
                         <span className="text-xs font-medium text-muted-foreground">
-                          · {unitForKey(l.key, en)}
+                          · {unitForKey(l.key, tx)}
                         </span>
                       )}
                     </p>
@@ -184,7 +184,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                       <div className="flex items-center gap-1 rounded-lg border border-border">
                         <button
                           onClick={() => setQuantity(storeOf(l.key), productIdOf(l.key), -1)}
-                          aria-label={en ? 'Decrease' : 'घटाएं'}
+                          aria-label={tx('Decrease', 'घटाएं')}
                           className="flex h-8 w-8 items-center justify-center rounded-l-lg hover:bg-foreground/[0.06]"
                         >
                           <Minus strokeWidth={2.5} className="h-3.5 w-3.5" />
@@ -194,7 +194,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                         </span>
                         <button
                           onClick={() => setQuantity(storeOf(l.key), productIdOf(l.key), 1)}
-                          aria-label={en ? 'Increase' : 'बढ़ाएं'}
+                          aria-label={tx('Increase', 'बढ़ाएं')}
                           className="flex h-8 w-8 items-center justify-center rounded-r-lg hover:bg-foreground/[0.06]"
                         >
                           <Plus strokeWidth={2.5} className="h-3.5 w-3.5" />
@@ -207,7 +207,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
                       <button
                         onClick={() => remove(l.key)}
-                        aria-label={en ? 'Remove item' : 'हटाएं'}
+                        aria-label={tx('Remove item', 'हटाएं')}
                         className="text-muted-foreground transition-colors hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -230,10 +230,10 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-foreground">
-                        {en ? 'Deliver to' : 'यहाँ भेजें'} · {selected.label}
+                        {tx('Deliver to', 'यहाँ भेजें')} · {selected.label}
                       </span>
                       <span className="text-xs font-semibold text-primary">
-                        {en ? 'Change' : 'बदलें'}
+                        {tx('Change', 'बदलें')}
                       </span>
                     </span>
                     <span className="mt-0.5 block truncate text-xs text-muted-foreground">
@@ -253,10 +253,10 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   <MapPin className="h-4 w-4 text-primary" />
                   <span className="text-left">
                     <span className="block text-sm font-semibold">
-                      {en ? 'Add a delivery address' : 'डिलीवरी पता जोड़ें'}
+                      {tx('Add a delivery address', 'डिलीवरी पता जोड़ें')}
                     </span>
                     <span className="block text-xs font-normal text-muted-foreground">
-                      {en ? 'Required to place the order' : 'ऑर्डर देने के लिए ज़रूरी'}
+                      {tx('Required to place the order', 'ऑर्डर देने के लिए ज़रूरी')}
                     </span>
                   </span>
                 </Button>
@@ -264,14 +264,14 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
               <dl className="space-y-1 pt-1 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-muted-foreground">{en ? 'Items' : 'आइटम'}</dt>
+                  <dt className="text-muted-foreground">{tx('Items', 'आइटम')}</dt>
                   <dd className="font-medium">₹{totalPrice.toLocaleString('en-IN')}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-muted-foreground">{en ? 'Delivery' : 'डिलीवरी'}</dt>
+                  <dt className="text-muted-foreground">{tx('Delivery', 'डिलीवरी')}</dt>
                   <dd className="font-medium">
                     {delivery === 0 ? (
-                      <span className="text-primary">{en ? 'FREE' : 'मुफ़्त'}</span>
+                      <span className="text-primary">{tx('FREE', 'मुफ़्त')}</span>
                     ) : (
                       `₹${delivery}`
                     )}
@@ -285,7 +285,7 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   </p>
                 )}
                 <div className="flex justify-between border-t border-border pt-2 text-base">
-                  <dt className="font-bold">{en ? 'Total' : 'कुल'}</dt>
+                  <dt className="font-bold">{tx('Total', 'कुल')}</dt>
                   <dd className="font-bold text-primary">₹{grand.toLocaleString('en-IN')}</dd>
                 </div>
               </dl>
@@ -294,12 +294,12 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 {placing ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {en ? 'Placing order…' : 'ऑर्डर हो रहा है…'}
+                    {tx('Placing order…', 'ऑर्डर हो रहा है…')}
                   </>
                 ) : (
                   <>
                     <PackageCheck className="h-4 w-4" />
-                    {en ? 'Place order' : 'ऑर्डर करें'}
+                    {tx('Place order', 'ऑर्डर करें')}
                   </>
                 )}
               </Button>

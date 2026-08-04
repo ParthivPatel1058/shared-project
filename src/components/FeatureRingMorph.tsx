@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +26,7 @@ interface FlipCardProps {
 }
 
 function FlipCard({ item, index, en, target, onSelect }: FlipCardProps) {
+  const { tx } = useLanguage();
   return (
     <motion.div
       animate={{
@@ -56,7 +58,7 @@ function FlipCard({ item, index, en, target, onSelect }: FlipCardProps) {
           className="absolute inset-0 h-full w-full overflow-hidden rounded-xl shadow-lg ring-1 ring-white/20 bg-white/5"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <img src={item.img} alt={en ? item.title : item.titleHi} className="h-full w-full object-cover" />
+          <img src={item.img} alt={tx(item.title, item.titleHi)} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-transparent" />
         </div>
 
@@ -66,10 +68,10 @@ function FlipCard({ item, index, en, target, onSelect }: FlipCardProps) {
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <p className="text-[7px] font-bold text-white/80 uppercase tracking-widest mb-1">
-            {en ? item.cta : item.ctaHi}
+            {tx(item.cta, item.ctaHi)}
           </p>
           <p className="text-[9px] font-semibold text-white leading-tight">
-            {en ? item.title : item.titleHi}
+            {tx(item.title, item.titleHi)}
           </p>
         </div>
       </motion.div>
@@ -86,6 +88,7 @@ interface FeatureRingMorphProps {
 }
 
 export default function FeatureRingMorph({ items, en }: FeatureRingMorphProps) {
+  const { tx } = useLanguage();
   const navigate = useNavigate();
   const total = items.length;
 
@@ -219,7 +222,7 @@ export default function FeatureRingMorph({ items, en }: FeatureRingMorphProps) {
             transition={{ duration: 1 }}
             className="font-display text-2xl md:text-4xl font-bold tracking-tight text-white"
           >
-            {en ? "Explore BhoomiX" : "BhoomiX एक्सप्लोर करें"}
+            {tx("Explore BhoomiX", "BhoomiX एक्सप्लोर करें")}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -227,7 +230,7 @@ export default function FeatureRingMorph({ items, en }: FeatureRingMorphProps) {
             transition={{ duration: 1, delay: 0.2 }}
             className="mt-4 text-xs font-bold tracking-[0.2em] text-white/60"
           >
-            {en ? "SCROLL TO EXPLORE" : "एक्सप्लोर करने के लिए स्क्रॉल करें"}
+            {tx("SCROLL TO EXPLORE", "एक्सप्लोर करने के लिए स्क्रॉल करें")}
           </motion.p>
         </div>
 
@@ -237,12 +240,10 @@ export default function FeatureRingMorph({ items, en }: FeatureRingMorphProps) {
           className="absolute top-[8%] z-10 flex flex-col items-center justify-center text-center pointer-events-none px-4"
         >
           <h2 className="font-display text-3xl md:text-5xl font-semibold text-white tracking-tight mb-3">
-            {en ? "Everything you need" : "आपकी हर ज़रूरत"}
+            {tx("Everything you need", "आपकी हर ज़रूरत")}
           </h2>
           <p className="text-sm md:text-base text-white/70 max-w-lg leading-relaxed">
-            {en
-              ? "From seed to sale — tap any card to explore that tool."
-              : "बीज से बिक्री तक — किसी भी कार्ड पर टैप करके एक्सप्लोर करें।"}
+            {tx("From seed to sale — tap any card to explore that tool.", "बीज से बिक्री तक — किसी भी कार्ड पर टैप करके एक्सप्लोर करें।")}
           </p>
         </motion.div>
 

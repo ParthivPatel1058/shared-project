@@ -71,7 +71,7 @@ const STATUS_META: Record<
 };
 
 const Orders = () => {
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const { user } = useAuth();
   const { add } = useCart();
   const en = language === 'en';
@@ -139,10 +139,10 @@ const Orders = () => {
     const { error } = await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id);
     if (error) {
       setOrders(snapshot);
-      toast.error(en ? 'Could not cancel the order' : 'ऑर्डर रद्द नहीं हो सका');
+      toast.error(tx('Could not cancel the order', 'ऑर्डर रद्द नहीं हो सका'));
       return;
     }
-    toast.success(en ? 'Order cancelled' : 'ऑर्डर रद्द कर दिया गया');
+    toast.success(tx('Order cancelled', 'ऑर्डर रद्द कर दिया गया'));
     setTab('past');
   };
 
@@ -153,10 +153,10 @@ const Orders = () => {
     const { error } = await supabase.from('orders').delete().eq('id', id);
     if (error) {
       setOrders(snapshot);
-      toast.error(en ? 'Could not remove the order' : 'ऑर्डर हटाया नहीं जा सका');
+      toast.error(tx('Could not remove the order', 'ऑर्डर हटाया नहीं जा सका'));
       return;
     }
-    toast.success(en ? 'Order removed' : 'ऑर्डर हटा दिया गया');
+    toast.success(tx('Order removed', 'ऑर्डर हटा दिया गया'));
   };
 
   const reorder = async (order: Order) => {
@@ -181,8 +181,8 @@ const Orders = () => {
         /* skip lines that fail */
       }
     }
-    if (added) toast.success(en ? 'Items added to cart' : 'आइटम कार्ट में जोड़े गए');
-    else toast.error(en ? 'Could not re-add these items' : 'ये आइटम दोबारा नहीं जुड़े');
+    if (added) toast.success(tx('Items added to cart', 'आइटम कार्ट में जोड़े गए'));
+    else toast.error(tx('Could not re-add these items', 'ये आइटम दोबारा नहीं जुड़े'));
   };
 
   const shown = tab === 'active' ? activeOrders : pastOrders;
@@ -202,7 +202,7 @@ const Orders = () => {
           <div className="min-w-0">
             <p className="font-semibold text-foreground">#{order.order_number}</p>
             <p className="text-xs text-muted-foreground">
-              {new Date(order.created_at).toLocaleString(en ? 'en-IN' : 'hi-IN', {
+              {new Date(order.created_at).toLocaleString(tx('en-IN', 'hi-IN'), {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -218,7 +218,7 @@ const Orders = () => {
             )}
           >
             <StatusIcon className="h-3.5 w-3.5" />
-            {en ? meta.en : meta.hi}
+            {tx(meta.en, meta.hi)}
           </span>
         </div>
 
@@ -239,7 +239,7 @@ const Orders = () => {
                     i <= stageIndex ? 'text-foreground' : 'text-muted-foreground',
                   )}
                 >
-                  {en ? STATUS_META[s].en : STATUS_META[s].hi}
+                  {tx(STATUS_META[s].en, STATUS_META[s].hi)}
                 </span>
               </div>
             ))}
@@ -252,19 +252,19 @@ const Orders = () => {
             <div key={i} className="flex items-center gap-3">
               <img
                 src={imageForKey(item.product_id, item.image)}
-                alt={en ? item.name : item.name_hi ?? item.name}
+                alt={tx(item.name, item.name_hi) ?? item.name}
                 loading="lazy"
                 className="h-12 w-12 flex-shrink-0 rounded-lg border border-border object-cover"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">
-                  {en ? item.name : item.name_hi ?? item.name}
+                  {tx(item.name, item.name_hi) ?? item.name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {unitForKey(item.product_id, en) && (
-                    <span className="mr-1.5">{unitForKey(item.product_id, en)} ·</span>
+                  {unitForKey(item.product_id, tx) && (
+                    <span className="mr-1.5">{unitForKey(item.product_id, tx)} ·</span>
                   )}
-                  {en ? 'Qty' : 'मात्रा'}: {item.quantity}
+                  {tx('Qty', 'मात्रा')}: {item.quantity}
                 </p>
               </div>
               <p className="text-sm font-semibold text-foreground">
@@ -279,9 +279,7 @@ const Orders = () => {
               className="flex items-center gap-1 text-xs font-semibold text-primary"
             >
               {isOpen
-                ? en
-                  ? 'Show less'
-                  : 'कम दिखाएं'
+                ? tx('Show less', 'कम दिखाएं')
                 : en
                   ? `+${order.items.length - 2} more items`
                   : `+${order.items.length - 2} और आइटम`}
@@ -311,7 +309,7 @@ const Orders = () => {
         {/* Footer */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-muted/30 p-4">
           <div>
-            <p className="text-xs text-muted-foreground">{en ? 'Total' : 'कुल'}</p>
+            <p className="text-xs text-muted-foreground">{tx('Total', 'कुल')}</p>
             <p className="text-lg font-bold text-primary">
               ₹{order.total_amount.toLocaleString('en-IN')}
             </p>
@@ -320,7 +318,7 @@ const Orders = () => {
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => reorder(order)} className="gap-1.5">
               <RotateCcw className="h-3.5 w-3.5" />
-              {en ? 'Reorder' : 'फिर से ऑर्डर'}
+              {tx('Reorder', 'फिर से ऑर्डर')}
             </Button>
 
             {cancellable && (
@@ -328,24 +326,22 @@ const Orders = () => {
                 <AlertDialogTrigger asChild>
                   <Button variant="outline" size="sm" className="gap-1.5 text-destructive">
                     <XCircle className="h-3.5 w-3.5" />
-                    {en ? 'Cancel' : 'रद्द करें'}
+                    {tx('Cancel', 'रद्द करें')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      {en ? 'Cancel this order?' : 'यह ऑर्डर रद्द करें?'}
+                      {tx('Cancel this order?', 'यह ऑर्डर रद्द करें?')}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {en
-                        ? 'This cannot be undone. The order moves to your past orders.'
-                        : 'यह वापस नहीं किया जा सकता। ऑर्डर पिछले ऑर्डर में चला जाएगा।'}
+                      {tx('This cannot be undone. The order moves to your past orders.', 'यह वापस नहीं किया जा सकता। ऑर्डर पिछले ऑर्डर में चला जाएगा।')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>{en ? 'Keep order' : 'रहने दें'}</AlertDialogCancel>
+                    <AlertDialogCancel>{tx('Keep order', 'रहने दें')}</AlertDialogCancel>
                     <AlertDialogAction onClick={() => cancelOrder(order.id)}>
-                      {en ? 'Yes, cancel' : 'हां, रद्द करें'}
+                      {tx('Yes, cancel', 'हां, रद्द करें')}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -357,24 +353,22 @@ const Orders = () => {
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
                     <Trash2 className="h-3.5 w-3.5" />
-                    {en ? 'Remove' : 'हटाएं'}
+                    {tx('Remove', 'हटाएं')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      {en ? 'Remove from history?' : 'इतिहास से हटाएं?'}
+                      {tx('Remove from history?', 'इतिहास से हटाएं?')}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {en
-                        ? 'This order will be deleted permanently.'
-                        : 'यह ऑर्डर स्थायी रूप से हटा दिया जाएगा।'}
+                      {tx('This order will be deleted permanently.', 'यह ऑर्डर स्थायी रूप से हटा दिया जाएगा।')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>{en ? 'Keep' : 'रहने दें'}</AlertDialogCancel>
+                    <AlertDialogCancel>{tx('Keep', 'रहने दें')}</AlertDialogCancel>
                     <AlertDialogAction onClick={() => deleteOrder(order.id)}>
-                      {en ? 'Remove' : 'हटाएं'}
+                      {tx('Remove', 'हटाएं')}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -399,10 +393,10 @@ const Orders = () => {
 
         <header className="pb-6 pt-8">
           <h1 className="font-serif-display text-4xl text-foreground md:text-5xl">
-            {en ? 'My Orders' : 'मेरे ऑर्डर'}
+            {tx('My Orders', 'मेरे ऑर्डर')}
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {en ? 'Track, reorder and manage your orders' : 'ट्रैक करें, दोबारा ऑर्डर करें और प्रबंधित करें'}
+            {tx('Track, reorder and manage your orders', 'ट्रैक करें, दोबारा ऑर्डर करें और प्रबंधित करें')}
           </p>
         </header>
 
@@ -420,8 +414,8 @@ const Orders = () => {
               )}
             >
               {k === 'active'
-                ? `${en ? 'Active' : 'सक्रिय'} (${activeOrders.length})`
-                : `${en ? 'Past' : 'पिछले'} (${pastOrders.length})`}
+                ? `${tx('Active', 'सक्रिय')} (${activeOrders.length})`
+                : `${tx('Past', 'पिछले')} (${pastOrders.length})`}
             </button>
           ))}
         </div>
@@ -435,20 +429,16 @@ const Orders = () => {
             <Package className="mx-auto mb-4 h-16 w-16 text-muted-foreground/25" />
             <p className="mb-1 font-semibold text-foreground">
               {tab === 'active'
-                ? en
-                  ? 'No active orders'
-                  : 'कोई सक्रिय ऑर्डर नहीं'
-                : en
-                  ? 'No past orders'
-                  : 'कोई पिछला ऑर्डर नहीं'}
+                ? tx('No active orders', 'कोई सक्रिय ऑर्डर नहीं')
+                : tx('No past orders', 'कोई पिछला ऑर्डर नहीं')}
             </p>
             <p className="mb-5 text-sm text-muted-foreground">
-              {en ? 'Start shopping to see orders here' : 'ऑर्डर देखने के लिए खरीदारी शुरू करें'}
+              {tx('Start shopping to see orders here', 'ऑर्डर देखने के लिए खरीदारी शुरू करें')}
             </p>
             <Button asChild>
               <Link to="/kisan-mart">
                 <ShoppingBag className="h-4 w-4" />
-                {en ? 'Start shopping' : 'खरीदारी करें'}
+                {tx('Start shopping', 'खरीदारी करें')}
               </Link>
             </Button>
           </div>

@@ -108,7 +108,7 @@ const shops: Shop[] = [
 ];
 
 const ShopLocator = () => {
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const { toast } = useToast();
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
@@ -121,10 +121,8 @@ const ShopLocator = () => {
       );
     } else {
       toast({
-        title: language === 'en' ? 'Enable Location' : 'स्थान सक्षम करें',
-        description: language === 'en' 
-          ? 'Please enable location to get directions'
-          : 'दिशा-निर्देश प्राप्त करने के लिए स्थान सक्षम करें',
+        title: tx('Enable Location', 'स्थान सक्षम करें'),
+        description: tx('Please enable location to get directions', 'दिशा-निर्देश प्राप्त करने के लिए स्थान सक्षम करें'),
         variant: 'destructive'
       });
     }
@@ -139,18 +137,14 @@ const ShopLocator = () => {
             lon: position.coords.longitude
           });
           toast({
-            title: language === 'en' ? 'Location Detected' : 'स्थान का पता चला',
-            description: language === 'en' 
-              ? 'Showing nearby shops'
-              : 'आस-पास की दुकानें दिखाई जा रही हैं'
+            title: tx('Location Detected', 'स्थान का पता चला'),
+            description: tx('Showing nearby shops', 'आस-पास की दुकानें दिखाई जा रही हैं')
           });
         },
         () => {
           toast({
-            title: language === 'en' ? 'Location Error' : 'स्थान त्रुटि',
-            description: language === 'en' 
-              ? 'Could not detect your location'
-              : 'आपका स्थान नहीं मिल सका',
+            title: tx('Location Error', 'स्थान त्रुटि'),
+            description: tx('Could not detect your location', 'आपका स्थान नहीं मिल सका'),
             variant: 'destructive'
           });
         }
@@ -167,12 +161,10 @@ const ShopLocator = () => {
           {/* Header */}
           <div className="text-center mb-12 animate-fade-in">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {language === 'en' ? 'Find Nearby Shops' : 'आस-पास की दुकानें खोजें'}
+              {tx('Find Nearby Shops', 'आस-पास की दुकानें खोजें')}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-              {language === 'en' 
-                ? 'Locate agricultural shops near you for seeds, fertilizers, and farming tools'
-                : 'बीज, उर्वरक और कृषि उपकरणों के लिए अपने पास की कृषि दुकानों का पता लगाएं'}
+              {tx('Locate agricultural shops near you for seeds, fertilizers, and farming tools', 'बीज, उर्वरक और कृषि उपकरणों के लिए अपने पास की कृषि दुकानों का पता लगाएं')}
             </p>
             
             <Button 
@@ -181,7 +173,7 @@ const ShopLocator = () => {
               size="lg"
             >
               <Navigation className="h-5 w-5 mr-2" />
-              {language === 'en' ? 'Find Shops Near Me' : 'मेरे पास दुकानें खोजें'}
+              {tx('Find Shops Near Me', 'मेरे पास दुकानें खोजें')}
             </Button>
           </div>
 
@@ -201,10 +193,10 @@ const ShopLocator = () => {
                       </div>
                       <div>
                         <CardTitle className="text-xl">
-                          {language === 'en' ? shop.name : shop.nameHi}
+                          {tx(shop.name, shop.nameHi)}
                         </CardTitle>
                         <Badge variant="outline" className="mt-1">
-                          {language === 'en' ? shop.type : shop.typeHi}
+                          {tx(shop.type, shop.typeHi)}
                         </Badge>
                       </div>
                     </div>
@@ -225,7 +217,7 @@ const ShopLocator = () => {
                     <div className="flex items-start gap-2 text-sm">
                       <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-muted-foreground">
-                        {language === 'en' ? shop.address : shop.addressHi}
+                        {tx(shop.address, shop.addressHi)}
                       </span>
                     </div>
                     
@@ -239,19 +231,19 @@ const ShopLocator = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Clock className="h-4 w-4 text-primary flex-shrink-0" />
                       <span className="text-muted-foreground">
-                        {language === 'en' ? shop.hours : shop.hoursHi}
+                        {tx(shop.hours, shop.hoursHi)}
                       </span>
                     </div>
                   </div>
 
                   <div>
                     <p className="text-sm font-semibold mb-2 text-primary">
-                      {language === 'en' ? 'Available Products:' : 'उपलब्ध उत्पाद:'}
+                      {tx('Available Products:', 'उपलब्ध उत्पाद:')}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {(language === 'en' ? shop.products : shop.productsHi).map((product, i) => (
+                      {shop.products.map((product, i) => (
                         <Badge key={i} variant="secondary" className="text-xs">
-                          {product}
+                          {tx(product, shop.productsHi[i] ?? product)}
                         </Badge>
                       ))}
                     </div>
@@ -263,14 +255,14 @@ const ShopLocator = () => {
                       onClick={() => window.open(`tel:${shop.phone}`)}
                     >
                       <Phone className="h-4 w-4 mr-2" />
-                      {language === 'en' ? 'Call' : 'कॉल करें'}
+                      {tx('Call', 'कॉल करें')}
                     </Button>
                     <Button 
                       className="btn-metal border-0"
                       onClick={() => handleGetDirections(shop)}
                     >
                       <Navigation className="h-4 w-4 mr-2" />
-                      {language === 'en' ? 'Directions' : 'दिशा-निर्देश'}
+                      {tx('Directions', 'दिशा-निर्देश')}
                     </Button>
                   </div>
                 </CardContent>

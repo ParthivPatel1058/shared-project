@@ -97,8 +97,7 @@ const BENEFITS = [
 ];
 
 const OrganicFarming = () => {
-  const { language } = useLanguage();
-  const en = language === 'en';
+  const { tx } = useLanguage();
 
   return (
     <div className="min-h-screen">
@@ -112,12 +111,10 @@ const OrganicFarming = () => {
         {/* Page header */}
         <Reveal className="max-w-3xl pb-10 pt-8" blur distance={22}>
           <h1 className="font-serif-display mb-3 text-4xl text-foreground md:text-5xl lg:text-6xl">
-            {en ? 'Organic Farming' : 'जैविक खेती'}
+            {tx('Organic Farming', 'जैविक खेती')}
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-            {en
-              ? 'Certified seeds, natural fertilizers, and chemical-free pest control — everything you need to farm organically.'
-              : 'प्रमाणित बीज, प्राकृतिक उर्वरक और रसायन मुक्त कीट नियंत्रण — जैविक खेती के लिए आवश्यक सब कुछ।'}
+            {tx('Certified seeds, natural fertilizers, and chemical-free pest control — everything you need to farm organically.', 'प्रमाणित बीज, प्राकृतिक उर्वरक और रसायन मुक्त कीट नियंत्रण — जैविक खेती के लिए आवश्यक सब कुछ।')}
           </p>
         </Reveal>
 
@@ -128,13 +125,13 @@ const OrganicFarming = () => {
               className="mb-6 text-2xl font-semibold text-foreground md:text-3xl"
               style={{ fontFamily: 'var(--font-serif)' }}
             >
-              {en ? 'Benefits of Organic Farming' : 'जैविक खेती के लाभ'}
+              {tx('Benefits of Organic Farming', 'जैविक खेती के लाभ')}
             </h2>
             <div className="grid gap-4 md:grid-cols-3">
               {BENEFITS.map((b) => (
                 <div key={b.en} className="glass lift flex items-center gap-3 rounded-xl p-4">
                   <Leaf className="h-6 w-6 flex-shrink-0 text-primary" />
-                  <p className="text-foreground">{en ? b.en : b.hi}</p>
+                  <p className="text-foreground">{tx(b.en, b.hi)}</p>
                 </div>
               ))}
             </div>
@@ -152,7 +149,7 @@ const OrganicFarming = () => {
                   className="text-2xl font-semibold text-foreground md:text-3xl"
                   style={{ fontFamily: 'var(--font-serif)' }}
                 >
-                  {en ? cat.category : cat.categoryHi}
+                  {tx(cat.category, cat.categoryHi)}
                 </h2>
               </Reveal>
 
@@ -163,18 +160,18 @@ const OrganicFarming = () => {
                       <div className="img-zoom h-48 overflow-hidden">
                         <img
                           src={item.image}
-                          alt={en ? item.name : item.nameHi}
+                          alt={tx(item.name, item.nameHi)}
                           loading="lazy"
                           className="h-full w-full object-cover"
                         />
                       </div>
                       <div className="p-6">
                         <h3 className="mb-2 text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
-                          {en ? item.name : item.nameHi}
+                          {tx(item.name, item.nameHi)}
                         </h3>
                         <p className="mb-3 text-2xl font-bold text-primary">{item.price}</p>
                         <p className="leading-relaxed text-muted-foreground">
-                          {en ? item.description : item.descriptionHi}
+                          {tx(item.description, item.descriptionHi)}
                         </p>
                       </div>
                     </article>
@@ -192,27 +189,21 @@ const OrganicFarming = () => {
               className="mb-6 text-2xl font-semibold text-foreground md:text-3xl"
               style={{ fontFamily: 'var(--font-serif)' }}
             >
-              {en ? 'Organic Certification' : 'जैविक प्रमाणन'}
+              {tx('Organic Certification', 'जैविक प्रमाणन')}
             </h2>
             <div className="space-y-4">
               <p className="text-foreground">
                 <strong>
-                  {en
-                    ? 'NPOP (National Programme for Organic Production):'
-                    : 'एनपीओपी (राष्ट्रीय जैविक उत्पादन कार्यक्रम):'}
+                  {tx('NPOP (National Programme for Organic Production):', 'एनपीओपी (राष्ट्रीय जैविक उत्पादन कार्यक्रम):')}
                 </strong>{' '}
-                {en
-                  ? 'Official organic certification by the Government of India'
-                  : 'भारत सरकार द्वारा आधिकारिक जैविक प्रमाणन'}
+                {tx('Official organic certification by the Government of India', 'भारत सरकार द्वारा आधिकारिक जैविक प्रमाणन')}
               </p>
               <p className="text-foreground">
-                <strong>{en ? 'Contact for Certification:' : 'प्रमाणन हेतु संपर्क:'}</strong>{' '}
-                {en
-                  ? 'Agricultural and Processed Food Products Export Development Authority (APEDA)'
-                  : 'कृषि एवं प्रसंस्कृत खाद्य उत्पाद निर्यात विकास प्राधिकरण (APEDA)'}
+                <strong>{tx('Contact for Certification:', 'प्रमाणन हेतु संपर्क:')}</strong>{' '}
+                {tx('Agricultural and Processed Food Products Export Development Authority (APEDA)', 'कृषि एवं प्रसंस्कृत खाद्य उत्पाद निर्यात विकास प्राधिकरण (APEDA)')}
               </p>
               <p className="text-foreground">
-                <strong>{en ? 'Website:' : 'वेबसाइट:'}</strong>{' '}
+                <strong>{tx('Website:', 'वेबसाइट:')}</strong>{' '}
                 <a
                   href="https://apeda.gov.in"
                   target="_blank"

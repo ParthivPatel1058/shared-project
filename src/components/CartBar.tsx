@@ -10,7 +10,7 @@ import CartDrawer from '@/components/CartDrawer';
  */
 export default function CartBar() {
   const { totalItems, totalPrice } = useCart();
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const [open, setOpen] = useState(false);
   const en = language === 'en';
 
@@ -34,14 +34,14 @@ export default function CartBar() {
             </span>
             <span className="text-left leading-tight">
               <span className="block text-sm font-bold">
-                {totalItems} {en ? (totalItems === 1 ? 'item' : 'items') : 'आइटम'}
+                {totalItems} {totalItems === 1 ? tx('item', 'आइटम') : tx('items', 'आइटम')}
               </span>
               <span className="block text-xs opacity-80">₹{totalPrice.toLocaleString('en-IN')}</span>
             </span>
           </span>
 
           <span className="flex items-center gap-1 text-sm font-bold uppercase tracking-wide">
-            {en ? 'View cart' : 'कार्ट देखें'}
+            {tx('View cart', 'कार्ट देखें')}
             <ChevronRight strokeWidth={2.5} className="h-4 w-4" />
           </span>
         </button>

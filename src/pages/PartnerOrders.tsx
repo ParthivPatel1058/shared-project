@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,10 +32,13 @@ interface Order {
 }
 
 const PartnerOrders = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  /** The RPC rejects non-partners; that needs a different empty state. */
+  const [notPartner, setNotPartner] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -70,8 +74,13 @@ const PartnerOrders = () => {
 
       if (error) throw error;
       setOrders(data || []);
+      setNotPartner(false);
     } catch (error) {
-      if (import.meta.env.DEV) {
+      // The RPC raises this for anyone who has not registered as a partner.
+      // It is an expected state, not a failure — show them how to sign up.
+      if ((error as { message?: string })?.message?.includes('not a registered partner')) {
+        setNotPartner(true);
+      } else if (import.meta.env.DEV) {
         console.error('Error loading orders:', error);
       }
     } finally {
@@ -92,18 +101,14 @@ const PartnerOrders = () => {
       if (error) throw error;
 
       toast.success(
-        language === 'en'
-          ? 'Order accepted! Starting delivery...'
-          : 'ऑर्डर स्वीकार किया गया! डिलीवरी शुरू हो रही है...'
+        tx('Order accepted! Starting delivery...', 'ऑर्डर स्वीकार किया गया! डिलीवरी शुरू हो रही है...')
       );
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Error accepting order:', error);
       }
       toast.error(
-        language === 'en'
-          ? 'Failed to accept order'
-          : 'ऑर्डर स्वीकार करने में विफल'
+        tx('Failed to accept order', 'ऑर्डर स्वीकार करने में विफल')
       );
     }
   };
@@ -128,15 +133,15 @@ const PartnerOrders = () => {
 
       toast.success(
         next === 'out_for_delivery'
-          ? language === 'en' ? 'Marked as picked up' : 'उठाया गया के रूप में चिह्नित'
-          : language === 'en' ? 'Order delivered 🎉' : 'ऑर्डर डिलीवर हो गया 🎉'
+          ? tx('Marked as picked up', 'उठाया गया के रूप में चिह्नित')
+          : tx('Order delivered 🎉', 'ऑर्डर डिलीवर हो गया 🎉')
       );
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Error updating order:', error);
       }
       toast.error(
-        language === 'en' ? 'Failed to update order' : 'ऑर्डर अपडेट करने में विफल'
+        tx('Failed to update order', 'ऑर्डर अपडेट करने में विफल')
       );
     }
   };
@@ -152,7 +157,7 @@ const PartnerOrders = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">
-              {language === 'en' ? 'Loading orders...' : 'ऑर्डर लोड हो रहे हैं...'}
+              {tx('Loading orders...', 'ऑर्डर लोड हो रहे हैं...')}
             </p>
           </div>
         </div>
@@ -167,25 +172,37 @@ const PartnerOrders = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 gradient-text">
-            {language === 'en' ? '🚚 Partner Deliveries' : '🚚 पार्टनर डिलीवरी'}
+            {tx('🚚 Partner Deliveries', '🚚 पार्टनर डिलीवरी')}
           </h1>
           <p className="text-muted-foreground">
-            {language === 'en' 
-              ? 'Accept and deliver orders in your area' 
-              : 'अपने क्षेत्र में ऑर्डर स्वीकार करें और डिलीवर करें'}
+            {tx('Accept and deliver orders in your area', 'अपने क्षेत्र में ऑर्डर स्वीकार करें और डिलीवर करें')}
           </p>
         </div>
 
-        {orders.length === 0 ? (
+        {notPartner ? (
+          <Card className="p-12 text-center">
+            <Package className="mx-auto mb-4 h-24 w-24 text-muted-foreground/50" />
+            <h3 className="mb-2 text-xl font-semibold">
+              {tx('You are not registered as a partner', 'आप पार्टनर के रूप में पंजीकृत नहीं हैं')}
+            </h3>
+            <p className="mb-6 text-muted-foreground">
+              {tx(
+                'Register as a delivery partner to start receiving orders.',
+                'ऑर्डर पाने के लिए डिलीवरी पार्टनर के रूप में पंजीकरण करें।',
+              )}
+            </p>
+            <Button onClick={() => navigate('/partner-registration')}>
+              {tx('Register as a partner', 'पार्टनर के रूप में पंजीकरण करें')}
+            </Button>
+          </Card>
+        ) : orders.length === 0 ? (
           <Card className="p-12 text-center">
             <Package className="h-24 w-24 mx-auto mb-4 text-muted-foreground/50" />
             <h3 className="text-xl font-semibold mb-2">
-              {language === 'en' ? 'No Orders Available' : 'कोई ऑर्डर उपलब्ध नहीं'}
+              {tx('No Orders Available', 'कोई ऑर्डर उपलब्ध नहीं')}
             </h3>
             <p className="text-muted-foreground">
-              {language === 'en' 
-                ? 'New orders will appear here automatically' 
-                : 'नए ऑर्डर यहां स्वचालित रूप से दिखाई देंगे'}
+              {tx('New orders will appear here automatically', 'नए ऑर्डर यहां स्वचालित रूप से दिखाई देंगे')}
             </p>
           </Card>
         ) : (
@@ -196,16 +213,17 @@ const PartnerOrders = () => {
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-xl font-bold">
-                        {language === 'en' ? 'Order' : 'ऑर्डर'} #{order.order_number}
+                        {tx('Order', 'ऑर्डर')} #{order.order_number}
                       </h3>
                       <Badge variant={order.status === 'pending' ? 'default' : 'secondary'}>
-                        {STATUS_LABEL[order.status]?.[language === 'en' ? 'en' : 'hi']
-                          ?? order.status}
+                        {STATUS_LABEL[order.status]
+                          ? tx(STATUS_LABEL[order.status].en, STATUS_LABEL[order.status].hi)
+                          : order.status}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {new Date(order.created_at).toLocaleString(
-                        language === 'en' ? 'en-IN' : 'hi-IN',
+                        tx('en-IN', 'hi-IN'),
                         { dateStyle: 'medium', timeStyle: 'short' }
                       )}
                     </p>
@@ -213,7 +231,7 @@ const PartnerOrders = () => {
                   <div className="text-right">
                     <p className="text-3xl font-bold text-primary">₹{order.total_amount}</p>
                     <p className="text-sm text-muted-foreground">
-                      {order.items?.length} {language === 'en' ? 'items' : 'आइटम'}
+                      {order.items?.length} {tx('items', 'आइटम')}
                     </p>
                   </div>
                 </div>
@@ -221,12 +239,12 @@ const PartnerOrders = () => {
                 {/* Order Items */}
                 <div className="mb-4 p-4 bg-secondary/20 rounded-lg">
                   <p className="font-semibold mb-2">
-                    {language === 'en' ? 'Order Items:' : 'ऑर्डर आइटम:'}
+                    {tx('Order Items:', 'ऑर्डर आइटम:')}
                   </p>
                   <div className="space-y-1">
                     {order.items?.map((item: any, idx: number) => (
                       <div key={idx} className="flex justify-between text-sm">
-                        <span>{language === 'en' ? item.name : item.nameHi}</span>
+                        <span>{tx(item.name, item.nameHi)}</span>
                         <span className="font-medium">x{item.quantity}</span>
                       </div>
                     ))}
@@ -238,9 +256,7 @@ const PartnerOrders = () => {
                   <div className="mb-4 p-3 bg-secondary/20 rounded-lg flex items-center gap-2">
                     <MapPin className="h-5 w-5 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                      {language === 'en' 
-                        ? '🔒 Customer details will be revealed after accepting' 
-                        : '🔒 स्वीकार करने के बाद ग्राहक विवरण दिखाई देगा'}
+                      {tx('🔒 Customer details will be revealed after accepting', '🔒 स्वीकार करने के बाद ग्राहक विवरण दिखाई देगा')}
                     </span>
                   </div>
                 ) : (
@@ -250,7 +266,7 @@ const PartnerOrders = () => {
                         <MapPin className="h-5 w-5 text-primary mt-0.5" />
                         <div>
                           <p className="font-medium">
-                            {language === 'en' ? 'Delivery Address:' : 'डिलीवरी पता:'}
+                            {tx('Delivery Address:', 'डिलीवरी पता:')}
                           </p>
                           <p className="text-sm text-muted-foreground">{order.delivery_address}</p>
                         </div>
@@ -271,9 +287,7 @@ const PartnerOrders = () => {
                       <div className="mb-4 p-3 bg-primary/10 rounded-lg flex items-center gap-2">
                         <MapPin className="h-5 w-5 text-primary animate-pulse" />
                         <span className="text-sm font-medium">
-                          {language === 'en' 
-                            ? '📍 Live GPS Location Available' 
-                            : '📍 लाइव GPS लोकेशन उपलब्ध'}
+                          {tx('📍 Live GPS Location Available', '📍 लाइव GPS लोकेशन उपलब्ध')}
                         </span>
                       </div>
                     )}
@@ -288,7 +302,7 @@ const PartnerOrders = () => {
                       onClick={() => handleAcceptOrder(order.id)}
                     >
                       <CheckCircle className="mr-2 h-5 w-5" />
-                      {language === 'en' ? 'Accept Order' : 'ऑर्डर स्वीकार करें'}
+                      {tx('Accept Order', 'ऑर्डर स्वीकार करें')}
                     </Button>
                   )}
 
@@ -298,7 +312,7 @@ const PartnerOrders = () => {
                       onClick={() => advanceStatus(order.id, 'out_for_delivery')}
                     >
                       <Truck className="mr-2 h-5 w-5" />
-                      {language === 'en' ? 'Picked up' : 'सामान उठा लिया'}
+                      {tx('Picked up', 'सामान उठा लिया')}
                     </Button>
                   )}
 
@@ -308,7 +322,7 @@ const PartnerOrders = () => {
                       onClick={() => advanceStatus(order.id, 'delivered')}
                     >
                       <PackageCheck className="mr-2 h-5 w-5" />
-                      {language === 'en' ? 'Mark delivered' : 'डिलीवर हो गया'}
+                      {tx('Mark delivered', 'डिलीवर हो गया')}
                     </Button>
                   )}
 
@@ -319,7 +333,7 @@ const PartnerOrders = () => {
                       onClick={() => handleNavigate(order.gps_lat!, order.gps_lng!)}
                     >
                       <NavIcon className="mr-2 h-5 w-5" />
-                      {language === 'en' ? 'Navigate' : 'नेविगेट करें'}
+                      {tx('Navigate', 'नेविगेट करें')}
                     </Button>
                   )}
                 </div>

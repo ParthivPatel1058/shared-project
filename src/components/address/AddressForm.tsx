@@ -47,7 +47,7 @@ interface AddressFormProps {
 }
 
 export default function AddressForm({ open, onOpenChange, existing, onSave }: AddressFormProps) {
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const en = language === 'en';
 
   const [draft, setDraft] = useState<AddressDraft>(EMPTY);
@@ -106,15 +106,13 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
     setLocating(true);
     try {
       applyGeocoded(await locateMe());
-      toast.success(en ? 'Location detected' : 'लोकेशन मिल गई');
+      toast.success(tx('Location detected', 'लोकेशन मिल गई'));
     } catch (e) {
       const msg = (e as Error).message;
       toast.error(
         msg === 'no-geolocation'
-          ? en ? 'This device cannot share location' : 'यह डिवाइस लोकेशन साझा नहीं कर सकता'
-          : en
-            ? 'Could not get your location. Allow location access or search instead.'
-            : 'लोकेशन नहीं मिली। अनुमति दें या खोजें।',
+          ? tx('This device cannot share location', 'यह डिवाइस लोकेशन साझा नहीं कर सकता')
+          : tx('Could not get your location. Allow location access or search instead.', 'लोकेशन नहीं मिली। अनुमति दें या खोजें।'),
       );
     } finally {
       setLocating(false);
@@ -128,22 +126,22 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
     try {
       const r = await searchAddress(q);
       setResults(r);
-      if (r.length === 0) toast.info(en ? 'No matching locality found' : 'कोई मिलती जगह नहीं मिली');
+      if (r.length === 0) toast.info(tx('No matching locality found', 'कोई मिलती जगह नहीं मिली'));
     } finally {
       setSearching(false);
     }
   };
 
   const missing = (): string | null => {
-    if (!draft.receiver_name.trim()) return en ? 'Add the receiver’s name' : 'पाने वाले का नाम भरें';
+    if (!draft.receiver_name.trim()) return tx('Add the receiver’s name', 'पाने वाले का नाम भरें');
     if (!/^[0-9]{10}$/.test(draft.phone.replace(/\D/g, '')))
-      return en ? 'Enter a 10-digit phone number' : '10 अंकों का फ़ोन नंबर भरें';
-    if (!draft.house.trim()) return en ? 'Add the house or flat number' : 'मकान/फ्लैट नंबर भरें';
-    if (!draft.area.trim()) return en ? 'Add the area or street' : 'क्षेत्र या गली भरें';
-    if (!draft.city.trim()) return en ? 'Add the city' : 'शहर भरें';
-    if (!draft.state.trim()) return en ? 'Add the state' : 'राज्य भरें';
+      return tx('Enter a 10-digit phone number', '10 अंकों का फ़ोन नंबर भरें');
+    if (!draft.house.trim()) return tx('Add the house or flat number', 'मकान/फ्लैट नंबर भरें');
+    if (!draft.area.trim()) return tx('Add the area or street', 'क्षेत्र या गली भरें');
+    if (!draft.city.trim()) return tx('Add the city', 'शहर भरें');
+    if (!draft.state.trim()) return tx('Add the state', 'राज्य भरें');
     if (!/^[1-9][0-9]{5}$/.test(draft.pincode.trim()))
-      return en ? 'Enter a valid 6-digit PIN code' : 'सही 6 अंकों का पिन कोड भरें';
+      return tx('Enter a valid 6-digit PIN code', 'सही 6 अंकों का पिन कोड भरें');
     return null;
   };
 
@@ -168,12 +166,12 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
       });
       toast.success(
         existing
-          ? en ? 'Address updated' : 'पता अपडेट हुआ'
-          : en ? 'Address saved' : 'पता सहेजा गया',
+          ? tx('Address updated', 'पता अपडेट हुआ')
+          : tx('Address saved', 'पता सहेजा गया'),
       );
       onOpenChange(false);
     } catch {
-      toast.error(en ? 'Could not save the address' : 'पता सहेजा नहीं जा सका');
+      toast.error(tx('Could not save the address', 'पता सहेजा नहीं जा सका'));
     } finally {
       setSaving(false);
     }
@@ -187,7 +185,7 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
     extra?: { inputMode?: 'tel' | 'numeric'; maxLength?: number },
   ) => (
     <div className="space-y-1.5">
-      <Label htmlFor={`addr-${key}`}>{en ? labelEn : labelHi}</Label>
+      <Label htmlFor={`addr-${key}`}>{tx(labelEn, labelHi)}</Label>
       <Input
         id={`addr-${key}`}
         value={(draft[key] as string) ?? ''}
@@ -205,8 +203,8 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
         <SheetHeader className="border-b border-border p-5">
           <SheetTitle className="text-xl">
             {existing
-              ? en ? 'Edit address' : 'पता बदलें'
-              : en ? 'Add a new address' : 'नया पता जोड़ें'}
+              ? tx('Edit address', 'पता बदलें')
+              : tx('Add a new address', 'नया पता जोड़ें')}
           </SheetTitle>
         </SheetHeader>
 
@@ -217,19 +215,19 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
               {locating ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {en ? 'Finding you…' : 'खोज रहे हैं…'}
+                  {tx('Finding you…', 'खोज रहे हैं…')}
                 </>
               ) : (
                 <>
                   <LocateFixed className="h-4 w-4" />
-                  {en ? 'Use my current location' : 'मेरी वर्तमान लोकेशन लें'}
+                  {tx('Use my current location', 'मेरी वर्तमान लोकेशन लें')}
                 </>
               )}
             </Button>
 
             <div className="flex items-center gap-2">
               <span className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">{en ? 'or search' : 'या खोजें'}</span>
+              <span className="text-xs text-muted-foreground">{tx('or search', 'या खोजें')}</span>
               <span className="h-px flex-1 bg-border" />
             </div>
 
@@ -238,7 +236,7 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && runSearch()}
-                placeholder={en ? 'Village, area or PIN code' : 'गाँव, क्षेत्र या पिन कोड'}
+                placeholder={tx('Village, area or PIN code', 'गाँव, क्षेत्र या पिन कोड')}
               />
               <Button variant="outline" size="icon" onClick={runSearch} disabled={searching}>
                 {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
@@ -264,31 +262,31 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
             {draft.lat != null && draft.lng != null && (
               <p className="flex items-center gap-1.5 text-xs font-medium text-primary">
                 <Check className="h-3.5 w-3.5" />
-                {en ? 'Location pinned for the delivery partner' : 'डिलीवरी पार्टनर के लिए लोकेशन सेट है'}
+                {tx('Location pinned for the delivery partner', 'डिलीवरी पार्टनर के लिए लोकेशन सेट है')}
               </p>
             )}
           </div>
 
           {/* Address */}
-          {field('house', 'House / flat / building', 'मकान / फ्लैट / इमारत', en ? 'e.g. H. No. 42' : 'जैसे मकान नं. 42')}
-          {field('area', 'Area / street / village', 'क्षेत्र / गली / गाँव', en ? 'e.g. Anand Nagar' : 'जैसे आनंद नगर')}
-          {field('landmark', 'Landmark (optional)', 'लैंडमार्क (वैकल्पिक)', en ? 'e.g. near the mandi' : 'जैसे मंडी के पास')}
+          {field('house', 'House / flat / building', 'मकान / फ्लैट / इमारत', tx('e.g. H. No. 42', 'जैसे मकान नं. 42'))}
+          {field('area', 'Area / street / village', 'क्षेत्र / गली / गाँव', tx('e.g. Anand Nagar', 'जैसे आनंद नगर'))}
+          {field('landmark', 'Landmark (optional)', 'लैंडमार्क (वैकल्पिक)', tx('e.g. near the mandi', 'जैसे मंडी के पास'))}
 
           <div className="grid grid-cols-2 gap-3">
-            {field('city', 'City / district', 'शहर / जिला', en ? 'Bhopal' : 'भोपाल')}
+            {field('city', 'City / district', 'शहर / जिला', tx('Bhopal', 'भोपाल'))}
             {field('pincode', 'PIN code', 'पिन कोड', '462022', { inputMode: 'numeric', maxLength: 6 })}
           </div>
-          {field('state', 'State', 'राज्य', en ? 'Madhya Pradesh' : 'मध्य प्रदेश')}
+          {field('state', 'State', 'राज्य', tx('Madhya Pradesh', 'मध्य प्रदेश'))}
 
           {/* Receiver */}
           <div className="grid grid-cols-2 gap-3">
-            {field('receiver_name', 'Receiver’s name', 'पाने वाले का नाम', en ? 'Full name' : 'पूरा नाम')}
+            {field('receiver_name', 'Receiver’s name', 'पाने वाले का नाम', tx('Full name', 'पूरा नाम'))}
             {field('phone', 'Phone number', 'फ़ोन नंबर', '98765 43210', { inputMode: 'tel', maxLength: 14 })}
           </div>
 
           {/* Label */}
           <div className="space-y-2">
-            <Label>{en ? 'Save this address as' : 'पता इस रूप में सहेजें'}</Label>
+            <Label>{tx('Save this address as', 'पता इस रूप में सहेजें')}</Label>
             <div className="flex gap-2">
               {LABELS.map(({ key, icon: Icon, en: le, hi: lh }) => (
                 <button
@@ -303,7 +301,7 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  {en ? le : lh}
+                  {tx(le, lh)}
                 </button>
               ))}
             </div>
@@ -315,7 +313,7 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
               onCheckedChange={(v) => set('is_default', v === true)}
             />
             <span className="text-sm text-foreground">
-              {en ? 'Make this my default address' : 'इसे मेरा डिफ़ॉल्ट पता बनाएं'}
+              {tx('Make this my default address', 'इसे मेरा डिफ़ॉल्ट पता बनाएं')}
             </span>
           </label>
         </div>
@@ -325,12 +323,12 @@ export default function AddressForm({ open, onOpenChange, existing, onSave }: Ad
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {en ? 'Saving…' : 'सहेजा जा रहा है…'}
+                {tx('Saving…', 'सहेजा जा रहा है…')}
               </>
             ) : existing ? (
-              en ? 'Save changes' : 'बदलाव सहेजें'
+              tx('Save changes', 'बदलाव सहेजें')
             ) : (
-              en ? 'Save address' : 'पता सहेजें'
+              tx('Save address', 'पता सहेजें')
             )}
           </Button>
         </div>

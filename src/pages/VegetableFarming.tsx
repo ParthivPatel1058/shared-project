@@ -62,8 +62,7 @@ const TOOLS = [
 ];
 
 const VegetableFarming = () => {
-  const { language } = useLanguage();
-  const en = language === 'en';
+  const { tx } = useLanguage();
 
   return (
     <div className="min-h-screen">
@@ -77,12 +76,10 @@ const VegetableFarming = () => {
         {/* Page header */}
         <Reveal className="max-w-3xl pb-10 pt-8" blur distance={22}>
           <h1 className="font-serif-display mb-3 text-4xl text-foreground md:text-5xl lg:text-6xl">
-            {en ? 'Vegetable Farming' : 'सब्जी की खेती'}
+            {tx('Vegetable Farming', 'सब्जी की खेती')}
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-            {en
-              ? 'Complete information on all types of vegetables, farming methods, and tools used.'
-              : 'सभी प्रकार की सब्जियों, खेती के तरीकों और उपयोग किए जाने वाले उपकरणों की संपूर्ण जानकारी।'}
+            {tx('Complete information on all types of vegetables, farming methods, and tools used.', 'सभी प्रकार की सब्जियों, खेती के तरीकों और उपयोग किए जाने वाले उपकरणों की संपूर्ण जानकारी।')}
           </p>
         </Reveal>
 
@@ -94,7 +91,7 @@ const VegetableFarming = () => {
                 <div className="img-zoom h-48 overflow-hidden">
                   <img
                     src={veg.image}
-                    alt={en ? veg.name : veg.nameHi}
+                    alt={tx(veg.name, veg.nameHi)}
                     loading="lazy"
                     className="h-full w-full object-cover"
                   />
@@ -105,15 +102,15 @@ const VegetableFarming = () => {
                     className="mb-4 text-2xl font-semibold text-foreground"
                     style={{ fontFamily: 'var(--font-serif)' }}
                   >
-                    {en ? veg.name : veg.nameHi}
+                    {tx(veg.name, veg.nameHi)}
                   </h3>
 
                   <dl className="space-y-3.5">
                     <div className="flex items-start gap-2.5">
                       <Sun className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div className="min-w-0">
-                        <dt className="text-sm text-muted-foreground">{en ? 'Season' : 'मौसम'}</dt>
-                        <dd className="font-semibold text-foreground">{en ? veg.season : veg.seasonHi}</dd>
+                        <dt className="text-sm text-muted-foreground">{tx('Season', 'मौसम')}</dt>
+                        <dd className="font-semibold text-foreground">{tx(veg.season, veg.seasonHi)}</dd>
                       </div>
                     </div>
 
@@ -121,10 +118,10 @@ const VegetableFarming = () => {
                       <Leaf className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div className="min-w-0">
                         <dt className="text-sm text-muted-foreground">
-                          {en ? 'Duration & Method' : 'अवधि और विधि'}
+                          {tx('Duration & Method', 'अवधि और विधि')}
                         </dt>
-                        <dd className="text-foreground">{en ? veg.duration : veg.durationHi}</dd>
-                        <dd className="text-foreground">{en ? veg.method : veg.methodHi}</dd>
+                        <dd className="text-foreground">{tx(veg.duration, veg.durationHi)}</dd>
+                        <dd className="text-foreground">{tx(veg.method, veg.methodHi)}</dd>
                       </div>
                     </div>
 
@@ -132,9 +129,9 @@ const VegetableFarming = () => {
                       <Droplets className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div className="min-w-0">
                         <dt className="text-sm text-muted-foreground">
-                          {en ? 'Water Requirements' : 'पानी की आवश्यकता'}
+                          {tx('Water Requirements', 'पानी की आवश्यकता')}
                         </dt>
-                        <dd className="text-sm text-foreground">{en ? veg.water : veg.waterHi}</dd>
+                        <dd className="text-sm text-foreground">{tx(veg.water, veg.waterHi)}</dd>
                       </div>
                     </div>
 
@@ -142,31 +139,31 @@ const VegetableFarming = () => {
                       <Sprout className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div className="min-w-0">
                         <dt className="text-sm text-muted-foreground">
-                          {en ? 'Seeds Required' : 'बीज की आवश्यकता'}
+                          {tx('Seeds Required', 'बीज की आवश्यकता')}
                         </dt>
-                        <dd className="font-semibold text-foreground">{en ? veg.seeds : veg.seedsHi}</dd>
+                        <dd className="font-semibold text-foreground">{tx(veg.seeds, veg.seedsHi)}</dd>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-2.5">
                       <Ruler className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                       <div className="min-w-0">
-                        <dt className="text-sm text-muted-foreground">{en ? 'Spacing' : 'दूरी'}</dt>
+                        <dt className="text-sm text-muted-foreground">{tx('Spacing', 'दूरी')}</dt>
                         <dd className="font-semibold text-foreground">{veg.spacing}</dd>
                       </div>
                     </div>
 
                     <div>
                       <dt className="mb-2 text-sm text-muted-foreground">
-                        {en ? 'Tools Needed' : 'आवश्यक उपकरण'}
+                        {tx('Tools Needed', 'आवश्यक उपकरण')}
                       </dt>
                       <dd className="flex flex-wrap gap-2">
-                        {(en ? veg.tools : veg.toolsHi).map((tool) => (
+                        {veg.tools.map((tool, i) => (
                           <span
                             key={tool}
                             className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary"
                           >
-                            {tool}
+                            {tx(tool, veg.toolsHi[i] ?? tool)}
                           </span>
                         ))}
                       </dd>
@@ -187,7 +184,7 @@ const VegetableFarming = () => {
                 className="text-2xl font-semibold text-foreground md:text-3xl"
                 style={{ fontFamily: 'var(--font-serif)' }}
               >
-                {en ? 'Common Tools for Vegetable Farming' : 'सब्जी की खेती के सामान्य उपकरण'}
+                {tx('Common Tools for Vegetable Farming', 'सब्जी की खेती के सामान्य उपकरण')}
               </h2>
             </div>
 
@@ -195,10 +192,10 @@ const VegetableFarming = () => {
               {TOOLS.map((tool) => (
                 <div key={tool.name} className="glass lift rounded-xl p-4">
                   <h3 className="mb-1.5 text-lg font-semibold text-foreground">
-                    {en ? tool.name : tool.nameHi}
+                    {tx(tool.name, tool.nameHi)}
                   </h3>
                   <p className="mb-1.5 text-xl font-bold text-primary">{tool.price}</p>
-                  <p className="text-sm text-muted-foreground">{en ? tool.use : tool.useHi}</p>
+                  <p className="text-sm text-muted-foreground">{tx(tool.use, tool.useHi)}</p>
                 </div>
               ))}
             </div>

@@ -31,7 +31,7 @@ declare global {
 }
 
 const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveItem }: CartSheetProps) => {
-  const { t, language } = useLanguage();
+  const { t, language, tx } = useLanguage();
   const { user } = useAuth();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
@@ -39,9 +39,7 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
 
   const handlePlaceOrder = async () => {
     if (!user) {
-      toast.error(language === 'en' 
-        ? 'Please login to place order' 
-        : 'ऑर्डर देने के लिए कृपया लॉगिन करें'
+      toast.error(tx('Please login to place order', 'ऑर्डर देने के लिए कृपया लॉगिन करें')
       );
       return;
     }
@@ -106,9 +104,7 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
       onOpenChange(false);
     } catch (error) {
       console.error('Error placing order:', error);
-      toast.error(language === 'en' 
-        ? 'Failed to place order. Please try again.' 
-        : 'ऑर्डर देने में विफल। कृपया पुनः प्रयास करें।'
+      toast.error(tx('Failed to place order. Please try again.', 'ऑर्डर देने में विफल। कृपया पुनः प्रयास करें।')
       );
     } finally {
       setIsPlacingOrder(false);
@@ -121,7 +117,7 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
         <SheetHeader className="px-6 py-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2 text-xl">
             <ShoppingBag className="h-6 w-6 text-primary" />
-            {language === 'en' ? 'My Cart' : 'मेरी कार्ट'}
+            {tx('My Cart', 'मेरी कार्ट')}
           </SheetTitle>
         </SheetHeader>
 
@@ -129,12 +125,10 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
           <div className="flex-1 flex flex-col items-center justify-center p-6">
             <ShoppingBag className="h-24 w-24 text-muted-foreground/20 mb-4" />
             <p className="text-lg font-semibold text-muted-foreground mb-2">
-              {language === 'en' ? 'Your cart is empty' : 'आपकी कार्ट खाली है'}
+              {tx('Your cart is empty', 'आपकी कार्ट खाली है')}
             </p>
             <p className="text-sm text-muted-foreground text-center">
-              {language === 'en' 
-                ? 'Add items to get started' 
-                : 'शुरू करने के लिए आइटम जोड़ें'}
+              {tx('Add items to get started', 'शुरू करने के लिए आइटम जोड़ें')}
             </p>
           </div>
         ) : (
@@ -149,7 +143,7 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-foreground mb-1 truncate">
-                      {language === 'en' ? item.name : item.nameHi}
+                      {tx(item.name, item.nameHi)}
                     </h3>
                     <p className="text-lg font-bold text-primary mb-2">
                       ₹{item.price * item.quantity}
@@ -193,7 +187,7 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
             <div className="border-t border-border p-6 space-y-4 ">
               <div className="space-y-2">
                 <div className="flex justify-between text-lg font-bold">
-                  <span>{language === 'en' ? 'Total Amount' : 'कुल राशि'}</span>
+                  <span>{tx('Total Amount', 'कुल राशि')}</span>
                   <span className="text-primary text-2xl">₹{total}</span>
                 </div>
               </div>
@@ -205,14 +199,12 @@ const CartSheet = ({ open, onOpenChange, cartItems, onUpdateQuantity, onRemoveIt
               >
                 <CheckCircle className="mr-2 h-6 w-6" />
                 {isPlacingOrder 
-                  ? (language === 'en' ? 'Placing Order...' : 'ऑर्डर दिया जा रहा है...')
-                  : (language === 'en' ? 'Place Order' : 'ऑर्डर करें')}
+                  ? (tx('Placing Order...', 'ऑर्डर दिया जा रहा है...'))
+                  : (tx('Place Order', 'ऑर्डर करें'))}
               </Button>
 
               <p className="text-xs text-center text-muted-foreground">
-                {language === 'en' 
-                  ? '✨ Free delivery in 10-15 minutes' 
-                  : '✨ 10-15 मिनट में मुफ्त डिलीवरी'}
+                {tx('✨ Free delivery in 10-15 minutes', '✨ 10-15 मिनट में मुफ्त डिलीवरी')}
               </p>
             </div>
           </>

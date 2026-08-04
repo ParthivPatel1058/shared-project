@@ -1,20 +1,32 @@
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
 import { Languages } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import LanguagePicker from '@/components/LanguagePicker';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LANGUAGE_MAP } from '@/i18n/languages';
 
+/**
+ * Opens the full language picker. This used to toggle straight between English
+ * and Hindi, which no longer works now that there are 23 languages to reach.
+ */
 const LanguageSwitcher = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
+  const meta = LANGUAGE_MAP[language];
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-      className="glass border-primary/20 hover:border-primary/40 transition-all"
-    >
-      <Languages className="mr-2 h-4 w-4" />
-      {language === 'en' ? 'हिं' : 'EN'}
-    </Button>
+    <LanguagePicker
+      trigger={
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label="Change language"
+          className="glass border-primary/20 transition-all hover:border-primary/40"
+        >
+          <Languages className="mr-2 h-4 w-4" />
+          {/* Endonyms can be long; the code keeps the header compact. */}
+          {meta ? meta.native.slice(0, 3) : language.toUpperCase()}
+        </Button>
+      }
+    />
   );
 };
 

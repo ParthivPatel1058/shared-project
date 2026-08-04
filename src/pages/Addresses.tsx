@@ -22,8 +22,7 @@ import AddressForm from '@/components/address/AddressForm';
 import { useAddresses, type Address, type AddressDraft } from '@/hooks/useAddresses';
 
 const Addresses = () => {
-  const { language } = useLanguage();
-  const en = language === 'en';
+  const { tx } = useLanguage();
   const { addresses, loading, create, update, remove, setDefault } = useAddresses();
 
   const [formOpen, setFormOpen] = useState(false);
@@ -47,18 +46,18 @@ const Addresses = () => {
   const del = async (a: Address) => {
     try {
       await remove(a.id);
-      toast.success(en ? 'Address removed' : 'पता हटा दिया गया');
+      toast.success(tx('Address removed', 'पता हटा दिया गया'));
     } catch {
-      toast.error(en ? 'Could not remove the address' : 'पता हटाया नहीं जा सका');
+      toast.error(tx('Could not remove the address', 'पता हटाया नहीं जा सका'));
     }
   };
 
   const promote = async (a: Address) => {
     try {
       await setDefault(a.id);
-      toast.success(en ? 'Default address updated' : 'डिफ़ॉल्ट पता बदल गया');
+      toast.success(tx('Default address updated', 'डिफ़ॉल्ट पता बदल गया'));
     } catch {
-      toast.error(en ? 'Could not update the default' : 'डिफ़ॉल्ट नहीं बदला जा सका');
+      toast.error(tx('Could not update the default', 'डिफ़ॉल्ट नहीं बदला जा सका'));
     }
   };
 
@@ -74,17 +73,15 @@ const Addresses = () => {
         <header className="flex flex-wrap items-end justify-between gap-4 pb-6 pt-8">
           <div>
             <h1 className="font-serif-display text-4xl text-foreground md:text-5xl">
-              {en ? 'My Addresses' : 'मेरे पते'}
+              {tx('My Addresses', 'मेरे पते')}
             </h1>
             <p className="mt-1 text-muted-foreground">
-              {en
-                ? 'Saved delivery addresses, reused at every checkout'
-                : 'सहेजे गए पते, हर ऑर्डर पर दोबारा इस्तेमाल करें'}
+              {tx('Saved delivery addresses, reused at every checkout', 'सहेजे गए पते, हर ऑर्डर पर दोबारा इस्तेमाल करें')}
             </p>
           </div>
           <Button onClick={openAdd}>
             <Plus className="h-4 w-4" />
-            {en ? 'Add address' : 'पता जोड़ें'}
+            {tx('Add address', 'पता जोड़ें')}
           </Button>
         </header>
 
@@ -96,16 +93,14 @@ const Addresses = () => {
           <div className="rounded-2xl border border-border bg-card py-16 text-center">
             <MapPin className="mx-auto mb-4 h-16 w-16 text-muted-foreground/25" />
             <p className="mb-1 font-semibold text-foreground">
-              {en ? 'No addresses yet' : 'अभी कोई पता नहीं'}
+              {tx('No addresses yet', 'अभी कोई पता नहीं')}
             </p>
             <p className="mb-5 text-sm text-muted-foreground">
-              {en
-                ? 'Add your first address so orders reach you faster'
-                : 'पहला पता जोड़ें ताकि ऑर्डर जल्दी पहुँचे'}
+              {tx('Add your first address so orders reach you faster', 'पहला पता जोड़ें ताकि ऑर्डर जल्दी पहुँचे')}
             </p>
             <Button onClick={openAdd}>
               <Plus className="h-4 w-4" />
-              {en ? 'Add address' : 'पता जोड़ें'}
+              {tx('Add address', 'पता जोड़ें')}
             </Button>
           </div>
         ) : (
@@ -118,13 +113,13 @@ const Addresses = () => {
                   <>
                     <Button variant="outline" size="sm" onClick={() => openEdit(a)} className="gap-1.5">
                       <Pencil className="h-3.5 w-3.5" />
-                      {en ? 'Edit' : 'बदलें'}
+                      {tx('Edit', 'बदलें')}
                     </Button>
 
                     {!a.is_default && (
                       <Button variant="outline" size="sm" onClick={() => promote(a)} className="gap-1.5">
                         <Star className="h-3.5 w-3.5" />
-                        {en ? 'Set as default' : 'डिफ़ॉल्ट बनाएं'}
+                        {tx('Set as default', 'डिफ़ॉल्ट बनाएं')}
                       </Button>
                     )}
 
@@ -132,24 +127,22 @@ const Addresses = () => {
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="sm" className="gap-1.5 text-destructive">
                           <Trash2 className="h-3.5 w-3.5" />
-                          {en ? 'Delete' : 'हटाएं'}
+                          {tx('Delete', 'हटाएं')}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            {en ? 'Delete this address?' : 'यह पता हटाएं?'}
+                            {tx('Delete this address?', 'यह पता हटाएं?')}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {en
-                              ? 'Orders already placed keep the address they were delivered to.'
-                              : 'पहले दिए गए ऑर्डर पर इसका असर नहीं होगा।'}
+                            {tx('Orders already placed keep the address they were delivered to.', 'पहले दिए गए ऑर्डर पर इसका असर नहीं होगा।')}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>{en ? 'Keep' : 'रहने दें'}</AlertDialogCancel>
+                          <AlertDialogCancel>{tx('Keep', 'रहने दें')}</AlertDialogCancel>
                           <AlertDialogAction onClick={() => del(a)}>
-                            {en ? 'Delete' : 'हटाएं'}
+                            {tx('Delete', 'हटाएं')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

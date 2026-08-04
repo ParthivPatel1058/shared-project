@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowRight } from 'lucide-react';
 
 export interface RingItem {
@@ -22,16 +23,17 @@ interface FeatureRingProps {
  * straightens it, and swaps the centre caption to that feature's name.
  */
 export default function FeatureRing({ items, en }: FeatureRingProps) {
+  const { tx } = useLanguage();
   const navigate = useNavigate();
   const [active, setActive] = useState<number | null>(null);
   const n = items.length;
 
   const centreTitle = active !== null
-    ? (en ? items[active].title : items[active].titleHi)
-    : (en ? 'Explore BhoomiX' : 'BhoomiX एक्सप्लोर करें');
+    ? tx(items[active].title, items[active].titleHi)
+    : (tx('Explore BhoomiX', 'BhoomiX एक्सप्लोर करें'));
   const centreSub = active !== null
-    ? (en ? items[active].cta : items[active].ctaHi)
-    : (en ? 'Everything you need — from seed to sale' : 'बीज से बिक्री तक — सब कुछ यहाँ');
+    ? tx(items[active].cta, items[active].ctaHi)
+    : (tx('Everything you need — from seed to sale', 'बीज से बिक्री तक — सब कुछ यहाँ'));
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[440px] lg:max-w-[560px]">
@@ -63,7 +65,7 @@ export default function FeatureRing({ items, en }: FeatureRingProps) {
             onMouseEnter={() => setActive(i)}
             onMouseLeave={() => setActive(null)}
             onClick={() => navigate(item.href)}
-            aria-label={en ? item.title : item.titleHi}
+            aria-label={tx(item.title, item.titleHi)}
             className="absolute z-10 transition-[transform,box-shadow] duration-300 ease-out focus:outline-none"
             style={{
               left: `${x}%`,

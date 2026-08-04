@@ -21,8 +21,7 @@ export default function AddressPicker({
   selectedId,
   onSelect,
 }: AddressPickerProps) {
-  const { language } = useLanguage();
-  const en = language === 'en';
+  const { tx } = useLanguage();
   const { addresses, loading, create } = useAddresses();
   const [adding, setAdding] = useState(false);
 
@@ -40,7 +39,7 @@ export default function AddressPicker({
           <SheetHeader className="border-b border-border p-5">
             <SheetTitle className="flex items-center gap-2 text-xl">
               <MapPin className="h-5 w-5 text-primary" />
-              {en ? 'Deliver to' : 'यहाँ भेजें'}
+              {tx('Deliver to', 'यहाँ भेजें')}
             </SheetTitle>
           </SheetHeader>
 
@@ -53,10 +52,10 @@ export default function AddressPicker({
               <div className="rounded-xl border border-dashed border-border py-10 text-center">
                 <MapPin className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
                 <p className="font-semibold text-foreground">
-                  {en ? 'No saved addresses' : 'कोई सहेजा पता नहीं'}
+                  {tx('No saved addresses', 'कोई सहेजा पता नहीं')}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {en ? 'Add one to place your order' : 'ऑर्डर देने के लिए पता जोड़ें'}
+                  {tx('Add one to place your order', 'ऑर्डर देने के लिए पता जोड़ें')}
                 </p>
               </div>
             ) : (
@@ -77,7 +76,7 @@ export default function AddressPicker({
           <div className="border-t border-border p-5">
             <Button variant="outline" className="h-12 w-full text-base" onClick={() => setAdding(true)}>
               <Plus className="h-4 w-4" />
-              {en ? 'Add a new address' : 'नया पता जोड़ें'}
+              {tx('Add a new address', 'नया पता जोड़ें')}
             </Button>
           </div>
         </SheetContent>

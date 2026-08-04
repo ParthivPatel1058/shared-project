@@ -87,7 +87,7 @@ interface SidebarProps {
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { language } = useLanguage();
+  const { language, tx } = useLanguage();
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const orderCount = useOrderCount();
@@ -137,7 +137,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {!collapsed && (
           <>
             <span className="flex-1 truncate text-sm font-medium">
-              {en ? item.label.en : item.label.hi}
+              {tx(item.label.en, item.label.hi)}
             </span>
             {badge && (
               <span className="flex h-5 min-w-5 items-center justify-center rounded-full accent-solid px-1.5 text-[10px] font-bold text-white">
@@ -171,7 +171,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
     const flyout = collapsed && (
       <span className="pointer-events-none absolute left-[calc(100%+14px)] top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded-xl accent-grad accent-ink px-3 py-2 text-xs font-semibold opacity-0 shadow-lg transition-all duration-200 group-hover/row:opacity-100">
-        {en ? item.label.en : item.label.hi}
+        {tx(item.label.en, item.label.hi)}
       </span>
     );
 
@@ -259,7 +259,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         )}
                       >
                         <span className="flex-1 truncate">
-                          {en ? child.label.en : child.label.hi}
+                          {tx(child.label.en, child.label.hi)}
                         </span>
                         <ChevronRight strokeWidth={2} className="h-3.5 w-3.5 opacity-50" />
                       </Link>

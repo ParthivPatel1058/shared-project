@@ -42,12 +42,21 @@ export function imageForKey(key: number | undefined, fallback?: string): string 
   return fallback;
 }
 
-/** Pack size for a line, or undefined when the product is no longer stocked. */
-export function unitForKey(key: number | undefined, en: boolean): string | undefined {
+/**
+ * Pack size for a line, or undefined when the product is no longer stocked.
+ *
+ * Takes the caller's `tx` rather than a language flag: this is a plain module
+ * function, so it cannot read the language context itself, and there are now
+ * more languages than a boolean can express.
+ */
+export function unitForKey(
+  key: number | undefined,
+  tx: (en: string, hi: string) => string,
+): string | undefined {
   if (typeof key !== 'number') return undefined;
   const entry = BY_KEY[key];
   if (!entry) return undefined;
-  const u = en ? entry.unit : entry.unitHi;
+  const u = tx(entry.unit, entry.unitHi);
   return u || undefined;
 }
 

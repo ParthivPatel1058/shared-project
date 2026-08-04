@@ -1,225 +1,171 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-
-type Language = 'en' | 'hi';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { AUTHORED, LANGUAGE_MAP, isRTL, type LanguageCode } from '@/i18n/languages';
+import { translations } from '@/i18n/strings';
 
 interface LanguageContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
+  language: LanguageCode;
+  setLanguage: (lang: LanguageCode) => void;
+  /** Look up a hand-authored key from the string table. */
   t: (key: string) => string;
+  /**
+   * Inline pair used throughout the pages: `tx('Orders', 'ऑर्डर')`.
+   * English and Hindi are returned as written; any other language resolves
+   * through the machine-translation cache, falling back to English until it
+   * arrives.
+   */
+  tx: (en: string, hi: string) => string;
+  /** True while strings for a newly selected language are still loading. */
+  translating: boolean;
 }
-
-const translations = {
-  en: {
-    // Navigation
-    home: 'Home',
-    agriMarket: 'Agri Market',
-    kisanHelp: 'Crop Advisory',
-    kisanMart: 'Kisan Mart',
-    settings: 'Settings',
-    myAccount: 'Account',
-    signOut: 'Sign Out',
-    signIn: 'Sign In',
-    menu: 'Menu',
-
-    // Sidebar
-    sidebar: 'Menu',
-    navigation: 'Explore',
-    shopping: 'Shop',
-    accountSection: 'Account',
-    dashboard: 'Dashboard',
-    orders: 'Orders',
-    myOrders: 'Orders',
-    orderHistory: 'Order History',
-    trackOrder: 'Track Order',
-    saveChanges: 'Save Changes',
-
-    // Sidebar page labels
-    govSchemes: 'Govt. Schemes',
-    roboticFarming: 'Robotic Farming',
-    organicFarming: 'Organic Farming',
-    vegetableFarming: 'Vegetable Farming',
-    shopLocator: 'Shop Locator',
-    deliveryPartner: 'Delivery Partner',
-    partnerOrders: 'Partner Deliveries',
-
-    // Home
-    welcome: 'Welcome to Bhoomi',
-    tagline: 'Tools, advisory, and inputs for every farming decision.',
-    searchPlaceholder: 'Search products, crops, or advisory…',
-
-    // AgriMarket
-    agriMarketTitle: 'Agri Market',
-    agriMarketDesc: 'Seeds, fertilizers, tools, and crop protection',
-    shopNow: 'Browse Products',
-    addToCart: 'Add to Cart',
-    cart: 'Cart',
-
-    // KisanHelp
-    kisanHelpTitle: 'Crop Advisory',
-    kisanHelpDesc: 'Ask a question or identify crop disease from a photo',
-    getHelp: 'Get Advice',
-    cropDiseaseDetection: 'Identify Crop Disease',
-    uploadCropImage: 'Upload a Crop Photo',
-    clickToSelect: 'Tap to select, or drag and drop an image',
-    askAIAssistant: 'Ask a Question',
-    askYourQuestion: 'Type your farming question…',
-    analyzing: 'Analyzing the image…',
-    aiAnalysis: 'Analysis',
-    you: 'You',
-    aiAssistant: 'Bhoomi Advisory',
-    thinking: 'Working on it…',
-
-    // KisanMart
-    kisanMartTitle: 'Kisan Mart',
-    kisanMartDesc: 'Everyday groceries and farm household supplies',
-    orderNow: 'Browse Store',
-
-    // Weather
-    weather: 'Weather',
-    temperature: 'Temperature',
-    humidity: 'Humidity',
-
-    // Settings
-    settingsTitle: 'Settings',
-    profile: 'Profile',
-    account: 'Account',
-    appearance: 'Appearance',
-    theme: 'Theme',
-    light: 'Light',
-    dark: 'Dark',
-    language: 'Language',
-    english: 'English',
-    hindi: 'हिंदी',
-    notifications: 'Notifications',
-    support: 'Support',
-    contactSupport: 'Contact Support',
-    helpCenter: 'Help Center',
-    reportIssue: 'Report an Issue',
-    about: 'About',
-    aboutApp: 'About Bhoomi',
-    version: 'Version',
-  },
-  hi: {
-    // Navigation
-    home: 'होम',
-    agriMarket: 'कृषि बाज़ार',
-    kisanHelp: 'फसल सलाह',
-    kisanMart: 'किसान मार्ट',
-    settings: 'सेटिंग्स',
-    myAccount: 'खाता',
-    signOut: 'साइन आउट',
-    signIn: 'साइन इन',
-    menu: 'मेनू',
-
-    // Sidebar
-    sidebar: 'मेनू',
-    navigation: 'खोजें',
-    shopping: 'खरीदारी',
-    accountSection: 'खाता',
-    dashboard: 'डैशबोर्ड',
-    orders: 'ऑर्डर',
-    myOrders: 'ऑर्डर',
-    orderHistory: 'ऑर्डर इतिहास',
-    trackOrder: 'ऑर्डर ट्रैक करें',
-    saveChanges: 'सहेजें',
-
-    // Sidebar page labels
-    govSchemes: 'सरकारी योजनाएं',
-    roboticFarming: 'रोबोटिक खेती',
-    organicFarming: 'जैविक खेती',
-    vegetableFarming: 'सब्जी खेती',
-    shopLocator: 'दुकान खोजें',
-    deliveryPartner: 'डिलीवरी पार्टनर',
-    partnerOrders: 'पार्टनर डिलीवरी',
-
-    // Home
-    welcome: 'भूमि में आपका स्वागत है',
-    tagline: 'हर खेती के फैसले के लिए उपकरण, सलाह और सामान।',
-    searchPlaceholder: 'उत्पाद, फसल, या सलाह खोजें…',
-
-    // AgriMarket
-    agriMarketTitle: 'कृषि बाज़ार',
-    agriMarketDesc: 'बीज, उर्वरक, उपकरण और फसल सुरक्षा',
-    shopNow: 'उत्पाद देखें',
-    addToCart: 'कार्ट में जोड़ें',
-    cart: 'कार्ट',
-
-    // KisanHelp
-    kisanHelpTitle: 'फसल सलाह',
-    kisanHelpDesc: 'सवाल पूछें या तस्वीर से फसल की बीमारी पहचानें',
-    getHelp: 'सलाह लें',
-    cropDiseaseDetection: 'फसल रोग पहचान',
-    uploadCropImage: 'फसल की तस्वीर अपलोड करें',
-    clickToSelect: 'चुनने के लिए टैप करें, या तस्वीर खींचकर छोड़ें',
-    askAIAssistant: 'सवाल पूछें',
-    askYourQuestion: 'अपना खेती का सवाल लिखें…',
-    analyzing: 'तस्वीर का विश्लेषण हो रहा है…',
-    aiAnalysis: 'विश्लेषण',
-    you: 'आप',
-    aiAssistant: 'भूमि सलाह',
-    thinking: 'जवाब तैयार हो रहा है…',
-
-    // KisanMart
-    kisanMartTitle: 'किसान मार्ट',
-    kisanMartDesc: 'रोज़मर्रा की किराना और घर-खेत की ज़रूरतें',
-    orderNow: 'स्टोर देखें',
-
-    // Weather
-    weather: 'मौसम',
-    temperature: 'तापमान',
-    humidity: 'नमी',
-
-    // Settings
-    settingsTitle: 'सेटिंग्स',
-    profile: 'प्रोफ़ाइल',
-    account: 'खाता',
-    appearance: 'दिखावट',
-    theme: 'थीम',
-    light: 'लाइट',
-    dark: 'डार्क',
-    language: 'भाषा',
-    english: 'English',
-    hindi: 'हिंदी',
-    notifications: 'सूचनाएं',
-    support: 'सहायता',
-    contactSupport: 'सहायता से संपर्क करें',
-    helpCenter: 'सहायता केंद्र',
-    reportIssue: 'समस्या रिपोर्ट करें',
-    about: 'परिचय',
-    aboutApp: 'भूमि के बारे में',
-    version: 'संस्करण',
-  },
-};
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const cacheKey = (lang: string) => `bx_i18n_${lang}`;
+
+function readCache(lang: string): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(cacheKey(lang)) ?? '{}');
+  } catch {
+    return {};
+  }
+}
+
+function writeCache(lang: string, dict: Record<string, string>) {
+  try {
+    localStorage.setItem(cacheKey(lang), JSON.stringify(dict));
+  } catch {
+    // Quota exceeded — the server cache still makes the next load fast.
+  }
+}
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>(() => {
-    return (localStorage.getItem('language') as Language) || 'en';
+  const [language, setLanguageState] = useState<LanguageCode>(() => {
+    const saved = localStorage.getItem('language');
+    return saved && LANGUAGE_MAP[saved] ? saved : 'en';
   });
 
-  const handleSetLanguage = useCallback((lang: Language) => {
-    setLanguage(lang);
+  const [dict, setDict] = useState<Record<string, string>>(() =>
+    AUTHORED.has(language) ? {} : readCache(language),
+  );
+  const [translating, setTranslating] = useState(false);
+
+  // Strings seen during render that have no translation yet. Collected in a
+  // ref so requesting them never itself triggers a render.
+  const pending = useRef<Set<string>>(new Set());
+  const timer = useRef<number | null>(null);
+  const inFlight = useRef<Set<string>>(new Set());
+
+  const flush = useCallback(async () => {
+    const lang = language;
+    if (AUTHORED.has(lang)) return;
+
+    const batch = [...pending.current].filter((s) => !inFlight.current.has(s)).slice(0, 100);
+    pending.current.clear();
+    if (batch.length === 0) return;
+
+    batch.forEach((s) => inFlight.current.add(s));
+    setTranslating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('translate', {
+        body: { lang, texts: batch },
+      });
+      if (!error && data?.translations) {
+        // Language may have changed while the request was in flight.
+        setDict((prev) => {
+          if (language !== lang) return prev;
+          const next = { ...prev, ...data.translations };
+          writeCache(lang, next);
+          return next;
+        });
+      }
+    } catch {
+      // Leave the English fallback in place.
+    } finally {
+      batch.forEach((s) => inFlight.current.delete(s));
+      setTranslating(false);
+    }
+  }, [language]);
+
+  const request = useCallback(
+    (text: string) => {
+      pending.current.add(text);
+      if (timer.current !== null) window.clearTimeout(timer.current);
+      // Batch everything one render pass produces into a single call.
+      timer.current = window.setTimeout(() => void flush(), 60);
+    },
+    [flush],
+  );
+
+  const setLanguage = useCallback((lang: LanguageCode) => {
+    if (!LANGUAGE_MAP[lang]) return;
+    setLanguageState(lang);
     localStorage.setItem('language', lang);
+    setDict(AUTHORED.has(lang) ? {} : readCache(lang));
+    pending.current.clear();
+    inFlight.current.clear();
   }, []);
+
+  // Scripts like Urdu, Kashmiri and Sindhi run right to left.
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = isRTL(language) ? 'rtl' : 'ltr';
+  }, [language]);
+
+  // Warm the cache with the whole static table so the shell is translated in
+  // one call instead of trickling in per component.
+  useEffect(() => {
+    if (AUTHORED.has(language)) return;
+    const cached = readCache(language);
+    const missing = Object.values(translations.en).filter((v) => !(v in cached));
+    if (missing.length === 0) return;
+    missing.slice(0, 100).forEach((v) => pending.current.add(v));
+    void flush();
+  }, [language, flush]);
+
+  const resolve = useCallback(
+    (english: string): string => {
+      const hit = dict[english];
+      if (hit) return hit;
+      if (english.trim()) request(english);
+      return english;
+    },
+    [dict, request],
+  );
 
   const t = useCallback(
     (key: string): string => {
-      return translations[language][key as keyof typeof translations.en] || key;
+      const en = translations.en[key as keyof typeof translations.en];
+      if (language === 'en') return en ?? key;
+      if (language === 'hi') return translations.hi[key as keyof typeof translations.hi] ?? en ?? key;
+      return en ? resolve(en) : key;
     },
-    [language],
+    [language, resolve],
+  );
+
+  const tx = useCallback(
+    (en: string, hi: string): string => {
+      if (language === 'en') return en;
+      if (language === 'hi') return hi;
+      return resolve(en);
+    },
+    [language, resolve],
   );
 
   const value = useMemo(
-    () => ({ language, setLanguage: handleSetLanguage, t }),
-    [language, handleSetLanguage, t],
+    () => ({ language, setLanguage, t, tx, translating }),
+    [language, setLanguage, t, tx, translating],
   );
 
-  return (
-    <LanguageContext.Provider value={value}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
 
 export const useLanguage = () => {

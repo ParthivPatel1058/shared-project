@@ -17,8 +17,7 @@ interface BackButtonProps {
 export default function BackButton({ fallback = '/', className }: BackButtonProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { language } = useLanguage();
-  const en = language === 'en';
+  const { tx } = useLanguage();
 
   if (location.pathname === fallback) return null;
 
@@ -32,7 +31,7 @@ export default function BackButton({ fallback = '/', className }: BackButtonProp
   return (
     <button
       onClick={goBack}
-      aria-label={en ? 'Go back' : 'वापस जाएं'}
+      aria-label={tx('Go back', 'वापस जाएं')}
       className={cn(
         'btn-metal group inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-semibold',
         className,
@@ -42,7 +41,7 @@ export default function BackButton({ fallback = '/', className }: BackButtonProp
         strokeWidth={2}
         className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-0.5"
       />
-      {en ? 'Back' : 'वापस'}
+      {tx('Back', 'वापस')}
     </button>
   );
 }

@@ -38,14 +38,13 @@ const CTRL =
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, language, tx } = useLanguage();
   const { signOut, user } = useAuth();
   const { weather } = useWeather();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const searchRef = React.useRef<HTMLInputElement>(null);
-  const en = language === 'en';
 
   const initials = (user?.email ?? 'BX').slice(0, 2).toUpperCase();
 
@@ -126,7 +125,7 @@ const Navigation = () => {
             ref={searchRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={en ? 'Search crops, products, advisory…' : 'फसल, उत्पाद, सलाह खोजें…'}
+            placeholder={tx('Search crops, products, advisory…', 'फसल, उत्पाद, सलाह खोजें…')}
             className="h-12 w-full rounded-full border pl-11 pr-16 text-sm outline-none transition-all duration-500
                        border-black/[0.07] bg-black/[0.035] text-neutral-900 placeholder:text-neutral-400
                        focus:border-primary/45 focus:bg-white focus:shadow-[0_0_0_4px_hsl(var(--aqua)/0.14)]
@@ -146,8 +145,8 @@ const Navigation = () => {
           <GlareHover className="hidden rounded-full sm:inline-flex">
             <button
               onClick={() =>
-                toast(en ? 'No new notifications' : 'कोई नई सूचना नहीं', {
-                  description: en ? "You're all caught up 🌾" : 'आप अप-टू-डेट हैं 🌾',
+                toast(tx('No new notifications', 'कोई नई सूचना नहीं'), {
+                  description: tx("You're all caught up 🌾", 'आप अप-टू-डेट हैं 🌾'),
                 })
               }
               aria-label="Notifications"
@@ -224,7 +223,7 @@ const Navigation = () => {
                 })}
                 <Button variant="outline" onClick={signOut} className="mt-4 w-full justify-start gap-3 p-3.5">
                   <LogOut strokeWidth={2} className="h-5 w-5" />
-                  <span className="font-semibold">{en ? 'Sign Out' : 'साइन आउट'}</span>
+                  <span className="font-semibold">{tx('Sign Out', 'साइन आउट')}</span>
                 </Button>
               </div>
             </SheetContent>
