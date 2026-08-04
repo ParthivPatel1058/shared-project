@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import heroImage from '@/assets/green-manure.jpg';
+import heroImage from '@/assets/auth-hero.jpg';
 import { Globe, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PixelReactor from '@/components/PixelReactor';
@@ -31,7 +31,7 @@ export default function Welcome() {
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl md:grid-cols-2">
         <PixelReactor
           src={heroImage}
-          alt={tx('Young crop seedlings', 'नई फसल के पौधे')}
+          alt={tx('Wheat field at golden hour', 'सुनहरी शाम में गेहूं का खेत')}
           cell={9}
           levels={9}
           className="h-56 w-full md:h-full"

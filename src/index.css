@@ -1024,8 +1024,10 @@ All colors MUST be HSL.
     /* Editorial display serif — high-contrast, luxury */
     --font-serif: "Cormorant Garamond", "Instrument Serif", Georgia, serif;
 
-    /* Fixed cinematic backdrop. Swap this URL to change the scene. */
-    --scene-image: url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=2400&q=80&auto=format&fit=crop");
+    /* Fixed cinematic backdrop. Swap this URL to change the scene.
+       Aerial crop rows: reads as precision agriculture and scale rather than
+       retail, and the calm palette keeps foreground UI legible over it. */
+    --scene-image: url("https://images.unsplash.com/photo-1560493676-04071c5f467b?w=2400&q=80&auto=format&fit=crop");
 
     /* Brand accent: warm beige into aqua (replaces the rose/indigo pair) */
     --beige: 40 44% 78%;
