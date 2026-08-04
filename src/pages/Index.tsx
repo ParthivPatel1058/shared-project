@@ -2,6 +2,7 @@ import { ShoppingBag, HelpCircle, Store, Landmark, Bot, Leaf, Truck, Carrot, Sca
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
 import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
 import GooeyNav from '@/components/GooeyNav';
@@ -174,6 +175,8 @@ Smarter`, `स्मार्ट
           </section>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
