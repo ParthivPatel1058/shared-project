@@ -3,33 +3,37 @@ import { useEffect, useRef } from 'react';
 /**
  * Pixel-mosaic image that reacts to the pointer.
  *
- * The image is reduced to a grid of colour cells once, up front. Every frame
- * each cell samples the grid at a position pushed radially away from the
- * cursor, so colours smear outward from wherever the pointer is and settle back
- * when it leaves. Sampling a pre-built grid rather than re-reading pixel data
- * keeps the loop to cheap fillRect calls.
+ * The image is reduced to a grid of flat colour cells once, up front. Every
+ * frame each cell samples that grid at a position pushed radially away from the
+ * cursor, so colours streak outward from wherever the pointer is and settle
+ * back when it leaves. Sampling a pre-built grid rather than re-reading pixel
+ * data keeps the loop to cheap fillRect calls.
+ *
+ * The canvas is sized from its container so the blocks stay square whatever the
+ * panel's aspect ratio — stretching a fixed-resolution canvas to fit would
+ * squash the pixels, which is very visible at this block size.
  */
 interface PixelReactorProps {
   src: string;
   alt: string;
-  /** Size of one mosaic block, in canvas pixels. Larger = chunkier. */
+  /** Size of one mosaic block, in CSS pixels. Larger = chunkier. */
   cell?: number;
-  /** How far the distortion reaches, in canvas pixels. */
+  /** How far the distortion reaches, in pixels. */
   radius?: number;
-  /** Peak displacement at the cursor, in canvas pixels. */
+  /** Peak displacement at the cursor, in pixels. */
   strength?: number;
+  /** Steps per colour channel. Lower = flatter, more poster-like bands. */
+  levels?: number;
   className?: string;
 }
-
-const W = 400;
-const H = 540;
 
 export default function PixelReactor({
   src,
   alt,
-  cell = 7,
+  cell = 9,
   radius = 185,
   strength = 130,
+  levels = 5,
   className,
 }: PixelReactorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,17 +47,19 @@ export default function PixelReactor({
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
 
-    const cols = Math.ceil(W / cell);
-    const rows = Math.ceil(H / cell);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    /** Averaged colour per mosaic cell, RGB triplets. */
+    let W = 0;
+    let H = 0;
+    let cols = 0;
+    let rows = 0;
+    /** Quantised colour per mosaic cell, RGB triplets. */
     let grid: Uint8ClampedArray | null = null;
     let frame = 0;
+    let loaded = false;
 
-    // Pointer in canvas space, plus a smoothed copy so motion feels fluid.
-    const target = { x: W / 2, y: H / 2 };
-    const eased = { x: W / 2, y: H / 2 };
+    const target = { x: 0, y: 0 };
+    const eased = { x: 0, y: 0 };
     // 0 when idle, 1 while hovering — lets the effect fade rather than snap.
     let energy = 0;
     let hovering = false;
@@ -61,8 +67,10 @@ export default function PixelReactor({
     const img = new Image();
     img.crossOrigin = 'anonymous';
 
-    img.onload = () => {
-      // Downscale to one pixel per cell; the browser averages for us.
+    /** Rebuild the colour grid for the current canvas size. */
+    const build = () => {
+      if (!loaded || cols < 1 || rows < 1) return;
+
       const small = document.createElement('canvas');
       small.width = cols;
       small.height = rows;
@@ -77,23 +85,40 @@ export default function PixelReactor({
 
       const data = sctx.getImageData(0, 0, cols, rows).data;
       grid = new Uint8ClampedArray(cols * rows * 3);
+
+      // Snap each channel to a few steps. This is what gives flat, poster-like
+      // colour bands rather than a merely blurry photo.
+      const step = 255 / (levels - 1);
+      const quantise = (v: number) => Math.round(Math.round(v / step) * step);
+
       for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
-        grid[j] = data[i];
-        grid[j + 1] = data[i + 1];
-        grid[j + 2] = data[i + 2];
+        grid[j] = quantise(data[i]);
+        grid[j + 1] = quantise(data[i + 1]);
+        grid[j + 2] = quantise(data[i + 2]);
       }
-      loop();
     };
 
-    img.onerror = () => {
-      ctx.fillStyle = '#16241d';
-      ctx.fillRect(0, 0, W, H);
+    const resize = () => {
+      const r = host.getBoundingClientRect();
+      const w = Math.max(1, Math.round(r.width));
+      const h = Math.max(1, Math.round(r.height));
+      if (w === W && h === H) return;
+
+      W = w;
+      H = h;
+      canvas.width = W;
+      canvas.height = H;
+      cols = Math.ceil(W / cell);
+      rows = Math.ceil(H / cell);
+      target.x = eased.x = W / 2;
+      target.y = eased.y = H / 2;
+      build();
+      draw();
     };
 
     const draw = () => {
       if (!grid) return;
 
-      // Ease the pointer and the on/off energy.
       eased.x += (target.x - eased.x) * 0.16;
       eased.y += (target.y - eased.y) * 0.16;
       energy += ((hovering ? 1 : 0) - energy) * 0.09;
@@ -149,14 +174,21 @@ export default function PixelReactor({
       if (!frame && !reduced) frame = requestAnimationFrame(loop);
     };
 
-    const toCanvas = (clientX: number, clientY: number) => {
-      const r = host.getBoundingClientRect();
-      target.x = ((clientX - r.left) / r.width) * W;
-      target.y = ((clientY - r.top) / r.height) * H;
+    img.onload = () => {
+      loaded = true;
+      build();
+      draw();
+    };
+
+    img.onerror = () => {
+      ctx.fillStyle = '#16241d';
+      ctx.fillRect(0, 0, W || 1, H || 1);
     };
 
     const onMove = (e: PointerEvent) => {
-      toCanvas(e.clientX, e.clientY);
+      const r = host.getBoundingClientRect();
+      target.x = e.clientX - r.left;
+      target.y = e.clientY - r.top;
       hovering = true;
       wake();
     };
@@ -165,16 +197,21 @@ export default function PixelReactor({
       wake();
     };
 
+    const observer = new ResizeObserver(resize);
+    observer.observe(host);
+    resize();
+
     host.addEventListener('pointermove', onMove);
     host.addEventListener('pointerleave', onLeave);
     img.src = src;
 
     return () => {
+      observer.disconnect();
       host.removeEventListener('pointermove', onMove);
       host.removeEventListener('pointerleave', onLeave);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [src, cell, radius, strength]);
+  }, [src, cell, radius, strength, levels]);
 
   return (
     <div
@@ -183,12 +220,7 @@ export default function PixelReactor({
       aria-label={alt}
       className={`relative block cursor-crosshair touch-pan-y overflow-hidden ${className ?? ''}`}
     >
-      <canvas
-        ref={canvasRef}
-        width={W}
-        height={H}
-        className="pointer-events-none absolute inset-0 block size-full"
-      />
+      <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 block size-full" />
     </div>
   );
 }
