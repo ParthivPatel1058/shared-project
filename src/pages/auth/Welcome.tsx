@@ -1,21 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import bhoomixLogo from '@/assets/bhoomix-logo-main.jpg';
-import { Leaf, ShoppingCart, Bot, TrendingUp, Globe, ArrowRight } from 'lucide-react';
+import heroImage from '@/assets/green-manure.jpg';
+import { Globe, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import GlassOrb from '@/components/GlassOrb';
+import PixelReactor from '@/components/PixelReactor';
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { language, setLanguage, tx } = useLanguage();
-  const en = language === 'en';
-
-  const features = [
-    { icon: Leaf, label: tx('Organic Farming', 'जैविक खेती'), gradient: 'gradient-primary', delay: '0.1s' },
-    { icon: ShoppingCart, label: tx('Kisan Mart', 'किसान मार्ट'), gradient: 'gradient-secondary', delay: '0.2s' },
-    { icon: Bot, label: tx('AI Assistant', 'AI सहायक'), gradient: 'gradient-accent', delay: '0.3s' },
-    { icon: TrendingUp, label: tx('Market Prices', 'बाजार मूल्य'), gradient: 'gradient-primary', delay: '0.4s' },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 py-10 animate-fade-in">
@@ -32,9 +25,13 @@ export default function Welcome() {
 
       {/* Liquid glass panel wrapping the whole hero */}
       <div className="glass-strong border-glow relative w-full max-w-md px-6 sm:px-10 py-10 flex flex-col items-center">
-        {/* Refractive glass orb hero */}
-        <div className="flex justify-center mb-5 animate-float">
-          <GlassOrb size={190} />
+        {/* Pointer-reactive pixel mosaic — move the cursor across it */}
+        <div className="mb-8 flex justify-center">
+          <PixelReactor
+            src={heroImage}
+            alt={tx('BhoomiX', 'BhoomiX')}
+            className="h-[432px] w-80 rounded-2xl border border-border/50 shadow-2xl"
+          />
         </div>
 
         {/* Logo plate with animated gradient ring */}
@@ -52,27 +49,6 @@ export default function Welcome() {
           <p className="text-muted-foreground">
             {tx('Your farming companion', 'आपका खेती साथी')}
           </p>
-        </div>
-
-        {/* Interactive liquid-glass feature tiles */}
-        <div className="grid grid-cols-2 gap-3.5 w-full max-w-xs mb-9">
-          {features.map(({ icon: Icon, label, gradient, delay }) => (
-            <button
-              key={label}
-              onClick={() => navigate('/auth/signup')}
-              className="group glass shine flex flex-col items-center gap-2.5 p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-xl active:scale-95 animate-fade-in text-left"
-              style={{ animationDelay: delay }}
-            >
-              <div
-                className={`p-3 rounded-xl ${gradient} shadow-md transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:shadow-lg`}
-              >
-                <Icon className="w-5 h-5 text-white drop-shadow" />
-              </div>
-              <span className="text-xs font-semibold text-center text-foreground">
-                {label}
-              </span>
-            </button>
-          ))}
         </div>
 
         {/* CTA */}
