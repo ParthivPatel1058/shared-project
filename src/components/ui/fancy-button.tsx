@@ -8,6 +8,22 @@ interface FancyButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
   /** Optional confirmed state shown after click (e.g. "Added"). */
   sentLabel?: string;
   sentIcon?: React.ReactNode;
+  /**
+   * True while a click is being honoured — the icon launches off the right
+   * edge and the label dissolves downward, mirroring the original's
+   * plane-takeoff sequence. Meant to be held for ~600ms before the caller
+   * navigates or completes the action, e.g.:
+   *   const [launching, setLaunching] = useState(false);
+   *   onClick={() => { setLaunching(true); setTimeout(go, 650); }}
+   */
+  launching?: boolean;
+  /**
+   * 'neutral' (default) follows the theme — a light plate that turns dark in
+   * dark mode, teal accent. 'gold' pins a warm cream plate and gold accent in
+   * both themes, for a primary CTA that should read as premium rather than
+   * blend into a dark UI.
+   */
+  tone?: 'neutral' | 'gold';
 }
 
 /**
@@ -21,11 +37,20 @@ interface FancyButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
  * never ran.
  */
 const FancyButton = React.forwardRef<HTMLButtonElement, FancyButtonProps>(
-  ({ label, icon, sentLabel, sentIcon, className, ...props }, ref) => {
+  ({ label, icon, sentLabel, sentIcon, launching, tone = 'neutral', className, ...props }, ref) => {
     const letters = Array.from(label);
 
     return (
-      <button ref={ref} className={cn('fancy-btn', className)} {...props}>
+      <button
+        ref={ref}
+        className={cn(
+          'fancy-btn',
+          tone === 'gold' && 'fancy-btn--gold',
+          launching && 'fancy-btn--launching',
+          className,
+        )}
+        {...props}
+      >
         <span className="fancy-btn__outline" aria-hidden />
 
         <span className="fancy-btn__state fancy-btn__state--default">

@@ -1,13 +1,24 @@
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import heroImage from '@/assets/auth-hero.jpg';
-import { Globe, Check } from 'lucide-react';
+import { Globe, Check, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PixelReactor from '@/components/PixelReactor';
+import { FancyButton } from '@/components/ui/fancy-button';
+
+/** How long the launch animation plays before the route actually changes. */
+const LAUNCH_MS = 650;
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { language, setLanguage, tx } = useLanguage();
+  const [launching, setLaunching] = useState(false);
+
+  const handleGetStarted = () => {
+    if (launching) return;
+    setLaunching(true);
+    window.setTimeout(() => navigate('/auth/signup'), LAUNCH_MS);
+  };
 
   const points = [
     tx('Free crop disease scanning', 'मुफ़्त फसल रोग जांच'),
@@ -57,13 +68,14 @@ export default function Welcome() {
           </ul>
 
           <div className="space-y-3">
-            <Button
-              onClick={() => navigate('/auth/signup')}
-              size="lg"
-              className="h-12 w-full text-base font-semibold"
-            >
-              {tx('Get Started', 'शुरू करें')}
-            </Button>
+            <FancyButton
+              label={tx('Get Started', 'शुरू करें')}
+              icon={<ArrowRight className="h-[1em] w-[1em]" />}
+              tone="gold"
+              launching={launching}
+              onClick={handleGetStarted}
+              className="h-14 w-full text-base"
+            />
 
             <button
               onClick={() => navigate('/auth/login')}

@@ -566,6 +566,23 @@
   color: #f2efe9;
 }
 
+/* Gold tone — pins a bright white plate in both themes, for a primary CTA
+   that should read as premium rather than blend into a dark UI. The rim-light
+   sweep is dropped for this tone: at full saturation it read as a harsh blob
+   in one corner rather than a sheen, so the letter-wave alone carries the
+   hover feedback. (Named "gold" for the accent colour on hover, not the
+   plate — the plate itself is white.) */
+.fancy-btn--gold,
+.dark .fancy-btn--gold {
+  --fb-accent: hsl(var(--gold));
+  --fb-n1: #ffffff;
+  --fb-n2: #e9e9ec;
+  color: hsl(var(--espresso));
+}
+.fancy-btn--gold .fancy-btn__outline {
+  display: none;
+}
+
 .fancy-btn:hover {
   transform: scale(1.02);
 }
@@ -660,12 +677,37 @@
 
 .fancy-btn__state--sent { display: none; }
 
+/* Launch sequence — played on click before the caller navigates away.
+   The icon flies off the trailing edge and the label dissolves downward,
+   the same beats as the original's plane-takeoff, adapted for a button
+   that departs the page rather than confirming a send. */
+.fancy-btn--launching {
+  pointer-events: none;
+}
+.fancy-btn--launching .fancy-btn__icon {
+  animation: fb-takeoff 0.6s ease forwards;
+}
+.fancy-btn--launching .fancy-btn__label span {
+  animation: fb-disappear 0.45s ease forwards calc(var(--i) * 0.02s);
+}
+@keyframes fb-takeoff {
+  0%   { opacity: 1; transform: translateX(0) scale(1.08); }
+  55%  { opacity: 1; transform: translateX(26px) scale(1.3); }
+  100% { opacity: 0; transform: translateX(60px) scale(0.4); }
+}
+@keyframes fb-disappear {
+  from { opacity: 1; transform: translateY(0); filter: blur(0); }
+  to   { opacity: 0; transform: translateY(14px); filter: blur(3px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fancy-btn,
   .fancy-btn::after,
   .fancy-btn__icon { transition: none; }
   .fancy-btn:hover .fancy-btn__label span { animation: none; }
   .fancy-btn__outline::before { animation: none; }
+  .fancy-btn--launching .fancy-btn__icon,
+  .fancy-btn--launching .fancy-btn__label span { animation: none; opacity: 0; }
 }
 
 
