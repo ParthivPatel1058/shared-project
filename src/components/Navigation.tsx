@@ -12,6 +12,7 @@ import {
   Search,
   Bell,
   MapPin,
+  ChevronDown,
   Command,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,6 +20,7 @@ import { trackSearch } from '@/lib/analytics';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWeather } from '@/hooks/useWeather';
+import { useAddresses, formatAddress } from '@/hooks/useAddresses';
 import { WeatherIcon } from './WeatherWidget';
 import GradientText from '@/components/ui/gradient-text';
 import GlareHover from '@/components/ui/glare-hover';
@@ -41,6 +43,14 @@ const Navigation = () => {
   const { t, language, tx } = useLanguage();
   const { signOut, user } = useAuth();
   const { weather } = useWeather();
+  const { defaultAddress } = useAddresses();
+
+  // Short form for the chip: the house/area is what identifies a place to the
+  // person living there; the full string is on the title attribute.
+  const deliverTo = defaultAddress
+    ? [defaultAddress.house, defaultAddress.area].filter(Boolean).join(', ') ||
+      formatAddress(defaultAddress)
+    : null;
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
@@ -64,7 +74,7 @@ const Navigation = () => {
     e.preventDefault();
     if (!query.trim()) return;
     trackSearch(query.trim());
-    navigate(`/agri-market?search=${encodeURIComponent(query.trim())}`);
+    navigate(`/search?q=${encodeURIComponent(query.trim())}`);
   };
 
   const navItems = [
@@ -111,6 +121,28 @@ const Navigation = () => {
             <span className="text-xs text-neutral-500 dark:text-white/60">{weather.condition}</span>
           </span>
         </div>
+
+        {/* Delivery address — the saved default, or a prompt to add one. */}
+        <Link
+          to="/addresses"
+          title={deliverTo ?? undefined}
+          className="hidden min-w-0 max-w-[15rem] flex-shrink items-center gap-2 rounded-full border py-2 pl-3.5 pr-4 transition-colors lg:flex
+                     border-black/[0.07] bg-black/[0.035] hover:bg-black/[0.06]
+                     dark:border-white/[0.12] dark:bg-white/[0.06] dark:hover:bg-white/[0.1]"
+        >
+          <MapPin className="h-4 w-4 flex-shrink-0 text-primary" />
+          <span className="min-w-0">
+            <span className="block text-[11px] leading-tight text-neutral-500 dark:text-white/60">
+              {defaultAddress
+                ? tx('Deliver to', 'यहाँ डिलीवरी')
+                : tx('Set location', 'स्थान चुनें')}
+            </span>
+            <span className="block truncate text-sm font-semibold leading-tight text-neutral-900 dark:text-white">
+              {deliverTo ?? tx('Add address', 'पता जोड़ें')}
+            </span>
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400 dark:text-white/45" />
+        </Link>
 
         {/* Search — grows on focus, with a Cmd-K affordance */}
         <form

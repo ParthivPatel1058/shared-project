@@ -1,4 +1,4 @@
-import { ShoppingCart, Zap, Search, Plus, Minus } from 'lucide-react';
+import { ShoppingCart, Zap, Search, Clock } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
@@ -161,35 +161,48 @@ const KisanMart = () => {
       <div className="pt-8 px-4 container mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {filteredProducts.map((product) => (
+            /*
+              Solid `bg-card`, not `glass`: over the app's fixed photographic
+              backdrop a translucent card let the scene bleed through the text
+              half, tinting the product name and price a murky olive.
+            */
             <div
               key={product.id}
-              className="glass rounded-2xl overflow-hidden hover:shadow-xl transition-all"
+              className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-xl"
             >
-              <div className="aspect-square bg-white p-4 relative">
+              <div className="relative aspect-square bg-white p-4">
                 <img
                   src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
+                  alt={tx(product.name, product.nameHi)}
+                  loading="lazy"
+                  className="h-full w-full object-contain"
                 />
-                <div className="absolute top-2 left-2 px-2 py-1 bg-primary/90 backdrop-blur-sm rounded-lg text-xs font-semibold text-primary-foreground">
-                  {tx(product.tag, product.tagHi)}
-                </div>
               </div>
-              <div className="p-3">
-                <h3 className="font-bold text-sm mb-1 text-foreground line-clamp-2">
+
+              <div className="flex flex-1 flex-col p-3">
+                <span className="mb-1.5 flex w-fit items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  {tx('10 MINS', '10 मिनट')}
+                </span>
+
+                <h3 className="mb-0.5 line-clamp-2 text-sm font-semibold text-foreground">
                   {tx(product.name, product.nameHi)}
                 </h3>
-                <div className="text-lg font-bold text-primary mb-3">₹{product.price}</div>
-                
-                <QuantityStepper
-                  className="w-full"
-                  store="mart"
-                  productId={product.id}
-                  name={product.name}
-                  nameHi={product.nameHi}
-                  price={product.price}
-                  image={product.image}
-                />
+                <p className="mb-3 text-xs text-muted-foreground">
+                  {tx(product.tag, product.tagHi)}
+                </p>
+
+                <div className="mt-auto flex items-center justify-between gap-2">
+                  <span className="text-base font-bold text-foreground">₹{product.price}</span>
+                  <QuantityStepper
+                    store="mart"
+                    productId={product.id}
+                    name={product.name}
+                    nameHi={product.nameHi}
+                    price={product.price}
+                    image={product.image}
+                  />
+                </div>
               </div>
             </div>
           ))}

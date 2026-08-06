@@ -3,22 +3,17 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
 
 const SearchBar = () => {
   const [search, setSearch] = useState('');
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
-      navigate(`/agri-market?search=${encodeURIComponent(search.trim())}`);
-      toast({
-        title: t('searchResultsTitle') || 'Searching...',
-        description: `${t('searchResultsDesc') || 'Looking for'}: "${search}"`,
-      });
+      // The results page is its own feedback; a toast on top of it is noise.
+      navigate(`/search?q=${encodeURIComponent(search.trim())}`);
     }
   };
 

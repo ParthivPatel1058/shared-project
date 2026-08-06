@@ -19,6 +19,7 @@ import Index from "./pages/Index";
 import AgriMarket from "./pages/AgriMarket";
 import KisanHelp from "./pages/KisanHelp";
 import KisanMart from "./pages/KisanMart";
+import SearchResults from './pages/SearchResults';
 import GovSchemes from "./pages/GovSchemes";
 import RoboticFarming from "./pages/RoboticFarming";
 import ShopLocator from "./pages/ShopLocator";
@@ -73,6 +74,7 @@ const App = () => {
                   <Route path="/agri-market" element={<AgriMarket />} />
                   <Route path="/kisan-help" element={<KisanHelp />} />
                   <Route path="/kisan-mart" element={<KisanMart />} />
+                  <Route path="/search" element={<SearchResults />} />
                   <Route path="/gov-schemes" element={<GovSchemes />} />
                   <Route path="/robotic-farming" element={<RoboticFarming />} />
                   <Route path="/shop-locator" element={<ShopLocator />} />
