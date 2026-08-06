@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
 import CartBar from '@/components/CartBar';
+import ProductImage from '@/components/ProductImage';
 import QuantityStepper from '@/components/ui/quantity-stepper';
 import { toast } from 'sonner';
 import { MART_PRODUCTS as products, MART_CATEGORIES as categories } from '@/data/martProducts';
@@ -171,10 +172,9 @@ const KisanMart = () => {
               className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-shadow hover:shadow-xl"
             >
               <div className="relative aspect-square bg-white p-4">
-                <img
+                <ProductImage
                   src={product.image}
                   alt={tx(product.name, product.nameHi)}
-                  loading="lazy"
                   className="h-full w-full object-contain"
                 />
               </div>

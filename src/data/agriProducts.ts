@@ -21,10 +21,6 @@ import manualWeeder from '@/assets/manual-weeder.jpg';
 import mulchSpreader from '@/assets/mulch-spreader.jpg';
 import compostMaker from '@/assets/compost-maker.jpg';
 import neemOil from '@/assets/neem-oil.jpg';
-import garlicExtract from '@/assets/garlic-extract.jpg';
-import tobaccoDecoction from '@/assets/tobacco-decoction.jpg';
-import panchagavya from '@/assets/panchagavya.jpg';
-import greenManure from '@/assets/green-manure.jpg';
 
 export interface Product {
   id: number;
@@ -243,7 +239,7 @@ export const AGRI_PRODUCTS: Product[] = [
     rating: 4.7,
     reviews: 567,
     inStock: true,
-    image: '🧪'
+    image: neemOil
   },
   {
     id: 16,

@@ -138,7 +138,7 @@ const KisanHelp = () => {
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Image Upload Section */}
-          <div className="glass rounded-3xl p-8">
+          <div className="glass rounded-3xl p-5 sm:p-8">
           <h2 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-2">
               <Camera className="h-6 w-6 text-primary" />
               {t('cropDiseaseDetection')}
@@ -173,7 +173,7 @@ const KisanHelp = () => {
           </div>
 
           {/* AI Chatbot Section */}
-          <div className="glass rounded-3xl p-8">
+          <div className="glass rounded-3xl p-5 sm:p-8">
           <h2 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-2">
               <MessageCircle className="h-6 w-6 text-primary" />
               {t('askAIAssistant')}

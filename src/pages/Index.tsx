@@ -137,8 +137,8 @@ Smarter`, `स्मार्ट
             Five pills do not fit a phone screen. Scroll the strip itself rather
             than letting it push the whole page sideways.
           */}
-          <Reveal className="mt-14 flex justify-center overflow-x-auto px-4" delay={0.05}>
-            <div className="glass shrink-0 px-2 py-1.5 !rounded-full">
+          <Reveal className="scrollbar-hide mt-14 overflow-x-auto px-4" delay={0.05}>
+            <div className="glass mx-auto w-max px-2 py-1.5 !rounded-full">
               <GooeyNav
                 items={[
                   { label: tx('Crop AI', 'फसल एआई'), href: '/crop-disease' },

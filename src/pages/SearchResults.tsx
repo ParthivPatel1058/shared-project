@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
 import CartBar from '@/components/CartBar';
+import ProductImage from '@/components/ProductImage';
 import QuantityStepper from '@/components/ui/quantity-stepper';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AGRI_PRODUCTS } from '@/data/agriProducts';
@@ -103,10 +104,9 @@ export default function SearchResults() {
                     onClick={() => navigate('/agri-market')}
                     className="block aspect-square w-full bg-white p-4"
                   >
-                    <img
+                    <ProductImage
                       src={p.image}
                       alt={tx(p.name, p.nameHi)}
-                      loading="lazy"
                       className="h-full w-full object-contain"
                     />
                   </button>
@@ -142,10 +142,9 @@ export default function SearchResults() {
               {mart.map((p) => (
                 <div key={`m-${p.id}`} className="glass overflow-hidden rounded-2xl">
                   <div className="aspect-square bg-white p-4">
-                    <img
+                    <ProductImage
                       src={p.image}
                       alt={tx(p.name, p.nameHi)}
-                      loading="lazy"
                       className="h-full w-full object-contain"
                     />
                   </div>

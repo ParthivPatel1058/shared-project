@@ -7,6 +7,7 @@ import BackButton from '@/components/BackButton';
 import QuantityStepper from '@/components/ui/quantity-stepper';
 import CartBar from '@/components/CartBar';
 import CartSheet from '@/components/CartSheet';
+import ProductImage from '@/components/ProductImage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -272,8 +273,8 @@ const AgriMarket = () => {
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-2 mb-3">
-                  <img 
-                    src={product.image} 
+                  <ProductImage
+                    src={product.image}
                     alt={tx(product.name, product.nameHi)}
                     className="w-24 h-24 object-cover rounded-2xl shadow-lg"
                   />
