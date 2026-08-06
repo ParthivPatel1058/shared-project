@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Button3D from '@/components/ui/button-3d';
 import PixelReactor from '@/components/PixelReactor';
+import BhoomixMark from '@/components/BhoomixMark';
 import heroImage from '@/assets/auth-hero.jpg';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -91,9 +92,11 @@ export default function Signup() {
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
         <PixelReactor
           src={heroImage}
-          alt={tx('Wheat field at golden hour', 'सुनहरी शाम में गेहूं का खेत')}
+          alt={tx('Lush green hills', 'हरी-भरी पहाड़ियां')}
           cell={9}
-          levels={9}
+          levels={10}
+          ripples={6}
+          centerMark={<BhoomixMark />}
           className="h-40 w-full md:h-full"
         />
 

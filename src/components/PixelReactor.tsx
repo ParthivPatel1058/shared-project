@@ -24,6 +24,10 @@ interface PixelReactorProps {
   strength?: number;
   /** Steps per colour channel. Lower = flatter, more poster-like bands. */
   levels?: number;
+  /** Ring density of the ripple. Higher = tighter, more water-like rings. */
+  ripples?: number;
+  /** Mark drawn over the centre of the panel, e.g. a logo. */
+  centerMark?: React.ReactNode;
   className?: string;
 }
 
@@ -34,6 +38,8 @@ export default function PixelReactor({
   radius = 185,
   strength = 130,
   levels = 5,
+  ripples = 3,
+  centerMark,
   className,
 }: PixelReactorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -140,7 +146,12 @@ export default function PixelReactor({
             if (dist < radius && dist > 0.001) {
               // Falls off smoothly to nothing at the edge of the radius.
               const f = 1 - dist / radius;
-              const amount = (f * f * push) / cell;
+              // Concentric rings displaced alternately in and out, so the
+              // surface reads as water disturbed by the pointer rather than a
+              // single radial smear. Rings tighten as they travel outward,
+              // which is what makes it look like a spreading ripple.
+              const ripple = Math.sin(dist * ripples * 0.05) * f;
+              const amount = (ripple * f * push) / cell;
               sx = Math.round(rx + (dx / dist) * amount);
               sy = Math.round(ry + (dy / dist) * amount);
               // Clamp so cells near the border keep sampling real colours.
@@ -211,7 +222,7 @@ export default function PixelReactor({
       host.removeEventListener('pointerleave', onLeave);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [src, cell, radius, strength, levels]);
+  }, [src, cell, radius, strength, levels, ripples]);
 
   return (
     <div
@@ -221,6 +232,12 @@ export default function PixelReactor({
       className={`relative block cursor-crosshair touch-pan-y overflow-hidden ${className ?? ''}`}
     >
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 block size-full" />
+
+      {centerMark && (
+        <div className="pointer-events-none absolute inset-0 grid place-items-center">
+          {centerMark}
+        </div>
+      )}
     </div>
   );
 }

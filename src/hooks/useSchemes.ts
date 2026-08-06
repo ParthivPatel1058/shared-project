@@ -13,6 +13,9 @@ import { ALL_SCHEMES, type Scheme } from '@/data/schemes';
  * A missing table is the expected state, not an error: the migration is
  * optional, so a failed query silently keeps the bundled data.
  */
+/** Marks that the optional table is absent, so we stop asking this session. */
+const MISS_KEY = 'bx_schemes_absent';
+
 /** Postgres columns are snake_case; the Scheme type is camelCase. */
 interface SchemeRow {
   id: string;
@@ -54,6 +57,11 @@ export function useSchemes() {
   useEffect(() => {
     let cancelled = false;
 
+    // Most installs never create the table, so without this every visit to the
+    // page fires a request that is known to 404. Remember the miss for the
+    // session and skip it.
+    if (sessionStorage.getItem(MISS_KEY)) return;
+
     (async () => {
       // `schemes` is an optional table, so it is absent from the generated
       // Supabase types. Cast past them rather than regenerating types for a
@@ -70,7 +78,10 @@ export function useSchemes() {
 
       if (cancelled) return;
       // No table, no rows, or no access — keep the bundled catalogue.
-      if (error || !data?.length) return;
+      if (error || !data?.length) {
+        sessionStorage.setItem(MISS_KEY, '1');
+        return;
+      }
 
       setSchemes(data.map(toScheme));
       setSource('live');
