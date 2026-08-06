@@ -207,27 +207,27 @@ const Settings = () => {
                     <Bell className="h-6 w-6 text-primary" />
                     {t('notifications')}
                   </CardTitle>
-                  <CardDescription>Manage your notification preferences</CardDescription>
+                  <CardDescription>{tx('Manage your notification preferences', 'अपनी सूचना प्राथमिकताएं प्रबंधित करें')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between glass rounded-2xl p-4">
                     <div className="space-y-1">
-                      <Label htmlFor="order-updates">Order Updates</Label>
-                      <p className="text-sm text-muted-foreground">Get notified about your order status</p>
+                      <Label htmlFor="order-updates">{tx('Order Updates', 'ऑर्डर अपडेट')}</Label>
+                      <p className="text-sm text-muted-foreground">{tx('Get notified about your order status', 'अपने ऑर्डर की स्थिति की सूचना पाएं')}</p>
                     </div>
                     <Switch id="order-updates" defaultChecked />
                   </div>
                   <div className="flex items-center justify-between glass rounded-2xl p-4">
                     <div className="space-y-1">
-                      <Label htmlFor="weather-alerts">Weather Alerts</Label>
-                      <p className="text-sm text-muted-foreground">Receive weather updates for farming</p>
+                      <Label htmlFor="weather-alerts">{tx('Weather Alerts', 'मौसम अलर्ट')}</Label>
+                      <p className="text-sm text-muted-foreground">{tx('Receive weather updates for farming', 'खेती के लिए मौसम अपडेट पाएं')}</p>
                     </div>
                     <Switch id="weather-alerts" defaultChecked />
                   </div>
                   <div className="flex items-center justify-between glass rounded-2xl p-4">
                     <div className="space-y-1">
-                      <Label htmlFor="crop-tips">Farming Tips</Label>
-                      <p className="text-sm text-muted-foreground">Get helpful farming tips and advice</p>
+                      <Label htmlFor="crop-tips">{tx('Farming Tips', 'खेती के सुझाव')}</Label>
+                      <p className="text-sm text-muted-foreground">{tx('Get helpful farming tips and advice', 'उपयोगी खेती सुझाव और सलाह पाएं')}</p>
                     </div>
                     <Switch id="crop-tips" />
                   </div>
@@ -242,7 +242,7 @@ const Settings = () => {
                     <HelpCircle className="h-6 w-6 text-primary" />
                     {t('support')}
                   </CardTitle>
-                  <CardDescription>Get help and support</CardDescription>
+                  <CardDescription>{tx('Get help and support', 'मदद और सहायता पाएं')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button className="w-full justify-start glass rounded-2xl h-auto p-6 border-2 border-primary/20 hover:border-primary/50" variant="outline">
@@ -256,14 +256,14 @@ const Settings = () => {
                     <Phone className="h-5 w-5 mr-3 text-secondary" />
                     <div className="text-left">
                       <p className="font-semibold">{t('helpCenter')}</p>
-                      <p className="text-sm text-muted-foreground">1800-123-4567 (Toll Free)</p>
+                      <p className="text-sm text-muted-foreground">1800-123-4567 ({tx('Toll Free', 'टोल फ्री')})</p>
                     </div>
                   </Button>
                   <Button className="w-full justify-start glass rounded-2xl h-auto p-6 border-2 border-primary/20 hover:border-primary/50" variant="outline">
                     <MessageSquare className="h-5 w-5 mr-3 text-accent" />
                     <div className="text-left">
                       <p className="font-semibold">{t('reportIssue')}</p>
-                      <p className="text-sm text-muted-foreground">Submit a support ticket</p>
+                      <p className="text-sm text-muted-foreground">{tx('Submit a support ticket', 'सहायता टिकट भेजें')}</p>
                     </div>
                   </Button>
                 </CardContent>
@@ -282,8 +282,8 @@ const Settings = () => {
                 <CardContent>
                   <div className="text-center py-12">
                     <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-lg font-semibold mb-2">No orders yet</p>
-                    <p className="text-muted-foreground mb-4">Start shopping to see your orders here</p>
+                    <p className="text-lg font-semibold mb-2">{tx('No orders yet', 'अभी कोई ऑर्डर नहीं')}</p>
+                    <p className="text-muted-foreground mb-4">{tx('Start shopping to see your orders here', 'खरीदारी शुरू करें, आपके ऑर्डर यहाँ दिखेंगे')}</p>
                     <Button className="btn-metal rounded-2xl">
                       {t('shopNow')}
                     </Button>
@@ -315,7 +315,7 @@ const Settings = () => {
                     </p>
                   </div>
                   <div className="glass rounded-2xl p-6 space-y-3">
-                    <h4 className="font-semibold text-lg">Features:</h4>
+                    <h4 className="font-semibold text-lg">{tx('Features:', 'विशेषताएं:')}</h4>
                     <ul className="space-y-2 text-muted-foreground">
                       <li>✅ AI-powered crop disease detection</li>
                       <li>✅ Quality agricultural products marketplace</li>

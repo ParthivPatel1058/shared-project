@@ -318,10 +318,10 @@ const RoboticFarming = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-foreground">{robot.name}</h3>
-                  <p className="text-xs text-muted-foreground">{robot.category}</p>
+                  <p className="text-xs text-muted-foreground">{tx(robot.category, robot.category)}</p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">{robot.function}</p>
+              <p className="text-sm text-muted-foreground mb-3">{tx(robot.function, robot.function)}</p>
               <p className="text-xl font-bold text-primary">{robot.price}</p>
             </div>)}
         </div>
@@ -330,27 +330,27 @@ const RoboticFarming = () => {
         <div>
           <h2 className="text-3xl font-bold mb-8 text-foreground flex items-center gap-3">
             <MapPin className="h-8 w-8 text-primary" />
-            State-Wise Agricultural Machinery
+            {tx('State-Wise Agricultural Machinery', 'राज्यवार कृषि मशीनरी')}
           </h2>
           <div className="space-y-8">
             {robotsByState.map((stateData, idx) => <div key={idx} className="glass rounded-3xl p-8">
                 <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                   <MapPin className="h-6 w-6 text-primary" />
-                  {stateData.state}
+                  {tx(stateData.state, stateData.state)}
                 </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {stateData.robots.map((robot, robotIdx) => <div key={robotIdx} className="glass rounded-2xl p-6 hover:shadow-xl transition-all">
                       <h4 className="text-xl font-bold text-foreground mb-3">{robot.name}</h4>
                       <div className="space-y-2 mb-4">
                         <p className="text-sm text-muted-foreground">
-                          <strong className="text-foreground">Function:</strong> {robot.function}
+                          <strong className="text-foreground">{tx('Function:', 'कार्य:')}</strong> {tx(robot.function, robot.function)}
                         </p>
                         <p className="text-xl font-bold text-primary">{robot.price}</p>
-                        <p className="text-sm text-green-600 font-semibold">{robot.subsidy}</p>
+                        <p className="text-sm text-green-600 font-semibold">{tx(robot.subsidy, robot.subsidy)}</p>
                       </div>
                       <div className="pt-3 border-t border-border">
                         <p className="text-sm text-muted-foreground mb-1">
-                          <strong className="text-foreground">Contact:</strong>
+                          <strong className="text-foreground">{tx('Contact:', 'संपर्क:')}</strong>
                         </p>
                         <p className="text-sm text-foreground">{robot.contact}</p>
                       </div>

@@ -141,7 +141,7 @@ const PartnerRegistration = () => {
                 <feature.icon className="w-6 h-6 text-primary" />
               </div>
               <span className="text-xs font-medium text-center text-foreground">
-                {feature.label}
+                {tx(feature.label, feature.label)}
               </span>
             </div>
           ))}

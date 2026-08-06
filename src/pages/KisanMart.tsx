@@ -99,7 +99,7 @@ const KisanMart = () => {
                 <Zap className="h-6 w-6 text-secondary" />
                 {t('kisanMartTitle')}
               </h1>
-              <p className="text-sm text-muted-foreground">Delivery in 10-15 mins</p>
+              <p className="text-sm text-muted-foreground">{tx('Delivery in 10-15 mins', '10-15 मिनट में डिलीवरी')}</p>
             </div>
             <button 
               onClick={() => setIsCartOpen(true)}

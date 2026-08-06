@@ -2,10 +2,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Button3D from '@/components/ui/button-3d';
+import PixelReactor from '@/components/PixelReactor';
+import heroImage from '@/assets/auth-hero.jpg';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { z } from 'zod';
 
@@ -17,45 +21,44 @@ const signupSchema = z.object({
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { tx } = useLanguage();
   const [searchParams] = useSearchParams();
   const rawNext = searchParams.get('next') ?? '';
   const nextPath = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const validated = signupSchema.parse(formData);
       setLoading(true);
 
       const redirectUrl = `${window.location.origin}${nextPath}`;
-      
+
       const { error } = await supabase.auth.signUp({
         email: validated.email,
         password: validated.password,
         options: {
           emailRedirectTo: redirectUrl,
-          data: {
-            username: validated.username,
-            full_name: validated.username,
-          }
-        }
+          data: { username: validated.username, full_name: validated.username },
+        },
       });
 
       if (error) {
         if (error.message.includes('already registered')) {
-          toast.error('This email is already registered. Please sign in instead.');
+          toast.error(
+            tx(
+              'This email is already registered. Please sign in instead.',
+              'यह ईमेल पहले से पंजीकृत है। कृपया साइन इन करें।',
+            ),
+          );
         } else {
           toast.error(error.message);
         }
       } else {
-        toast.success('Account created! Redirecting...');
+        toast.success(tx('Account created! Redirecting…', 'खाता बन गया! ले जा रहे हैं…'));
         if (nextPath === '/') navigate('/');
         else window.location.href = nextPath;
       }
@@ -63,7 +66,7 @@ export default function Signup() {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error('An error occurred during signup');
+        toast.error(tx('An error occurred during signup', 'साइन अप करते समय समस्या हुई'));
       }
     } finally {
       setLoading(false);
@@ -74,9 +77,7 @@ export default function Signup() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}${nextPath}`,
-      }
+      options: { redirectTo: `${window.location.origin}${nextPath}` },
     });
 
     if (error) {
@@ -86,106 +87,120 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen p-6 py-8 animate-fade-in">
-      <button
-        onClick={() => navigate('/auth/welcome')}
-        className="mb-8 text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </button>
+    <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
+      <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
+        <PixelReactor
+          src={heroImage}
+          alt={tx('Wheat field at golden hour', 'सुनहरी शाम में गेहूं का खेत')}
+          cell={9}
+          levels={9}
+          className="h-40 w-full md:h-full"
+        />
 
-      <div className="max-w-md mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Create an account</h1>
-          <p className="text-muted-foreground">Join KisanMart today</p>
-        </div>
+        <div className="p-8 sm:p-10">
+          <button
+            onClick={() => navigate('/auth/welcome')}
+            aria-label={tx('Back', 'वापस')}
+            className="mb-6 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
 
-        <form onSubmit={handleSignup} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-foreground">Username</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                id="username"
-                type="text"
-                placeholder="johndoe"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                className="pl-11 h-12 bg-card border-border"
-                required
-                disabled={loading}
-              />
-            </div>
+          <div className="mb-7">
+            <h1 className="font-display text-3xl font-bold text-foreground">
+              {tx('Create an account', 'खाता बनाएं')}
+            </h1>
+            <p className="mt-1.5 text-muted-foreground">
+              {tx('Join BhoomiX today', 'आज ही BhoomiX से जुड़ें')}
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-foreground">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="john@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="pl-11 h-12 bg-card border-border"
-                required
-                disabled={loading}
-              />
+          <form onSubmit={handleSignup} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="username">{tx('Username', 'उपयोगकर्ता नाम')}</Label>
+              <div className="relative">
+                <User className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder={tx('your name', 'आपका नाम')}
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  className="h-12 pl-11"
+                  required
+                  disabled={loading}
+                />
+              </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">{tx('Email', 'ईमेल')}</Label>
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="h-12 pl-11"
+                  required
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">{tx('Password', 'पासवर्ड')}</Label>
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="h-12 pl-11"
+                  required
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <Button3D type="submit" tone="emerald" disabled={loading} className="!mt-7">
+              {loading ? tx('Creating account…', 'खाता बन रहा है…') : tx('Register', 'पंजीकरण करें')}
+              {!loading && <ArrowRight className="h-4 w-4" />}
+            </Button3D>
+          </form>
+
+          <div className="my-6 flex items-center gap-4">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-sm text-muted-foreground">{tx('or', 'या')}</span>
+            <div className="h-px flex-1 bg-border" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-foreground">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="pl-11 h-12 bg-card border-border"
-                required
-                disabled={loading}
-              />
-            </div>
-          </div>
-
-          <Button 
-            type="submit" 
-            className="w-full h-12 text-base font-semibold"
+          <Button
+            onClick={handleGoogleSignup}
+            variant="outline"
+            className="h-12 w-full text-base font-semibold"
             disabled={loading}
           >
-            {loading ? 'Creating account...' : 'Register'}
+            <FcGoogle className="mr-2 h-5 w-5" />
+            {tx('Continue with Google', 'Google से जारी रखें')}
           </Button>
-        </form>
 
-        <div className="my-6 flex items-center gap-4">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-sm text-muted-foreground">Or continue with</span>
-          <div className="flex-1 h-px bg-border" />
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            {tx('Already have an account?', 'पहले से खाता है?')}{' '}
+            <button
+              onClick={() =>
+                navigate('/auth/login' + (rawNext ? `?next=${encodeURIComponent(rawNext)}` : ''))
+              }
+              className="font-semibold text-primary hover:underline"
+            >
+              {tx('Sign in', 'साइन इन करें')}
+            </button>
+          </p>
         </div>
-
-        <Button
-          onClick={handleGoogleSignup}
-          variant="outline"
-          className="w-full h-12 text-base font-semibold"
-          disabled={loading}
-        >
-          <FcGoogle className="w-5 h-5 mr-2" />
-          Google
-        </Button>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
-          <button
-            onClick={() => navigate('/auth/login' + (rawNext ? `?next=${encodeURIComponent(rawNext)}` : ''))}
-            className="text-primary font-semibold hover:underline"
-          >
-            Sign In
-          </button>
-        </p>
       </div>
     </div>
   );
