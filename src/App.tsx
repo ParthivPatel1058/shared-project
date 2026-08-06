@@ -20,6 +20,8 @@ import AgriMarket from "./pages/AgriMarket";
 import KisanHelp from "./pages/KisanHelp";
 import KisanMart from "./pages/KisanMart";
 import SearchResults from './pages/SearchResults';
+import MandiPrices from './pages/MandiPrices';
+import DamageReport from './pages/DamageReport';
 import GovSchemes from "./pages/GovSchemes";
 import RoboticFarming from "./pages/RoboticFarming";
 import ShopLocator from "./pages/ShopLocator";
@@ -75,6 +77,8 @@ const App = () => {
                   <Route path="/kisan-help" element={<KisanHelp />} />
                   <Route path="/kisan-mart" element={<KisanMart />} />
                   <Route path="/search" element={<SearchResults />} />
+                  <Route path="/mandi-prices" element={<MandiPrices />} />
+                  <Route path="/damage-report" element={<DamageReport />} />
                   <Route path="/gov-schemes" element={<GovSchemes />} />
                   <Route path="/robotic-farming" element={<RoboticFarming />} />
                   <Route path="/shop-locator" element={<ShopLocator />} />

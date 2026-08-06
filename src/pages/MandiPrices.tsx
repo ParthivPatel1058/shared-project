@@ -1,0 +1,198 @@
+import { useMemo, useState } from 'react';
+import Navigation from '@/components/Navigation';
+import BackButton from '@/components/BackButton';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useMandiPrices } from '@/hooks/useMandiPrices';
+import { IndianRupee, Search, TrendingUp, KeyRound, Loader2, ExternalLink } from 'lucide-react';
+
+const STATES = [
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Uttar Pradesh',
+  'Punjab',
+  'Rajasthan',
+  'Gujarat',
+  'Karnataka',
+  'Bihar',
+  'West Bengal',
+  'Haryana',
+];
+
+/**
+ * Today's mandi rates, so a farmer walks into the market already knowing the
+ * going price instead of taking whatever the first trader offers.
+ */
+export default function MandiPrices() {
+  const { tx } = useLanguage();
+  const [state, setState] = useState('Madhya Pradesh');
+  const [query, setQuery] = useState('');
+  const { prices, status } = useMandiPrices({ state, limit: 100 });
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return prices;
+    return prices.filter((p) =>
+      [p.commodity, p.market, p.district, p.variety].join(' ').toLowerCase().includes(q),
+    );
+  }, [prices, query]);
+
+  return (
+    <div className="min-h-screen">
+      <Navigation />
+      <div className="px-4 pt-5 lg:px-6">
+        <BackButton />
+      </div>
+
+      <div className="container mx-auto px-4 pb-16 pt-8">
+        <header className="mb-8 max-w-3xl">
+          <h1 className="font-serif-display mb-3 text-4xl text-foreground md:text-5xl">
+            {tx('Mandi Prices', 'मंडी भाव')}
+          </h1>
+          <p className="text-muted-foreground">
+            {tx(
+              "Today's rates from government-regulated markets. Know the price before you sell.",
+              'सरकारी मंडियों से आज के भाव। बेचने से पहले दाम जानें।',
+            )}
+          </p>
+        </header>
+
+        {status === 'no-key' && (
+          <div className="glass rounded-3xl p-8">
+            <KeyRound className="mb-4 h-10 w-10 text-primary" />
+            <h2 className="mb-2 text-xl font-bold text-foreground">
+              {tx('One free key needed', 'एक निःशुल्क कुंजी चाहिए')}
+            </h2>
+            <p className="mb-4 max-w-2xl text-muted-foreground">
+              {tx(
+                'Live prices come from the Government of India open data platform. The key is free and takes about two minutes — register, open My Account, and copy the key.',
+                'भाव भारत सरकार के ओपन डेटा प्लेटफ़ॉर्म से आते हैं। कुंजी निःशुल्क है और लगभग दो मिनट लगते हैं — पंजीकरण करें, My Account खोलें, और कुंजी कॉपी करें।',
+              )}
+            </p>
+            <pre className="mb-4 overflow-x-auto rounded-xl bg-black/[0.06] p-4 text-sm dark:bg-white/[0.06]">
+              <code>VITE_DATAGOV_API_KEY="your-key-here"</code>
+            </pre>
+            <p className="mb-5 text-sm text-muted-foreground">
+              {tx('Add that line to .env, then restart the dev server.', 'इसे .env में जोड़ें, फिर सर्वर पुनः चालू करें।')}
+            </p>
+            <a
+              href="https://www.data.gov.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 font-semibold text-primary-foreground"
+            >
+              {tx('Get a free key', 'निःशुल्क कुंजी लें')}
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
+        )}
+
+        {status !== 'no-key' && (
+          <>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={tx('Search crop or market…', 'फसल या मंडी खोजें…')}
+                  className="glass w-full rounded-2xl border-primary/20 py-3.5 pl-12 pr-4 text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/40"
+                />
+              </div>
+              <select
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                className="glass rounded-2xl border-primary/20 px-4 py-3.5 text-foreground outline-none focus:border-primary/40"
+              >
+                {STATES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {status === 'loading' && (
+              <div className="glass flex items-center justify-center gap-3 rounded-2xl p-12">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <span className="text-muted-foreground">{tx('Loading rates…', 'भाव लोड हो रहे हैं…')}</span>
+              </div>
+            )}
+
+            {status === 'error' && (
+              <div className="glass rounded-2xl p-8 text-center">
+                <p className="font-semibold text-foreground">
+                  {tx('Could not load prices', 'भाव लोड नहीं हो सके')}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {tx(
+                    'The government service may be busy, or the key may be rate limited. Try again shortly.',
+                    'सरकारी सेवा व्यस्त हो सकती है, या कुंजी की सीमा पार हो गई है। थोड़ी देर बाद कोशिश करें।',
+                  )}
+                </p>
+              </div>
+            )}
+
+            {(status === 'empty' || (status === 'ok' && filtered.length === 0)) && (
+              <div className="glass rounded-2xl p-8 text-center">
+                <p className="font-semibold text-foreground">
+                  {tx('No rates found', 'कोई भाव नहीं मिला')}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {tx('Try another state, or clear the search.', 'दूसरा राज्य चुनें, या खोज हटाएं।')}
+                </p>
+              </div>
+            )}
+
+            {status === 'ok' && filtered.length > 0 && (
+              <>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  {tx('{n} rates', '{n} भाव').replace('{n}', String(filtered.length))}
+                </p>
+                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                  {filtered.map((p, i) => (
+                    <article
+                      key={`${p.market}-${p.commodity}-${p.variety}-${i}`}
+                      className="rounded-2xl border border-border bg-card p-5"
+                    >
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="truncate font-bold text-foreground">{p.commodity}</h3>
+                          <p className="truncate text-sm text-muted-foreground">
+                            {p.market}
+                            {p.district ? `, ${p.district}` : ''}
+                          </p>
+                        </div>
+                        <TrendingUp className="h-5 w-5 flex-shrink-0 text-primary" />
+                      </div>
+
+                      <div className="mb-3 flex items-baseline gap-1.5">
+                        <IndianRupee className="h-5 w-5 text-foreground" />
+                        <span className="text-2xl font-bold text-foreground">{p.modalPrice}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {tx('/ quintal', '/ क्विंटल')}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>
+                          {tx('Range', 'सीमा')}: ₹{p.minPrice} – ₹{p.maxPrice}
+                        </span>
+                        {p.arrivalDate && <span>{p.arrivalDate}</span>}
+                      </div>
+
+                      {p.variety && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {tx('Variety', 'किस्म')}: {p.variety}
+                        </p>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

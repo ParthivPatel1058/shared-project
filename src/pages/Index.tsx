@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import FarmAdvisory from '@/components/FarmAdvisory';
 import SearchBar from '@/components/SearchBar';
 import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
 import GooeyNav from '@/components/GooeyNav';
@@ -158,6 +159,12 @@ Smarter`, `स्मार्ट
               />
             </div>
           </Reveal>
+
+          {/* Weather-driven advice, above the gallery: this is what a farmer
+              opens the app to check, so it should not sit under a link grid. */}
+          <section className="mt-12">
+            <FarmAdvisory />
+          </section>
 
           {/* Feature gallery — hover-reveal 3×3 grid */}
           <section className="mt-12 mb-8">
