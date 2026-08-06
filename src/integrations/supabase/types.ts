@@ -280,9 +280,392 @@ export type Database = {
         }
         Relationships: []
       }
+      farm_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          land_size_acres: number | null
+          crops_grown: string[] | null
+          soil_type: string | null
+          irrigation: string | null
+          state: string | null
+          district: string | null
+          village: string | null
+          pincode: string | null
+          lat: number | null
+          lng: number | null
+          kisan_id: string | null
+          aadhaar_linked: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          land_size_acres?: number | null
+          crops_grown?: string[] | null
+          soil_type?: string | null
+          irrigation?: string | null
+          state?: string | null
+          district?: string | null
+          village?: string | null
+          pincode?: string | null
+          lat?: number | null
+          lng?: number | null
+          kisan_id?: string | null
+          aadhaar_linked?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          land_size_acres?: number | null
+          crops_grown?: string[] | null
+          soil_type?: string | null
+          irrigation?: string | null
+          state?: string | null
+          district?: string | null
+          village?: string | null
+          pincode?: string | null
+          lat?: number | null
+          lng?: number | null
+          kisan_id?: string | null
+          aadhaar_linked?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crop_diagnoses: {
+        Row: {
+          id: string
+          user_id: string
+          crop_name: string | null
+          image_url: string | null
+          disease_name: string | null
+          disease_name_hi: string | null
+          confidence: number | null
+          severity: 'low' | 'medium' | 'high' | 'critical' | null
+          treatment_text: string | null
+          treatment_hi: string | null
+          is_healthy: boolean
+          lat: number | null
+          lng: number | null
+          state: string | null
+          district: string | null
+          outcome: 'cured' | 'improved' | 'no_change' | 'worsened' | null
+          outcome_notes: string | null
+          outcome_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          crop_name?: string | null
+          image_url?: string | null
+          disease_name?: string | null
+          disease_name_hi?: string | null
+          confidence?: number | null
+          severity?: 'low' | 'medium' | 'high' | 'critical' | null
+          treatment_text?: string | null
+          treatment_hi?: string | null
+          is_healthy?: boolean
+          lat?: number | null
+          lng?: number | null
+          state?: string | null
+          district?: string | null
+          outcome?: 'cured' | 'improved' | 'no_change' | 'worsened' | null
+          outcome_notes?: string | null
+          outcome_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          crop_name?: string | null
+          image_url?: string | null
+          disease_name?: string | null
+          disease_name_hi?: string | null
+          confidence?: number | null
+          severity?: 'low' | 'medium' | 'high' | 'critical' | null
+          treatment_text?: string | null
+          treatment_hi?: string | null
+          is_healthy?: boolean
+          lat?: number | null
+          lng?: number | null
+          state?: string | null
+          district?: string | null
+          outcome?: 'cured' | 'improved' | 'no_change' | 'worsened' | null
+          outcome_notes?: string | null
+          outcome_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      damage_reports: {
+        Row: {
+          id: string
+          user_id: string
+          crop_name: string | null
+          cause_of_loss: string | null
+          area_affected: string | null
+          lat: number | null
+          lng: number | null
+          state: string | null
+          district: string | null
+          photo_urls: string[]
+          first_photo_at: string | null
+          rainfall_json: Json | null
+          status: 'draft' | 'submitted' | 'acknowledged' | 'approved' | 'rejected'
+          insurer_name: string | null
+          policy_number: string | null
+          claim_reference: string | null
+          submitted_at: string | null
+          resolved_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          crop_name?: string | null
+          cause_of_loss?: string | null
+          area_affected?: string | null
+          lat?: number | null
+          lng?: number | null
+          state?: string | null
+          district?: string | null
+          photo_urls?: string[]
+          first_photo_at?: string | null
+          rainfall_json?: Json | null
+          status?: 'draft' | 'submitted' | 'acknowledged' | 'approved' | 'rejected'
+          insurer_name?: string | null
+          policy_number?: string | null
+          claim_reference?: string | null
+          submitted_at?: string | null
+          resolved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          crop_name?: string | null
+          cause_of_loss?: string | null
+          area_affected?: string | null
+          lat?: number | null
+          lng?: number | null
+          state?: string | null
+          district?: string | null
+          photo_urls?: string[]
+          first_photo_at?: string | null
+          rainfall_json?: Json | null
+          status?: 'draft' | 'submitted' | 'acknowledged' | 'approved' | 'rejected'
+          insurer_name?: string | null
+          policy_number?: string | null
+          claim_reference?: string | null
+          submitted_at?: string | null
+          resolved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      kisan_help_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          title: string | null
+          messages: Json
+          topic: string | null
+          language: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title?: string | null
+          messages?: Json
+          topic?: string | null
+          language?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string | null
+          messages?: Json
+          topic?: string | null
+          language?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          title_hi: string | null
+          body: string
+          body_hi: string | null
+          link: string | null
+          is_read: boolean
+          ref_table: string | null
+          ref_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          title_hi?: string | null
+          body: string
+          body_hi?: string | null
+          link?: string | null
+          is_read?: boolean
+          ref_table?: string | null
+          ref_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          title_hi?: string | null
+          body?: string
+          body_hi?: string | null
+          link?: string | null
+          is_read?: boolean
+          ref_table?: string | null
+          ref_id?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      product_reviews: {
+        Row: {
+          id: string
+          user_id: string
+          catalogue: 'agri_market' | 'kisan_mart'
+          product_id: number
+          product_name: string
+          rating: number
+          review_text: string | null
+          review_text_hi: string | null
+          is_verified: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          catalogue: 'agri_market' | 'kisan_mart'
+          product_id: number
+          product_name: string
+          rating: number
+          review_text?: string | null
+          review_text_hi?: string | null
+          is_verified?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          catalogue?: 'agri_market' | 'kisan_mart'
+          product_id?: number
+          product_name?: string
+          rating?: number
+          review_text?: string | null
+          review_text_hi?: string | null
+          is_verified?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shops: {
+        Row: {
+          id: string
+          owner_id: string | null
+          name: string
+          name_hi: string | null
+          category: 'general' | 'seeds' | 'fertiliser' | 'pesticide' | 'equipment' | 'vet'
+          address: string
+          city: string
+          state: string
+          pincode: string | null
+          phone: string | null
+          open_hours: string | null
+          lat: number
+          lng: number
+          is_verified: boolean
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id?: string | null
+          name: string
+          name_hi?: string | null
+          category?: 'general' | 'seeds' | 'fertiliser' | 'pesticide' | 'equipment' | 'vet'
+          address: string
+          city: string
+          state: string
+          pincode?: string | null
+          phone?: string | null
+          open_hours?: string | null
+          lat: number
+          lng: number
+          is_verified?: boolean
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string | null
+          name?: string
+          name_hi?: string | null
+          category?: 'general' | 'seeds' | 'fertiliser' | 'pesticide' | 'equipment' | 'vet'
+          address?: string
+          city?: string
+          state?: string
+          pincode?: string | null
+          phone?: string | null
+          open_hours?: string | null
+          lat?: number
+          lng?: number
+          is_verified?: boolean
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      product_avg_ratings: {
+        Row: {
+          catalogue: string | null
+          product_id: number | null
+          review_count: number | null
+          avg_rating: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_partner_orders: {
@@ -308,7 +691,31 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: Record<never, never>; Returns: boolean }
       is_partner: { Args: { check_user_id: string }; Returns: boolean }
+      my_unread_notification_count: { Args: Record<never, never>; Returns: number }
+      nearby_shops: {
+        Args: { p_lat: number; p_lng: number; radius_km?: number; max_rows?: number }
+        Returns: {
+          id: string
+          owner_id: string | null
+          name: string
+          name_hi: string | null
+          category: string
+          address: string
+          city: string
+          state: string
+          pincode: string | null
+          phone: string | null
+          open_hours: string | null
+          lat: number
+          lng: number
+          is_verified: boolean
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
