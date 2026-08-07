@@ -36,7 +36,14 @@ const GovSchemes = () => {
   const central = filtered.filter((s) => !s.state);
   const stateWise = filtered.filter((s) => s.state);
 
-  const catLabel = (c: SchemeCategory) => tx(CATEGORY_LABELS[c].en, CATEGORY_LABELS[c].hi);
+  // Schemes can come from the database, where `category` is free text and may
+  // not match this app's vocabulary — an editor fixing a link could type
+  // anything. Falling back to the raw value keeps an unknown category
+  // displayable instead of taking the whole page down.
+  const catLabel = (c: SchemeCategory) => {
+    const label = CATEGORY_LABELS[c];
+    return label ? tx(label.en, label.hi) : String(c);
+  };
 
   const Card = ({ s }: { s: Scheme }) => (
     <article className="glass flex flex-col rounded-2xl p-6 transition-all hover:shadow-xl">
