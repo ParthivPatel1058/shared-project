@@ -33,6 +33,7 @@ import Support from "./pages/Support";
 import OrganicFarming from "./pages/OrganicFarming";
 import VegetableFarming from "./pages/VegetableFarming";
 import Settings from "./pages/Settings";
+import RoleHome from "./pages/RoleHome";
 import StaffAccounts from "./pages/StaffAccounts";
 import CropDisease from "./pages/CropDisease";
 import NotFound from "./pages/NotFound";
@@ -73,7 +74,8 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 >
-                  <Route path="/" element={<Index />} />
+                  {/* Home differs by account type; RoleHome picks the screen. */}
+                  <Route path="/" element={<RoleHome />} />
                   <Route path="/agri-market" element={<AgriMarket />} />
                   <Route path="/kisan-help" element={<KisanHelp />} />
                   <Route path="/kisan-mart" element={<KisanMart />} />

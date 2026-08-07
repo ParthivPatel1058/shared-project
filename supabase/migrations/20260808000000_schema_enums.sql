@@ -1,8 +1,3 @@
--- BhoomiX — APPLY STEP 1 of 2  (enumerated types)
--- Run in the Supabase SQL Editor, then run STEP 2 separately.
--- Two runs are required: Postgres will not let an enum value be used
--- in the same transaction that created it.
-
 -- =============================================================
 -- BhoomiX schema — 1 of 2: enumerated types
 --

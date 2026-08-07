@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
-import { ArrowLeft, Mail, Lock, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, ArrowRight, Phone, KeyRound } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { z } from 'zod';
 
@@ -18,6 +18,14 @@ const loginSchema = z.object({
   email: z.string().trim().email('Invalid email address').max(255),
   password: z.string().min(1, 'Password is required').max(100),
 });
+
+/** Indian mobile numbers, with or without the +91 the user may type. */
+const phoneSchema = z
+  .string()
+  .trim()
+  .regex(/^(\+?91)?[6-9]\d{9}$/, 'Enter a valid 10-digit mobile number');
+
+type Method = 'email' | 'phone';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,6 +35,61 @@ export default function Login() {
   const nextPath = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
+
+  // Many farmers have a mobile number but no email address, so phone sign-in
+  // is offered as an equal option rather than hidden behind "more ways".
+  const [method, setMethod] = useState<Method>('email');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
+  const e164 = (raw: string) => '+91' + raw.replace(/\D/g, '').slice(-10);
+
+  const sendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      phoneSchema.parse(phone);
+    } catch {
+      toast.error(tx('Enter a valid 10-digit mobile number', 'सही 10 अंकों का मोबाइल नंबर डालें'));
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ phone: e164(phone) });
+    setLoading(false);
+
+    if (error) {
+      // Phone auth needs an SMS provider configured on the Supabase project.
+      // Say so plainly instead of showing a raw provider error.
+      const notConfigured = /provider|not enabled|unsupported|sms/i.test(error.message);
+      toast.error(
+        notConfigured
+          ? tx('Phone sign-in is not enabled yet. Use email for now.', 'फ़ोन साइन-इन अभी चालू नहीं है। अभी ईमेल इस्तेमाल करें।')
+          : error.message,
+      );
+      return;
+    }
+    setOtpSent(true);
+    toast.success(tx('Code sent to your phone', 'आपके फ़ोन पर कोड भेजा गया'));
+  };
+
+  const verifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({
+      phone: e164(phone),
+      token: otp.trim(),
+      type: 'sms',
+    });
+    setLoading(false);
+
+    if (error) {
+      toast.error(tx('That code is not right. Try again.', 'यह कोड सही नहीं है। दोबारा कोशिश करें।'));
+      return;
+    }
+    toast.success(tx('Welcome back!', 'वापसी पर स्वागत है!'));
+    if (nextPath === '/') navigate('/');
+    else window.location.href = nextPath;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +169,92 @@ export default function Login() {
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          {/* Two equal ways in. */}
+          <div className="mb-6 grid grid-cols-2 gap-2 rounded-xl bg-muted/60 p-1">
+            {(['email', 'phone'] as Method[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMethod(m)}
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                  method === m
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {m === 'email' ? <Mail className="h-4 w-4" /> : <Phone className="h-4 w-4" />}
+                {m === 'email' ? tx('Email', 'ईमेल') : tx('Mobile', 'मोबाइल')}
+              </button>
+            ))}
+          </div>
+
+          {method === 'phone' && (
+            <form onSubmit={otpSent ? verifyOtp : sendOtp} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="phone">{tx('Mobile number', 'मोबाइल नंबर')}</Label>
+                <div className="relative">
+                  <Phone className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <span className="pointer-events-none absolute left-11 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    +91
+                  </span>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    placeholder="98765 43210"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="h-12 pl-20"
+                    required
+                    disabled={loading || otpSent}
+                  />
+                </div>
+              </div>
+
+              {otpSent && (
+                <div className="space-y-2">
+                  <Label htmlFor="otp">{tx('Six-digit code', 'छह अंकों का कोड')}</Label>
+                  <div className="relative">
+                    <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="otp"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                      placeholder="123456"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="h-12 pl-11 tracking-[0.4em]"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setOtpSent(false); setOtp(''); }}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {tx('Change number', 'नंबर बदलें')}
+                  </button>
+                </div>
+              )}
+
+              <Button3D type="submit" tone="emerald" disabled={loading} className="!mt-7">
+                {loading
+                  ? tx('Please wait…', 'कृपया रुकें…')
+                  : otpSent
+                    ? tx('Verify and sign in', 'जाँचें और साइन इन करें')
+                    : tx('Send code', 'कोड भेजें')}
+                {!loading && <ArrowRight className="h-4 w-4" />}
+              </Button3D>
+            </form>
+          )}
+
+          <form
+            onSubmit={handleLogin}
+            className={`space-y-5 ${method === 'email' ? '' : 'hidden'}`}
+          >
             <div className="space-y-2">
               <Label htmlFor="email">{tx('Email', 'ईमेल')}</Label>
               <div className="relative">

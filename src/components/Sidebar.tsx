@@ -32,7 +32,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useOrderCount } from "@/hooks/useOrderCount";
-import { useStaffRole } from "@/hooks/useStaffRole";
+import { useAccount } from "@/hooks/useAccount";
 import ThemeSwitch from "@/components/ui/theme-switch";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/bhoomix-logo.jpeg";
@@ -105,7 +105,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const orderCount = useOrderCount();
-  const { isStaff } = useStaffRole();
+  const { isStaff } = useAccount();
   const en = language === "en";
 
   // Hiding the row is presentation only — the page and the edge function both

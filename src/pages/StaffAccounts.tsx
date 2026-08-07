@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useStaffRole, type StaffRole } from '@/hooks/useStaffRole';
+import { useAccount, type StaffRole } from '@/hooks/useAccount';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,7 +64,7 @@ const BLANK = {
  */
 export default function StaffAccounts() {
   const { tx } = useLanguage();
-  const { role, loading, canCreate, isAdmin } = useStaffRole();
+  const { role, loading, canCreate, isAdmin } = useAccount();
 
   const [form, setForm] = useState({ ...BLANK });
   const [submitting, setSubmitting] = useState(false);

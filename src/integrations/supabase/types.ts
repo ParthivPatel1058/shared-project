@@ -240,6 +240,15 @@ export type Database = {
           id: string
           updated_at: string
           username: string | null
+          phone: string | null
+          phone_verified: boolean
+          account_type: 'farmer' | 'buyer' | 'partner' | 'manager' | 'admin'
+          preferred_language: string
+          city: string | null
+          district: string | null
+          state: string | null
+          pincode: string | null
+          onboarded_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -284,8 +293,10 @@ export type Database = {
         Row: {
           id: string
           user_id: string
-          land_size_acres: number | null
-          crops_grown: string[] | null
+          farm_type: 'rural' | 'peri_urban' | 'urban'
+          growing_method: string
+          total_area: number | null
+          area_unit: string
           soil_type: string | null
           irrigation: string | null
           state: string | null
@@ -296,6 +307,7 @@ export type Database = {
           lng: number | null
           kisan_id: string | null
           aadhaar_linked: boolean
+          has_soil_card: boolean
           created_at: string
           updated_at: string
         }

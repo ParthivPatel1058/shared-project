@@ -1,6 +1,3 @@
--- BhoomiX — APPLY STEP 2 of 2  (tables, relationships, policies)
--- Run only after STEP 1 succeeds. Idempotent; safe to re-run.
-
 -- =============================================================
 -- BhoomiX schema — 2 of 2: tables, relationships, policies
 --
