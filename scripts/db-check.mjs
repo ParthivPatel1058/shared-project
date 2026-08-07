@@ -121,8 +121,12 @@ try {
   }
 } catch { /* leave null */ }
 
-if (bucketIds === null) {
-  console.log(`  ${WARN} could not list buckets (anon key lacks permission) — skipped`);
+// An empty list is ambiguous: it means either "no buckets" or "anon may not
+// see them". Reporting MISSING there produced a false negative on a database
+// that in fact had all four, so ambiguity is now reported as ambiguity.
+if (bucketIds === null || bucketIds.length === 0) {
+  console.log(`  ${WARN} anon key cannot enumerate buckets — not verifiable from here`);
+  console.log('     check with:  select id, public from storage.buckets;');
 } else {
   for (const b of BUCKETS) {
     const exists = bucketIds.includes(b);

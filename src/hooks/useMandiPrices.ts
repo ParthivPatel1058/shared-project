@@ -40,14 +40,12 @@ interface Options {
 
 export function useMandiPrices({ state, commodity, limit = 30 }: Options = {}) {
   const [prices, setPrices] = useState<MandiPrice[]>([]);
-  const [status, setStatus] = useState<MandiStatus>(API_KEY ? 'loading' : 'no-key');
+  const [status, setStatus] = useState<MandiStatus>('loading');
 
   useEffect(() => {
-    if (!API_KEY) {
-      setStatus('no-key');
-      return;
-    }
-
+    // No early return on a missing key: the edge function is the normal path
+    // and carries the key itself. A key in the browser is the exception now,
+    // kept only as a fallback for local work against an undeployed function.
     let cancelled = false;
     setStatus('loading');
 
@@ -68,6 +66,13 @@ export function useMandiPrices({ state, commodity, limit = 30 }: Options = {}) {
         }
       } catch {
         // Function absent or erroring — fall back to the direct call.
+      }
+
+      // The function is the only path in production. Reaching here without a
+      // key means it is unreachable and there is nothing left to try.
+      if (!API_KEY) {
+        if (!cancelled) setStatus('no-key');
+        return;
       }
 
       try {
