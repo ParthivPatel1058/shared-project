@@ -8,7 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:check": "node scripts/db-check.mjs",
+    "db:apply": "echo \"Run supabase/APPLY_STEP_1.sql then APPLY_STEP_2.sql in the SQL Editor, or: supabase db push\"",
+    "fn:deploy": "supabase functions deploy --project-ref tzmuivqtlnosgkubhyft"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
