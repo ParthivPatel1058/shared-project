@@ -108,7 +108,12 @@ export default function FarmAdvisory() {
             {daily.map((d) => (
               <div
                 key={d.date}
-                className="flex min-w-[5.5rem] flex-shrink-0 flex-col items-center gap-1.5 rounded-xl bg-muted/60 p-3"
+                /* `relative` is load-bearing: the sr-only label below is
+                   absolutely positioned, and an absolute element is only
+                   clipped by an overflow ancestor that is its containing
+                   block. Without a positioned tile the labels escaped the
+                   scroller and stretched the page 279px sideways on a phone. */
+                className="relative flex min-w-[5.5rem] flex-shrink-0 flex-col items-center gap-1.5 rounded-xl bg-muted/60 p-3"
               >
                 <span className="text-xs font-medium text-muted-foreground">
                   {new Date(d.date).toLocaleDateString(language === 'hi' ? 'hi-IN' : undefined, {

@@ -223,7 +223,10 @@ const ShopLocator = () => {
                     
                     <div className="flex items-center gap-2 text-sm">
                       <Phone className="h-4 w-4 text-primary flex-shrink-0" />
-                      <a href={`tel:${shop.phone}`} className="text-primary hover:underline">
+                      <a
+                        href={`tel:${shop.phone}`}
+                        className="inline-flex min-h-11 items-center py-2 text-primary hover:underline"
+                      >
                         {shop.phone}
                       </a>
                     </div>

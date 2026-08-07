@@ -69,7 +69,10 @@ const GovSchemes = () => {
         href={s.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+        /* min-h-11 (44px) not larger text: the hit area has to clear the
+           touch guideline for a gloved hand outdoors, while the label stays
+           the size the card layout expects. */
+        className="mt-auto inline-flex min-h-11 items-center gap-2 py-2 text-sm font-semibold text-primary hover:underline"
       >
         <ExternalLink className="h-4 w-4" />
         {tx('Apply now', 'अभी आवेदन करें')}
