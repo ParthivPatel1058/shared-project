@@ -33,6 +33,7 @@ import Support from "./pages/Support";
 import OrganicFarming from "./pages/OrganicFarming";
 import VegetableFarming from "./pages/VegetableFarming";
 import Settings from "./pages/Settings";
+import StaffAccounts from "./pages/StaffAccounts";
 import CropDisease from "./pages/CropDisease";
 import NotFound from "./pages/NotFound";
 import Welcome from "./pages/auth/Welcome";
@@ -80,6 +81,7 @@ const App = () => {
                   <Route path="/mandi-prices" element={<MandiPrices />} />
                   <Route path="/damage-report" element={<DamageReport />} />
                   <Route path="/gov-schemes" element={<GovSchemes />} />
+                  <Route path="/staff-accounts" element={<StaffAccounts />} />
                   <Route path="/robotic-farming" element={<RoboticFarming />} />
                   <Route path="/shop-locator" element={<ShopLocator />} />
                   <Route path="/orders" element={<Orders />} />

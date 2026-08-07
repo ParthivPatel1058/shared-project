@@ -655,6 +655,81 @@ export type Database = {
         }
         Relationships: []
       }
+      managers: {
+        Row: {
+          id: string
+          user_id: string
+          full_name: string
+          phone: string | null
+          region: string | null
+          employee_code: string | null
+          is_active: boolean
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          full_name: string
+          phone?: string | null
+          region?: string | null
+          employee_code?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          full_name?: string
+          phone?: string | null
+          region?: string | null
+          employee_code?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      staff_audit: {
+        Row: {
+          id: string
+          actor_id: string | null
+          actor_role: string
+          action: 'create' | 'activate' | 'deactivate' | 'update' | 'delete'
+          target_user_id: string | null
+          target_role: string | null
+          target_email: string | null
+          details: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          actor_id?: string | null
+          actor_role: string
+          action: 'create' | 'activate' | 'deactivate' | 'update' | 'delete'
+          target_user_id?: string | null
+          target_role?: string | null
+          target_email?: string | null
+          details?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          actor_id?: string | null
+          actor_role?: string
+          action?: 'create' | 'activate' | 'deactivate' | 'update' | 'delete'
+          target_user_id?: string | null
+          target_role?: string | null
+          target_email?: string | null
+          details?: Json | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       product_avg_ratings: {
@@ -663,6 +738,20 @@ export type Database = {
           product_id: number | null
           review_count: number | null
           avg_rating: number | null
+        }
+        Relationships: []
+      }
+      staff_roster: {
+        Row: {
+          user_id: string | null
+          role: string | null
+          full_name: string | null
+          phone: string | null
+          region: string | null
+          employee_code: string | null
+          is_active: boolean | null
+          created_by: string | null
+          created_at: string | null
         }
         Relationships: []
       }
@@ -692,6 +781,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: Record<never, never>; Returns: boolean }
+      is_manager: { Args: Record<never, never>; Returns: boolean }
+      my_role: { Args: Record<never, never>; Returns: string }
       is_partner: { Args: { check_user_id: string }; Returns: boolean }
       my_unread_notification_count: { Args: Record<never, never>; Returns: number }
       nearby_shops: {
@@ -718,7 +809,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "manager" | "partner"
     }
     CompositeTypes: {
       [_ in never]: never
