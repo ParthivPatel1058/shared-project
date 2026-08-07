@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface MandiPrice {
   state: string;
@@ -51,6 +52,24 @@ export function useMandiPrices({ state, commodity, limit = 30 }: Options = {}) {
     setStatus('loading');
 
     (async () => {
+      // Preferred path: the edge function holds the key server-side and caches
+      // for an hour. Falls through to the direct call below when the function
+      // is not deployed yet, so prices never simply stop working.
+      try {
+        const { data, error } = await supabase.functions.invoke('mandi-prices', {
+          body: { state, commodity, limit },
+        });
+        if (!error && Array.isArray((data as { prices?: MandiPrice[] })?.prices)) {
+          if (cancelled) return;
+          const viaProxy = (data as { prices: MandiPrice[] }).prices;
+          setPrices(viaProxy);
+          setStatus(viaProxy.length ? 'ok' : 'empty');
+          return;
+        }
+      } catch {
+        // Function absent or erroring — fall back to the direct call.
+      }
+
       try {
         const params = new URLSearchParams({
           'api-key': API_KEY,

@@ -5,17 +5,20 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useMandiPrices } from '@/hooks/useMandiPrices';
 import { IndianRupee, Search, TrendingUp, KeyRound, Loader2, ExternalLink } from 'lucide-react';
 
+/** Every state the dataset reports, so no farmer is left without their own. */
 const STATES = [
-  'Madhya Pradesh',
-  'Maharashtra',
-  'Uttar Pradesh',
-  'Punjab',
-  'Rajasthan',
-  'Gujarat',
-  'Karnataka',
-  'Bihar',
+  'Andhra Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chattisgarh', 'Gujarat',
+  'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'NCT of Delhi', 'Odisha', 'Pondicherry', 'Punjab', 'Rajasthan',
+  'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttrakhand',
   'West Bengal',
-  'Haryana',
+];
+
+/** The crops a farmer is most likely to be selling; the rest via search. */
+const COMMODITIES = [
+  'Wheat', 'Paddy(Dhan)(Common)', 'Soyabean', 'Maize', 'Cotton',
+  'Onion', 'Potato', 'Tomato', 'Gram', 'Mustard',
 ];
 
 /**
@@ -25,8 +28,12 @@ const STATES = [
 export default function MandiPrices() {
   const { tx } = useLanguage();
   const [state, setState] = useState('Madhya Pradesh');
+  const [commodity, setCommodity] = useState('');
   const [query, setQuery] = useState('');
-  const { prices, status } = useMandiPrices({ state, limit: 100 });
+  // Filtering by commodity server-side rather than client-side: the API caps a
+  // response at `limit`, so narrowing here is what surfaces a farmer's crop in
+  // a state that reports thousands of rows a day.
+  const { prices, status } = useMandiPrices({ state, commodity: commodity || undefined, limit: 100 });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -101,7 +108,8 @@ export default function MandiPrices() {
               <select
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                className="glass rounded-2xl border-primary/20 px-4 py-3.5 text-foreground outline-none focus:border-primary/40"
+                aria-label={tx('State', 'राज्य')}
+                className="glass min-h-11 rounded-2xl border-primary/20 px-4 py-3.5 text-foreground outline-none focus:border-primary/40"
               >
                 {STATES.map((s) => (
                   <option key={s} value={s}>
@@ -109,6 +117,34 @@ export default function MandiPrices() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Crop chips: a farmer sells one crop and wants its rate, not a
+                thousand rows to scroll. */}
+            <div className="scrollbar-hide mb-5 flex gap-2 overflow-x-auto pb-1">
+              <button
+                onClick={() => setCommodity('')}
+                className={`min-h-11 flex-shrink-0 rounded-full border px-4 text-sm font-semibold transition-colors ${
+                  commodity === ''
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-muted/40 text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {tx('All crops', 'सभी फसलें')}
+              </button>
+              {COMMODITIES.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCommodity(c)}
+                  className={`min-h-11 flex-shrink-0 rounded-full border px-4 text-sm font-semibold transition-colors ${
+                    commodity === c
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border bg-muted/40 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {c.replace(/\(.*\)/, '')}
+                </button>
+              ))}
             </div>
 
             {status === 'loading' && (
