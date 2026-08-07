@@ -15,31 +15,40 @@ import { ThemeSwitchDefs } from "@/components/ui/theme-switch";
 import { useUIPrefs } from "@/hooks/useUIPrefs";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PublicOnlyRoute from "@/components/PublicOnlyRoute";
-import Index from "./pages/Index";
-import AgriMarket from "./pages/AgriMarket";
-import KisanHelp from "./pages/KisanHelp";
-import KisanMart from "./pages/KisanMart";
-import SearchResults from './pages/SearchResults';
-import MandiPrices from './pages/MandiPrices';
-import DamageReport from './pages/DamageReport';
-import GovSchemes from "./pages/GovSchemes";
-import RoboticFarming from "./pages/RoboticFarming";
-import ShopLocator from "./pages/ShopLocator";
-import Orders from "./pages/Orders";
-import Addresses from "./pages/Addresses";
-import PartnerOrders from "./pages/PartnerOrders";
-import PartnerRegistration from "./pages/PartnerRegistration";
-import Support from "./pages/Support";
-import OrganicFarming from "./pages/OrganicFarming";
-import VegetableFarming from "./pages/VegetableFarming";
-import Settings from "./pages/Settings";
+import ErrorBoundary from "./components/ErrorBoundary";
+import RouteFallback from "@/components/RouteFallback";
+
+// Eager: these are the first paint on every visit, so deferring them would
+// only add a round trip.
 import RoleHome from "./pages/RoleHome";
-import StaffAccounts from "./pages/StaffAccounts";
-import CropDisease from "./pages/CropDisease";
-import NotFound from "./pages/NotFound";
+import Index from "./pages/Index";
 import Welcome from "./pages/auth/Welcome";
-import Signup from "./pages/auth/Signup";
 import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+import NotFound from "./pages/NotFound";
+
+// Lazy: everything a farmer reaches by navigating. Shipping all of it up
+// front made one 1.1 MB chunk, which on a 3G connection in a field is the
+// difference between the app opening and the farmer giving up.
+const AgriMarket = React.lazy(() => import("./pages/AgriMarket"));
+const KisanHelp = React.lazy(() => import("./pages/KisanHelp"));
+const KisanMart = React.lazy(() => import("./pages/KisanMart"));
+const SearchResults = React.lazy(() => import("./pages/SearchResults"));
+const MandiPrices = React.lazy(() => import("./pages/MandiPrices"));
+const DamageReport = React.lazy(() => import("./pages/DamageReport"));
+const GovSchemes = React.lazy(() => import("./pages/GovSchemes"));
+const RoboticFarming = React.lazy(() => import("./pages/RoboticFarming"));
+const ShopLocator = React.lazy(() => import("./pages/ShopLocator"));
+const Orders = React.lazy(() => import("./pages/Orders"));
+const Addresses = React.lazy(() => import("./pages/Addresses"));
+const PartnerOrders = React.lazy(() => import("./pages/PartnerOrders"));
+const PartnerRegistration = React.lazy(() => import("./pages/PartnerRegistration"));
+const Support = React.lazy(() => import("./pages/Support"));
+const OrganicFarming = React.lazy(() => import("./pages/OrganicFarming"));
+const VegetableFarming = React.lazy(() => import("./pages/VegetableFarming"));
+const Settings = React.lazy(() => import("./pages/Settings"));
+const StaffAccounts = React.lazy(() => import("./pages/StaffAccounts"));
+const CropDisease = React.lazy(() => import("./pages/CropDisease"));
 
 const queryClient = new QueryClient();
 
@@ -47,6 +56,7 @@ const App = () => {
   // Mirror saved preferences onto <html> before the tree renders.
   useUIPrefs();
   return (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <LanguageProvider>
@@ -59,6 +69,7 @@ const App = () => {
             <RouteAnalytics />
             <AuthProvider>
               <CartProvider>
+              <React.Suspense fallback={<RouteFallback />}>
               <Routes>
                 {/* Auth Routes (no shell) */}
                 <Route path="/auth/welcome" element={<PublicOnlyRoute><Welcome /></PublicOnlyRoute>} />
@@ -100,6 +111,7 @@ const App = () => {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </React.Suspense>
               </CartProvider>
             </AuthProvider>
           </BrowserRouter>
@@ -107,6 +119,7 @@ const App = () => {
       </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
   );
 };
 

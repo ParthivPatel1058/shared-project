@@ -23,6 +23,9 @@ interface Account {
   onboarded: boolean;
 }
 
+/** Session flag: the staff/farm schema is not on this database yet. */
+const SCHEMA_ABSENT = 'bx_account_schema_absent';
+
 const GUEST: Account = {
   role: 'user',
   accountType: 'farmer',
@@ -52,13 +55,28 @@ export function useAccount() {
       return;
     }
 
-    // One round trip each, in parallel. All three are optional: the schema
-    // may not be migrated yet, and a new user has no farm profile.
+    // Until the staff/farm migration is applied these three calls 404 or 400.
+    // Without this gate that is three failed requests on every navigation —
+    // slow, and it buries real errors in console noise. One probe per session
+    // is enough; a successful call clears the flag immediately.
+    if (sessionStorage.getItem(SCHEMA_ABSENT) === '1') {
+      setAccount({ ...GUEST, fullName: (user.user_metadata?.full_name as string) ?? null });
+      setLoading(false);
+      return;
+    }
+
+    // Select * rather than naming the new columns: asking for a column that
+    // does not exist yet is a 400, which would hide the row entirely.
     const [roleRes, profileRes, farmRes] = await Promise.all([
       supabase.rpc('my_role'),
-      supabase.from('profiles').select('account_type, full_name, onboarded_at').eq('id', user.id).maybeSingle(),
+      supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
       supabase.from('farm_profiles').select('farm_type').eq('user_id', user.id).maybeSingle(),
     ]);
+
+    // A missing function plus a missing table means the migration has not run.
+    if (roleRes.error && farmRes.error) {
+      sessionStorage.setItem(SCHEMA_ABSENT, '1');
+    }
 
     const role = (!roleRes.error && roleRes.data ? roleRes.data : 'user') as StaffRole;
     const profile = profileRes.data as
