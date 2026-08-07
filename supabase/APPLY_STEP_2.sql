@@ -26,6 +26,20 @@
 -- =============================================================
 
 
+-- ═══ 0. Shared trigger function ══════════════════════════════
+-- Defined here rather than assumed. Eleven triggers below depend on it, and
+-- an earlier migration having created it is not a guarantee worth betting a
+-- half-applied schema on. CREATE OR REPLACE is a no-op when it already exists.
+
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
+
 -- ═══ 1. Authority helpers ════════════════════════════════════
 -- SECURITY DEFINER so a policy on user_roles can never recurse into itself.
 
