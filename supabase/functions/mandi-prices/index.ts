@@ -92,7 +92,20 @@ Deno.serve(async (req) => {
       return json({ error: 'The government price service is busy' }, 502);
     }
 
-    const prices: Price[] = (data?.records ?? []).map((r: Record<string, string>) => ({
+    // data.gov.in honours a filter only until it runs out of matching rows,
+    // then pads to `limit` with rows from anywhere. Asking for 200 wheat rows
+    // in Madhya Pradesh returns 150 real ones and 50 from Uttar Pradesh —
+    // verified 8 Aug 2026. A farmer must never be shown another state's rate
+    // as if it were their own, so the filter is re-applied here.
+    const raw: Record<string, string>[] = data?.records ?? [];
+    const matches = raw.filter(
+      (r) =>
+        (!state || r.state === state) &&
+        (!commodity || r.commodity === commodity) &&
+        (!district || r.district === district),
+    );
+
+    const prices: Price[] = matches.map((r: Record<string, string>) => ({
       state: r.state ?? '',
       district: r.district ?? '',
       market: r.market ?? '',
