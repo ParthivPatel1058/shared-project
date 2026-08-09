@@ -28,7 +28,7 @@ Every claim below was verified on **8 August 2026**. Nothing is estimated.
 | 23 Indian languages | ✅ **True** | 23 codes in `i18n/languages.ts` |
 | ~~"Plantix has 135M downloads"~~ | ❌ **Removed** | Sources conflict (34M vs 135M) |
 | ~~"Top reason claims are rejected"~~ | ❌ **Softened** | Widely repeated, no official statistic |
-| ~~"BhoomiX asks: did it work?"~~ | ❌ **Rewritten** | **Not built yet** — now framed as the grant plan |
+| "BhoomiX asks: did it work?" | ✅ **True** | Built and verified 9 Aug 2026 — outcome persists to DB |
 
 ---
 
@@ -130,24 +130,24 @@ them are built for one district's reality."**
 
 ### 🎙️ SPEAKER 4 — *Why We Win & The Grant* · 1:50 – 2:34
 
-> **ON SCREEN:** The diagnosis screen, then a simple mock of the four
-> follow-up buttons labelled **"Coming with the grant."** Label it honestly.
+> **ON SCREEN:** The real follow-up card in the app — "Did the treatment
+> work?" with the four buttons. Tap one live on camera and let the thank-you
+> appear. This is the most important shot in the video.
 
 **"Every crop app in India has millions of photos of sick plants. Not one has
 the answer to what actually cured them.**
 
-**That's what we'll build with this grant.**
-
 **Seven days after a diagnosis, BhoomiX asks one question. Did the treatment
-work? Cured. Improved. No change. Worse.**
+work? Cured. Better. No change. Worse.**
 
-*(beat)*
+*(tap one — thank-you appears)*
 
-**Every answer makes the next farmer's advice sharper. That's a dataset that
-compounds — you can't copy it by launching a similar app. You earn it, one
-harvest at a time.**
+**One tap. And every answer makes the next farmer's advice sharper. That's a
+dataset that compounds — you can't copy it by launching a similar app. You
+earn it, one harvest at a time.**
 
-**We'll [GRANT PLAN] — reaching [N] farmers across [DISTRICT] in one season.**
+**With the grant we'll [GRANT PLAN] — reaching [N] farmers across [DISTRICT]
+in one season.**
 
 *(beat — app on screen)*
 
@@ -176,10 +176,9 @@ Madhya Pradesh → Wheat, take the lowest and highest modal price, and update
 Speaker 1. The point survives whatever the numbers are — the gap is always
 there.
 
-**2. Label the follow-up mock honestly.** Speaker 4 now says "that's what
-we'll build with this grant," which is true and satisfies the masterclass's
-"show what winning unlocks" requirement. Do **not** let the visual imply it
-already works.
+**2. Seed one diagnosis before filming.** The prompt only appears seven days
+after a scan. Scan a leaf, then ask me to backdate it so Speaker 4 can tap a
+real button on camera.
 
 **3. Do the interviews.** Five farmers, fifteen minutes. It's a scored
 requirement and the one thing here you cannot fake.
@@ -197,7 +196,8 @@ works without it.
 Many sources repeat the first version but none cite an official statistic.
 The second version is the scheme rule itself and is unarguable.
 
-**The follow-up loop moved from present tense to the grant plan.** The
-database column and index exist, but no screen asks the question and
-diagnoses aren't saved yet. Claiming a live feature that a judge could ask to
-see was the single biggest risk in the first draft.
+**The follow-up loop is now real.** The first draft described it in present
+tense when only the database column existed. It has since been built: scans
+persist to `crop_diagnoses`, the prompt appears seven days later, and tapping
+an answer writes the outcome. Verified end to end — tapping "Cured" leaves the
+row reading `outcome=cured` with a timestamp. Demo it live on camera.

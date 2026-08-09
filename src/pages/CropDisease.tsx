@@ -24,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useDiagnoses } from '@/hooks/useDiagnoses';
+import FollowUpPrompt from '@/components/FollowUpPrompt';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -82,6 +84,7 @@ interface PhotoScanProps {
 
 function PhotoScan({ id, mode, title, hint, analyzeLabel }: PhotoScanProps) {
   const { language, tx } = useLanguage();
+  const { save } = useDiagnoses();
   const en = language === 'en';
 
   const [preview, setPreview] = useState<string | null>(null);
@@ -119,7 +122,27 @@ function PhotoScan({ id, mode, title, hint, analyzeLabel }: PhotoScanProps) {
       });
       if (error) throw error;
       if (!data?.result) throw new Error('empty response');
-      setResult(data.result as VisionResult);
+      const r = data.result as VisionResult;
+      setResult(r);
+
+      // Store it so we can come back in a week and ask whether the treatment
+      // worked. A diagnosis nobody ever grades teaches us nothing, and that
+      // follow-up label is the part no competitor has. Deliberately not
+      // awaited: the farmer should see their result immediately, and a failed
+      // write must never look like a failed diagnosis.
+      if (r.isPlant) {
+        void save({
+          cropName: r.crop,
+          diseaseName: r.disease,
+          confidence:
+            typeof r.confidence === 'number'
+              ? Math.round(r.confidence * (r.confidence <= 1 ? 100 : 1))
+              : undefined,
+          severity: r.severity,
+          treatment: r.treatment,
+          isHealthy: mode === 'crop' ? r.health === 'Healthy' : !r.disease,
+        });
+      }
     } catch {
       toast.error(
         tx('Could not analyse the photo. Please try again.', 'फोटो का विश्लेषण नहीं हो सका। दोबारा कोशिश करें।'),
@@ -460,6 +483,10 @@ const CropDisease = () => {
       </div>
 
       <main className="container mx-auto px-4 pt-8 md:pt-12 pb-16 max-w-5xl">
+        {/* Any scan still waiting on its outcome, asked before a new one is
+            started — the answer is more valuable to us than another photo. */}
+        <FollowUpPrompt />
+
         {/* Page header */}
         <div className="mb-8">
           <span className="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-primary/10 text-primary text-sm font-medium">

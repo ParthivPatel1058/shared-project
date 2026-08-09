@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import FarmAdvisory from '@/components/FarmAdvisory';
+import FollowUpPrompt from '@/components/FollowUpPrompt';
 import SearchBar from '@/components/SearchBar';
 import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
 import GooeyNav from '@/components/GooeyNav';
@@ -160,9 +161,16 @@ Smarter`, `स्मार्ट
             </div>
           </Reveal>
 
+          {/* Above everything when it has something to ask. A follow-up a week
+              after a diagnosis is the one thing we need back from the farmer,
+              and it renders nothing when there is nothing pending. */}
+          <div className="mt-12">
+            <FollowUpPrompt />
+          </div>
+
           {/* Weather-driven advice, above the gallery: this is what a farmer
               opens the app to check, so it should not sit under a link grid. */}
-          <section className="mt-12">
+          <section>
             <FarmAdvisory />
           </section>
 
