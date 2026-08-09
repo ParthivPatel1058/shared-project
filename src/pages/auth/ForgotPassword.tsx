@@ -56,11 +56,26 @@ export default function ForgotPassword() {
     });
     setLoading(false);
 
-    // Rate limiting is the one failure worth surfacing — otherwise the user
-    // taps resend forever wondering why nothing arrives.
-    if (error && /rate|too many/i.test(error.message)) {
-      toast.error(tx('Too many attempts. Wait a minute and try again.', 'बहुत बार कोशिश की। एक मिनट रुककर दोबारा करें।'));
-      return;
+    if (error) {
+      // Rate limiting and server errors are real failures and must be shown.
+      // "No such user" must not be: a different answer for a registered
+      // address turns this form into a way to enumerate who has an account.
+      // A 5xx means our mail provider is broken, not that the email is wrong,
+      // and pretending it succeeded leaves the user waiting for nothing.
+      if (/rate|too many/i.test(error.message)) {
+        toast.error(tx('Too many attempts. Wait a minute and try again.', 'बहुत बार कोशिश की। एक मिनट रुककर दोबारा करें।'));
+        return;
+      }
+      if (error.status && error.status >= 500) {
+        toast.error(
+          tx(
+            'We could not send the email right now. Please try again shortly.',
+            'अभी ईमेल नहीं भेजा जा सका। थोड़ी देर बाद कोशिश करें।',
+          ),
+        );
+        console.error('password reset send failed:', error.message);
+        return;
+      }
     }
 
     setSent(true);
