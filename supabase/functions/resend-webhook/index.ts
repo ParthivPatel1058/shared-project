@@ -1,0 +1,113 @@
+/**
+ * Receives Resend delivery events and mirrors them into `email_events`.
+ *
+ * Supabase records that it asked Resend to send a password reset, never
+ * whether it arrived. That gap is exactly the question worth answering when a
+ * farmer says the email never came: bounced and never-sent look identical from
+ * inside Supabase and need opposite fixes.
+ *
+ * Configure at resend.com/webhooks pointing to:
+ *   https://<project>.supabase.co/functions/v1/resend-webhook
+ * then set the signing secret:
+ *   supabase secrets set RESEND_WEBHOOK_SECRET=whsec_...
+ */
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, content-type, svix-id, svix-timestamp, svix-signature',
+};
+
+/** Resend signs with Svix: HMAC-SHA256 over "id.timestamp.body". */
+async function signatureValid(
+  secret: string,
+  id: string,
+  timestamp: string,
+  body: string,
+  header: string,
+): Promise<boolean> {
+  // Reject anything older than five minutes so a captured request cannot be
+  // replayed later to inject fabricated delivery events.
+  const age = Math.abs(Date.now() / 1000 - Number(timestamp));
+  if (!Number.isFinite(age) || age > 300) return false;
+
+  const keyBytes = Uint8Array.from(atob(secret.replace(/^whsec_/, '')), (c) => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyBytes,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${id}.${timestamp}.${body}`));
+  const expected = btoa(String.fromCharCode(...new Uint8Array(mac)));
+
+  // The header carries one or more space-separated "v1,<sig>" pairs.
+  return header
+    .split(' ')
+    .map((p) => p.split(',')[1])
+    .some((sig) => sig === expected);
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+  if (req.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+
+  const raw = await req.text();
+  const secret = Deno.env.get('RESEND_WEBHOOK_SECRET');
+
+  if (secret) {
+    const id = req.headers.get('svix-id') ?? '';
+    const ts = req.headers.get('svix-timestamp') ?? '';
+    const sig = req.headers.get('svix-signature') ?? '';
+    if (!id || !ts || !sig || !(await signatureValid(secret, id, ts, raw, sig))) {
+      console.error('rejected webhook: bad signature');
+      return new Response('Invalid signature', { status: 401, headers: corsHeaders });
+    }
+  } else {
+    // Without a secret anyone who finds the URL can write rows. Refuse rather
+    // than quietly accept forged delivery data.
+    console.error('RESEND_WEBHOOK_SECRET is not set — refusing unverified events');
+    return new Response('Webhook not configured', { status: 503, headers: corsHeaders });
+  }
+
+  let event: Record<string, unknown>;
+  try {
+    event = JSON.parse(raw);
+  } catch {
+    return new Response('Invalid JSON', { status: 400, headers: corsHeaders });
+  }
+
+  const data = (event.data ?? {}) as Record<string, unknown>;
+  const to = Array.isArray(data.to) ? String(data.to[0]) : String(data.to ?? '');
+  // Resend sends "email.delivered"; the leading namespace adds nothing here.
+  const type = String(event.type ?? '').replace(/^email\./, '');
+
+  const db = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+
+  const { error } = await db.from('email_events').insert({
+    message_id: data.email_id ?? null,
+    event_type: type || 'unknown',
+    recipient: to,
+    subject: data.subject ?? null,
+    from_address: data.from ?? null,
+    reason: (data.reason ?? (data.bounce as Record<string, unknown>)?.message) ?? null,
+    occurred_at: event.created_at ?? new Date().toISOString(),
+    raw: event,
+  });
+
+  if (error) {
+    console.error('could not record email event:', error.message);
+    // 500 makes Resend retry, which is what we want for a transient failure.
+    return new Response('Could not record event', { status: 500, headers: corsHeaders });
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+});
