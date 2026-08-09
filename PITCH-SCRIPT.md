@@ -4,9 +4,9 @@
 
 | Pace | Runtime |
 |---|---|
-| Fast (160 wpm) | 2:20 |
-| **Normal (145 wpm)** | **2:34** |
-| Slow / nervous (130 wpm) | 2:52 |
+| Fast (160 wpm) | 2:22 |
+| **Normal (145 wpm)** | **2:36** |
+| Slow / nervous (130 wpm) | 2:54 |
 
 Fits under 3:00 even spoken slowly. Nerves make people slower, not faster.
 
@@ -29,22 +29,18 @@ Every claim below was verified on **8 August 2026**. Nothing is estimated.
 | ~~"Plantix has 135M downloads"~~ | ❌ **Removed** | Sources conflict (34M vs 135M) |
 | ~~"Top reason claims are rejected"~~ | ❌ **Softened** | Widely repeated, no official statistic |
 | "BhoomiX asks: did it work?" | ✅ **True** | Built and verified 9 Aug 2026 — outcome persists to DB |
+| ~~Farmer interview quotes~~ | ❌ **Removed 10 Aug** | No interviews were done — cut rather than invented |
 
 ---
 
 ## ⚠️ Fill these in before filming
 
-Five slots marked `[LIKE THIS]` are your real user research. I have **not**
-invented them — a made-up farmer quote collapses at the first follow-up
-question.
-
 | Slot | What goes there |
 |---|---|
 | `[NAMES]` | Your four names |
-| `[N]` farmers | How many you actually spoke to |
-| `[M]` | How many confirmed the problem |
-| `[QUOTE]` | One real sentence, their words |
-| `[GRANT PLAN]` | Specific and small |
+| `[GRANT PLAN]` | Specific and small — a concrete next step, not a big vague dream |
+| `[REACH TARGET]` | A number you'd genuinely stand behind if asked how you got it |
+| `[DISTRICT]` | Where you'd actually run the pilot |
 
 ---
 
@@ -52,7 +48,7 @@ question.
 
 ---
 
-### 🎙️ SPEAKER 1 — *The Problem* · 0:00 – 0:36
+### 🎙️ SPEAKER 1 — *The Problem* · 0:00 – 0:39
 
 > **ON SCREEN:** Two price cards — Raisen ₹2,000 · Ratlam ₹2,826, gap animating.
 
@@ -74,7 +70,7 @@ window to claim his insurance."**
 
 ---
 
-### 🎙️ SPEAKER 2 — *The Prototype* · 0:36 – 1:16
+### 🎙️ SPEAKER 2 — *The Prototype* · 0:39 – 1:19
 
 > **ON SCREEN:** Live screen recording of the real app. No slides.
 
@@ -102,20 +98,21 @@ claim reported late can be rejected outright.**
 
 ---
 
-### 🎙️ SPEAKER 3 — *Real Users & Market* · 1:16 – 1:50
+### 🎙️ SPEAKER 3 — *Market & Why We're Different* · 1:19 – 1:53
 
-> **ON SCREEN:** A photo of you talking to farmers, then the table.
+> **ON SCREEN:** The comparison table, building row by row.
 
-**"We didn't guess. We spoke to [N] farmers around Indore. [M] had sold low
-simply because they didn't know that morning's rate.**
+**"India already has crop-disease apps, and they're good at what they do.
+But open one and check: no mandi rate. No insurance help. Built for the
+whole country, not for one district's reality.**
 
-**One said — [QUOTE]**
+**We checked the Play Store, we checked five competitors, and we checked
+what a farmer near us actually needs on a bad day — not just 'what's wrong
+with my plant,' but 'what do I do next.'**
 
 *(beat — table appears)*
 
-**India has crop-disease apps, and they're good at what they do. But they
-tell you what's wrong and stop. No mandi rate. No insurance help. And none of
-them are built for one district's reality."**
+**That gap is where BhoomiX sits."**
 
 > **TABLE ON SCREEN** (don't read aloud):
 >
@@ -128,7 +125,7 @@ them are built for one district's reality."**
 
 ---
 
-### 🎙️ SPEAKER 4 — *Why We Win & The Grant* · 1:50 – 2:34
+### 🎙️ SPEAKER 4 — *Why We Win & The Grant* · 1:53 – 2:36
 
 > **ON SCREEN:** The real follow-up card in the app — "Did the treatment
 > work?" with the four buttons. Tap one live on camera and let the thank-you
@@ -146,8 +143,8 @@ work? Cured. Better. No change. Worse.**
 dataset that compounds — you can't copy it by launching a similar app. You
 earn it, one harvest at a time.**
 
-**With the grant we'll [GRANT PLAN] — reaching [N] farmers across [DISTRICT]
-in one season.**
+**With the grant we'll [GRANT PLAN] — reaching [REACH TARGET] farmers across
+[DISTRICT] in one season.**
 
 *(beat — app on screen)*
 
@@ -161,11 +158,11 @@ in one season.**
 
 | Speaker | Words | At 145 wpm |
 |---|---|---|
-| 1 | 92 | 0:38 |
-| 2 | 95 | 0:39 |
-| 3 | 74 | 0:31 |
-| 4 | 111 | 0:46 |
-| **Total** | **372** | **2:34** |
+| 1 | 95 | 0:39 |
+| 2 | 96 | 0:40 |
+| 3 | 81 | 0:34 |
+| 4 | 106 | 0:44 |
+| **Total** | **378** | **2:36** |
 
 ---
 
@@ -180,8 +177,9 @@ there.
 after a scan. Scan a leaf, then ask me to backdate it so Speaker 4 can tap a
 real button on camera.
 
-**3. Do the interviews.** Five farmers, fifteen minutes. It's a scored
-requirement and the one thing here you cannot fake.
+**3. Rehearse the market table beat.** Speaker 3 now carries more of the
+"why we're different" weight than before — read it once out loud before
+recording so the pacing feels natural, not rushed.
 
 ---
 
@@ -201,3 +199,11 @@ tense when only the database column existed. It has since been built: scans
 persist to `crop_diagnoses`, the prompt appears seven days later, and tapping
 an answer writes the outcome. Verified end to end — tapping "Cured" leaves the
 row reading `outcome=cured` with a timestamp. Demo it live on camera.
+
+**User interviews were dropped, on request.** The masterclass lists real user
+research as one of five scored checklist items — this is a genuine trade-off,
+not a formatting choice, and it's worth knowing before submission, not after.
+Speaker 3 was rebuilt around the market and competitor comparison instead,
+which the masterclass itself says needs "no big data — a Google search, an
+app-store check, and talking to 5 people." If there's time before the
+deadline, even one quick conversation would let you add it back honestly.
