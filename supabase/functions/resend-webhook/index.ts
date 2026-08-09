@@ -79,10 +79,21 @@ Deno.serve(async (req) => {
     return new Response('Invalid JSON', { status: 400, headers: corsHeaders });
   }
 
+  const rawType = String(event.type ?? '');
+
+  // A webhook subscribed to everything also delivers contact.* and domain.*
+  // events, which carry no recipient and would fill the log with rows that
+  // are not emails. Acknowledge them so Resend stops retrying, store nothing.
+  if (!rawType.startsWith('email.')) {
+    return new Response(JSON.stringify({ ok: true, ignored: rawType }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   const data = (event.data ?? {}) as Record<string, unknown>;
   const to = Array.isArray(data.to) ? String(data.to[0]) : String(data.to ?? '');
   // Resend sends "email.delivered"; the leading namespace adds nothing here.
-  const type = String(event.type ?? '').replace(/^email\./, '');
+  const type = rawType.replace(/^email\./, '');
 
   const db = createClient(
     Deno.env.get('SUPABASE_URL')!,
