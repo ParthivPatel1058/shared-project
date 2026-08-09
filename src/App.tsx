@@ -25,6 +25,8 @@ import Index from "./pages/Index";
 import Welcome from "./pages/auth/Welcome";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 // Lazy: everything a farmer reaches by navigating. Shipping all of it up
@@ -74,6 +76,12 @@ const App = () => {
                 <Route path="/auth/welcome" element={<PublicOnlyRoute><Welcome /></PublicOnlyRoute>} />
                 <Route path="/auth/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
                 <Route path="/auth/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+                <Route path="/auth/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
+                {/* Deliberately NOT PublicOnlyRoute: the emailed link creates a
+                    recovery session, so this page is reached while signed in.
+                    Guarding it would bounce the user away before they could set
+                    a password — and the link only works once. */}
+                <Route path="/auth/reset-password" element={<ResetPassword />} />
 
                 {/* Protected Routes — all rendered inside AppShell so the
                     desktop Sidebar persists across navigation. */}

@@ -6,7 +6,7 @@ import Button3D from '@/components/ui/button-3d';
 import PixelReactor from '@/components/PixelReactor';
 import BhoomixMark from '@/components/BhoomixMark';
 import heroImage from '@/assets/auth-hero.jpg';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
@@ -38,7 +38,10 @@ export default function Login() {
 
   // Many farmers have a mobile number but no email address, so phone sign-in
   // is offered as an equal option rather than hidden behind "more ways".
-  const [method, setMethod] = useState<Method>('email');
+  // Honour ?method=phone so "sign in with mobile instead" lands ready to go.
+  const [method, setMethod] = useState<Method>(
+    searchParams.get('method') === 'phone' ? 'phone' : 'email',
+  );
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -141,12 +144,15 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
+        {/* Fine cells and no ripple: the distortion pulled the hillside into
+            concentric rings, which read as water rather than grass. Smaller
+            cells with more tonal levels keep the blades legible. */}
         <PixelReactor
           src={heroImage}
           alt={tx('Lush green hills', 'हरी-भरी पहाड़ियां')}
-          cell={9}
-          levels={10}
-          ripples={6}
+          cell={4}
+          levels={14}
+          ripples={0}
           centerMark={<BhoomixMark />}
           className="h-40 w-full md:h-full"
         />
@@ -287,13 +293,13 @@ export default function Login() {
                   disabled={loading}
                 />
               </div>
-              <button
-                type="button"
-                onClick={() => toast.info(tx('Password reset coming soon!', 'पासवर्ड रीसेट जल्द आ रहा है!'))}
-                className="text-sm text-primary hover:underline"
+              {/* Carry whatever they already typed, so they don't retype it. */}
+              <Link
+                to={`/auth/forgot-password${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`}
+                className="inline-flex min-h-11 items-center text-sm text-primary hover:underline"
               >
                 {tx('Forgot password?', 'पासवर्ड भूल गए?')}
-              </button>
+              </Link>
             </div>
 
             <Button3D type="submit" tone="emerald" disabled={loading} className="!mt-7">
