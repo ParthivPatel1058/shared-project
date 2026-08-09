@@ -26,13 +26,12 @@ import {
   Moon,
   LifeBuoy,
   HelpCircle,
-  ShieldCheck,
+
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useOrderCount } from "@/hooks/useOrderCount";
-import { useAccount } from "@/hooks/useAccount";
 import ThemeSwitch from "@/components/ui/theme-switch";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/bhoomix-logo.jpeg";
@@ -44,8 +43,6 @@ interface Item {
   /** Nested children turn this row into an expandable group. */
   children?: Item[];
   badgeKey?: "orders";
-  /** Hidden unless the signed-in account is an admin or a manager. */
-  staffOnly?: boolean;
 }
 
 const NAV: Item[] = [
@@ -79,12 +76,6 @@ const NAV: Item[] = [
     ],
   },
   { path: "/shop-locator", icon: MapPin, label: { en: "Nearby Shops", hi: "नज़दीकी दुकानें" } },
-  {
-    path: "/staff-accounts",
-    icon: ShieldCheck,
-    label: { en: "Staff Accounts", hi: "स्टाफ खाते" },
-    staffOnly: true,
-  },
   { path: "/support", icon: LifeBuoy, label: { en: "Support", hi: "सहायता" } },
 ];
 
@@ -105,12 +96,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const orderCount = useOrderCount();
-  const { isStaff } = useAccount();
   const en = language === "en";
-
-  // Hiding the row is presentation only — the page and the edge function both
-  // re-check authority, so a hand-typed URL gains nothing.
-  const nav = NAV.filter((item) => !item.staffOnly || isStaff);
 
   const [openGroup, setOpenGroup] = useState<string | null>("#farming");
 
@@ -249,7 +235,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Navigation */}
       <nav className={cn("flex-1 overflow-y-auto overflow-x-visible py-4 space-y-1", collapsed ? "px-3" : "px-3")}>
-        {nav.map((item) => (
+        {NAV.map((item) => (
           <div key={item.path}>
             <Row item={item} />
 

@@ -87,6 +87,67 @@ npm run fn:deploy
 
 ---
 
+## Staff administration
+
+Staff management lives in the Supabase dashboard, not in the app. A farmer
+opening BhoomiX has no business seeing a "Staff Accounts" row, and hiding it
+by role is presentation, not security.
+
+### Check who has an account
+
+**Table Editor → `staff_roster`** — every partner, manager and admin with
+their login email, region, who created them, and whether they have ever
+signed in.
+
+**Table Editor → `account_roles`** — one row per account with every role it
+holds. Use this to answer "who is an admin?".
+
+Both views are revoked from `anon` and `authenticated`, so the app cannot read
+them even with a valid session. They expose email addresses and sign-in times.
+
+### Create a staff account
+
+Creating an auth user needs the service-role key, so it happens in the
+`create-staff-account` edge function. From the **SQL Editor** you cannot call
+it directly — use `curl`, signed in as an admin:
+
+```bash
+# 1. Get an access token by signing in as an admin account
+curl -s -X POST "https://tzmuivqtlnosgkubhyft.supabase.co/auth/v1/token?grant_type=password" \
+  -H "apikey: YOUR_ANON_KEY" -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"..."}' | jq -r .access_token
+
+# 2. Create the account with it
+curl -X POST "https://tzmuivqtlnosgkubhyft.supabase.co/functions/v1/create-staff-account" \
+  -H "Authorization: Bearer THE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"role":"partner","email":"ramesh@example.com","password":"TempPass123",
+       "fullName":"Ramesh Patel","phone":"+919876543210","region":"Indore",
+       "vehicleType":"Bike"}'
+```
+
+The function enforces the hierarchy server-side: an admin may create managers
+and partners, a manager may create partners only, and anyone else gets 403 —
+regardless of what the request claims.
+
+### Promote an existing account to admin
+
+```sql
+insert into public.user_roles (user_id, role)
+select id, 'admin' from auth.users where email = 'someone@example.com'
+on conflict (user_id, role) do nothing;
+```
+
+### Deactivate someone
+
+```sql
+update public.partners set is_active = false where employee_code = 'EMP-014';
+```
+
+Deactivating stops them accepting orders but keeps the audit trail. Deleting
+the auth user removes their history with them.
+
+---
+
 ## Giving Claude direct access
 
 Without a token, Claude can only read through the anon key with RLS enforced —

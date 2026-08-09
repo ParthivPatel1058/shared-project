@@ -47,7 +47,6 @@ const Support = React.lazy(() => import("./pages/Support"));
 const OrganicFarming = React.lazy(() => import("./pages/OrganicFarming"));
 const VegetableFarming = React.lazy(() => import("./pages/VegetableFarming"));
 const Settings = React.lazy(() => import("./pages/Settings"));
-const StaffAccounts = React.lazy(() => import("./pages/StaffAccounts"));
 const CropDisease = React.lazy(() => import("./pages/CropDisease"));
 
 const queryClient = new QueryClient();
@@ -94,7 +93,6 @@ const App = () => {
                   <Route path="/mandi-prices" element={<MandiPrices />} />
                   <Route path="/damage-report" element={<DamageReport />} />
                   <Route path="/gov-schemes" element={<GovSchemes />} />
-                  <Route path="/staff-accounts" element={<StaffAccounts />} />
                   <Route path="/robotic-farming" element={<RoboticFarming />} />
                   <Route path="/shop-locator" element={<ShopLocator />} />
                   <Route path="/orders" element={<Orders />} />
