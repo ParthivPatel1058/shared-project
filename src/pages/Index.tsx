@@ -43,7 +43,7 @@ interface Feature {
 const FEATURES: Feature[] = [
   { title: 'Crop Disease Detection', titleHi: 'फसल रोग पहचान', description: 'Scan crop photos to identify diseases, browse the disease library, and get treatment advice', descriptionHi: 'फसल की फोटो स्कैन करके रोग पहचानें और उपचार की सलाह पाएं', icon: ScanSearch, emoji: '🔬', img: imgDisease, href: '/crop-disease', cta: 'Scan Now', ctaHi: 'स्कैन करें', gradient: 'primary', badge: 'New', badgeHi: 'नया' },
   { title: 'Agri Market', titleHi: 'कृषि बाज़ार', description: 'Seeds, fertilizers, tools, and crop protection', descriptionHi: 'बीज, उर्वरक, उपकरण और फसल सुरक्षा', icon: ShoppingBag, emoji: '🛒', img: imgMarket, href: '/agri-market', cta: 'Browse Products', ctaHi: 'उत्पाद देखें', gradient: 'secondary' },
-  { title: 'Kisan Mart', titleHi: 'किसान मार्ट', description: 'Everyday groceries and farm household supplies', descriptionHi: 'रोज़मर्रा का किराना और घरेलू सामान', icon: Store, emoji: '🏪', img: imgMart, href: '/kisan-mart', cta: 'Browse Store', ctaHi: 'स्टोर देखें', gradient: 'primary' },
+  { title: 'AgriNova Mart', titleHi: 'एग्रीनोवा मार्ट', description: 'Everyday groceries and farm household supplies', descriptionHi: 'रोज़मर्रा का किराना और घरेलू सामान', icon: Store, emoji: '🏪', img: imgMart, href: '/kisan-mart', cta: 'Browse Store', ctaHi: 'स्टोर देखें', gradient: 'primary' },
   { title: 'Crop Advisory', titleHi: 'फसल सलाह', description: 'Ask a question or identify crop disease from a photo', descriptionHi: 'प्रश्न पूछें या फोटो से फसल रोग पहचानें', icon: HelpCircle, emoji: '👨‍🌾', img: imgAdvisory, href: '/kisan-help', cta: 'Get Advice', ctaHi: 'सलाह लें', gradient: 'secondary' },
   { title: 'Government Schemes', titleHi: 'सरकारी योजनाएं', description: 'Explore latest government benefits and schemes for farmers', descriptionHi: 'किसानों के लिए नवीनतम सरकारी लाभ और योजनाओं का अन्वेषण करें', icon: Landmark, emoji: '🏛️', img: imgSchemes, href: '/gov-schemes', cta: 'View Schemes', ctaHi: 'योजनाएं देखें', gradient: 'primary' },
   { title: 'Robotic Farming', titleHi: 'रोबोटिक कृषि', description: 'Discover modern farming robots and automation technology', descriptionHi: 'आधुनिक कृषि रोबोट और स्वचालन प्रौद्योगिकी की खोज करें', icon: Bot, emoji: '🤖', img: imgRobotic, href: '/robotic-farming', cta: 'Explore Tech', ctaHi: 'तकनीक जानें', gradient: 'secondary' },
@@ -144,7 +144,7 @@ Smarter`, `स्मार्ट
                 items={[
                   { label: tx('Crop AI', 'फसल एआई'), href: '/crop-disease' },
                   { label: tx('Market', 'बाज़ार'), href: '/agri-market' },
-                  { label: tx('Kisan Mart', 'किसान मार्ट'), href: '/kisan-mart' },
+                  { label: tx('AgriNova Mart', 'एग्रीनोवा मार्ट'), href: '/kisan-mart' },
                   { label: tx('Advisory', 'सलाह'), href: '/kisan-help' },
                   { label: tx('Schemes', 'योजनाएं'), href: '/gov-schemes' },
                 ]}

@@ -12,7 +12,7 @@ export const translations = {
     home: 'Home',
     agriMarket: 'Agri Market',
     kisanHelp: 'Crop Advisory',
-    kisanMart: 'Kisan Mart',
+    kisanMart: 'AgriNova Mart',
     settings: 'Settings',
     myAccount: 'Account',
     signOut: 'Sign Out',
@@ -68,7 +68,7 @@ export const translations = {
     thinking: 'Working on it…',
 
     // KisanMart
-    kisanMartTitle: 'Kisan Mart',
+    kisanMartTitle: 'AgriNova Mart',
     kisanMartDesc: 'Everyday groceries and farm household supplies',
     orderNow: 'Browse Store',
 
@@ -102,7 +102,7 @@ export const translations = {
     home: 'होम',
     agriMarket: 'कृषि बाज़ार',
     kisanHelp: 'फसल सलाह',
-    kisanMart: 'किसान मार्ट',
+    kisanMart: 'एग्रीनोवा मार्ट',
     settings: 'सेटिंग्स',
     myAccount: 'खाता',
     signOut: 'साइन आउट',
@@ -158,7 +158,7 @@ export const translations = {
     thinking: 'जवाब तैयार हो रहा है…',
 
     // KisanMart
-    kisanMartTitle: 'किसान मार्ट',
+    kisanMartTitle: 'एग्रीनोवा मार्ट',
     kisanMartDesc: 'रोज़मर्रा की किराना और घर-खेत की ज़रूरतें',
     orderNow: 'स्टोर देखें',
 

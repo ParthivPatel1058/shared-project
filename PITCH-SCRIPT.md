@@ -213,38 +213,119 @@ deadline, even one quick conversation would let you add it back honestly.
 
 # SLIDE DECK SKELETON — Round 2
 
-A slide-by-slide outline you can build in Figma / Canva / Google Slides and
-screen-record over, or cut between live and slide during editing. Matches the
-masterclass's six focus areas, compressed to fit 180 seconds. **Every slide
-below is deliberately short** — one headline plus at most three short lines.
-Judges read a slide in two seconds; don't make them read a paragraph.
+Built directly from the four-speaker script above. **One idea per slide.**
+Nothing on a slide runs past ~8 words, so a judge reads it in one glance and
+goes back to listening — the speaker carries the sentence, the slide carries
+the anchor.
+
+**53 cues in total**, of which about **40 are real slides you build** — the
+other 13 are captions burned over Speaker 2's live screen recording, so
+there's nothing to design for those. Across 2:36 that averages **~3 seconds
+per cue**. The high count is the point, not padding: something changing every
+few seconds keeps the eye moving, and it means no single slide ever has to
+hold two thoughts at once.
 
 Real screenshots from the live app are in [`pitch-assets/`](pitch-assets/) —
-taken this session, not mockups. Two slides below have no image yet because
-the feature they cover (live mandi rates, the 7-day outcome prompt) wasn't
-capturable in this session — noted honestly rather than filled with a staged
-substitute. Take those two before filming.
+captured from the running app, not mockups. Slides marked ⚠️ still need a
+real capture; they are left empty rather than filled with a staged
+substitute. Take those before filming.
 
-| # | Slide | On-screen text (verbatim, keep it this short) | Image |
+**Reading the table:** *On screen* is the literal text to type into the
+slide. *Visual* is the image or motion. *Under the line* is the script
+sentence the speaker is saying while that slide is up.
+
+---
+
+## SPEAKER 1 — The Problem · 0:00 – 0:39
+
+| # | On screen (exact) | Visual | Under the line |
 |---|---|---|---|
-| 0 | **Cover** | BhoomiX — *Every farmer deserves the right price.* <br>[NAMES] · Round 2 · LaunchVerse | `pitch-assets/02-home-dashboard.png` |
-| 1 | **The Problem** | ₹2,000/quintal in Raisen. ₹2,826 in Ratlam. <br>Same crop, same day, same state. <br>₹800 gone — because nobody told him. | none — let the two numbers animate in on a plain background |
-| 2 | **Live Prototype** | Not a mockup. <br>Live at bhoomix.vercel.app | `pitch-assets/02-home-dashboard.png` |
-| 3 | **Feature — Crop Disease AI** | Photograph a leaf. <br>Disease + confidence score + treatment. | `pitch-assets/03-crop-disease-ai.png` |
-| 4 | **Feature — Mandi Prices** | Live government mandi data. <br>Your crop, your district, today's price. | ⚠️ none captured yet — screenshot the live rates table before filming |
-| 5 | **Feature — Damage Report** | GPS + timestamp + rainfall, logged automatically. <br>72-hour countdown before a PMFBY claim can be rejected. | `pitch-assets/04-damage-report-72hr.png` |
-| 6 | **Feature — 23 Languages** | 23 Indian languages, not just English and Hindi. | `pitch-assets/01-sign-in.png` (हिंदी toggle visible top-right) |
-| 7 | **Market & Competitors** | Table: Disease diagnosis · Live mandi prices · Insurance claim help · Indian languages — Others vs. BhoomiX | none — table only, see Speaker 3 table above |
-| 8 | **Tested, Not Just Demoed** | Built and QA-verified end to end before submission. <br>Every feature you just saw is live, not staged. | none |
-| 9 | **Why We Win — The Outcome Loop** | 7 days after a diagnosis: "Did the treatment work?" <br>Every answer sharpens the next farmer's advice. | ⚠️ none captured yet — tap a real outcome button on camera and screenshot it |
-| 10 | **SDG Alignment** | see table below | none |
-| 11 | **The Grant Ask** | With the grant: [GRANT PLAN] <br>[REACH TARGET] farmers across [DISTRICT], one season. | none |
-| 12 | **Close** | BhoomiX. <br>Every farmer deserves the right price. <br>bhoomix.vercel.app | `pitch-assets/02-home-dashboard.png` |
+| 1 | **BhoomiX** <br><sub>Every farmer deserves the right price.</sub> | Logo on the field photo | *(cold open, before speaking)* |
+| 2 | **₹2,000** <br><sub>Raisen · wheat · today</sub> | Single price card, big number | "Today, wheat sold for two thousand rupees a quintal in Raisen." |
+| 3 | **₹2,826** <br><sub>Ratlam · wheat · today</sub> | Second card slides in beside the first | "In Ratlam — two thousand eight hundred and twenty six." |
+| 4 | **Same crop. Same day. Same state.** | Both cards held, gap line drawing between them | "Same crop. Same day. Same state." |
+| 5 | **₹826** <br><sub>per quintal, gone</sub> | The gap number counts up and locks | "Eight hundred rupees a quintal, gone." |
+| 6 | **× 10 quintals = ₹8,000** | Simple multiplication animating | "On ten quintals that's eight thousand rupees a farmer never sees…" |
+| 7 | **Not a bad harvest.** <br>**Nobody told him.** | Text only, black background | "…not from a bad harvest, but because nobody told him." |
+| 8 | **[NAMES]** <br><sub>Indore</sub> | Team photo | "We're [NAMES], from Indore." |
+| 9 | **BhoomiX** | Logo, clean | "This is BhoomiX." |
+| 10 | **Three ways a farmer loses money** | Heading only | "A farmer here loses money three ways." |
+| 11 | **1 — Sells at the wrong mandi** | Icon + line | "He sells at the wrong mandi." |
+| 12 | **2 — Misreads a disease** | Icon + line (1 stays dimmed) | "He misreads a disease until the field is gone." |
+| 13 | **3 — Misses the 72-hour window** | Icon + line (1 and 2 dimmed) | "He misses the seventy-two-hour window to claim his insurance." |
 
-Slide 8 exists because the masterclass scores "real user research" and no
-interviews were done this round (see above) — it states plainly what *was*
-verified (the working prototype) rather than implying user testing that
-didn't happen. That is the honest version of this slide, not a filler.
+---
+
+## SPEAKER 2 — The Prototype · 0:39 – 1:19
+
+> This whole block is **live screen recording**, not slides. The rows below
+> are lower-third captions burned over the recording — keep them small and
+> in a corner so the app stays the hero.
+
+| # | On screen (exact) | Visual | Under the line |
+|---|---|---|---|
+| 14 | **Not a mockup.** | Cut to live app loading | "So we built it. Not a mockup —" |
+| 15 | **bhoomix.vercel.app** <br><sub>live right now</sub> | URL bar visible in the recording | "— a working app, live at bhoomix dot vercel dot app." |
+| 16 | *(no caption)* | **Live:** photograph a leaf → upload | "Photograph a leaf." |
+| 17 | **Disease · Confidence · Treatment** | **Live:** the three result chips appear | "Our AI names the disease, gives a confidence score, and a treatment you can buy." |
+| 18 | *(no caption)* | **Live:** open Mandi Prices | "Mandi prices —" |
+| 19 | **Government of India open data** | **Live:** rates table loads | "— live from the Government of India's open data, refreshed every day." |
+| 20 | **Your crop. Your district. Today.** | **Live:** filter to one crop | "Your crop, your district, today's price." |
+| 21 | **₹826 — closed** | The gap number from slide 5, struck through | "That's the eight hundred rupees, closed." |
+| 22 | *(no caption)* | **Live:** open Damage Report | "Crop damaged?" |
+| 23 | **GPS · Time · Rainfall** | **Live:** the captured coordinates row | "Photos stamped with GPS and time, paired with recorded rainfall…" |
+| 24 | **72:00:00** | **Live:** the countdown, ticking | "…and a seventy-two-hour countdown —" |
+| 25 | **Late = rejected** | Red text over the countdown | "— because under the scheme, a claim reported late can be rejected outright." |
+| 26 | **23 Indian languages** | **Live:** language switcher opening | "Twenty-three Indian languages." |
+
+---
+
+## SPEAKER 3 — Market & Why We're Different · 1:19 – 1:53
+
+| # | On screen (exact) | Visual | Under the line |
+|---|---|---|---|
+| 27 | **India already has crop apps.** | Neutral background | "India already has crop-disease apps, and they're good at what they do." |
+| 28 | **Open one and check.** | Text only | "But open one and check:" |
+| 29 | **No mandi rate.** | Struck-through row | "no mandi rate." |
+| 30 | **No insurance help.** | Second struck-through row | "No insurance help." |
+| 31 | **Built for the country.** <br>**Not for one district.** | Map zooming out, then failing to zoom in | "Built for the whole country, not for one district's reality." |
+| 32 | **Play Store · 5 competitors** | Small research-receipt visual | "We checked the Play Store, we checked five competitors…" |
+| 33 | **Not "what's wrong."** <br>**"What do I do next."** | Two lines, second highlighted | "…not just 'what's wrong with my plant,' but 'what do I do next.'" |
+| 34 | Table row 1 — Disease diagnosis · Yes · Yes | Comparison table, row 1 only | *(beat — table starts building)* |
+| 35 | + Live mandi prices · **No** · **Yes** | Row 2 lands, BhoomiX column highlights | *(beat)* |
+| 36 | + Insurance claim help · **No** · **Yes** | Row 3 lands | *(beat)* |
+| 37 | + Indian languages · Some · **23** | Row 4 lands, full table visible | *(beat)* |
+| 38 | **That gap is where BhoomiX sits.** | Table dims, one line over it | "That gap is where BhoomiX sits." |
+
+---
+
+## SPEAKER 4 — Why We Win & The Grant · 1:53 – 2:36
+
+| # | On screen (exact) | Visual | Under the line |
+|---|---|---|---|
+| 39 | **Millions of photos of sick plants.** | Grid of leaf thumbnails filling the screen | "Every crop app in India has millions of photos of sick plants." |
+| 40 | **None know what cured them.** | The grid greys out | "Not one has the answer to what actually cured them." |
+| 41 | **Day 7** | Calendar tick | "Seven days after a diagnosis…" |
+| 42 | **"Did the treatment work?"** | ⚠️ **Live:** the real follow-up card | "…BhoomiX asks one question. Did the treatment work?" |
+| 43 | **Cured · Better · No change · Worse** | ⚠️ **Live:** the four buttons | "Cured. Better. No change. Worse." |
+| 44 | *(no caption)* | ⚠️ **Live:** tap one, thank-you appears — **the most important shot in the video** | *(tap — thank-you appears)* |
+| 45 | **One tap.** | Text only | "One tap." |
+| 46 | **Every answer sharpens the next advice.** | Loop arrow diagram | "And every answer makes the next farmer's advice sharper." |
+| 47 | **A dataset that compounds.** | The loop thickening | "That's a dataset that compounds —" |
+| 48 | **You can't copy it.** <br>**You earn it.** | Text only | "— you can't copy it by launching a similar app. You earn it, one harvest at a time." |
+| 49 | **[GRANT PLAN]** | Simple plan visual | "With the grant we'll [GRANT PLAN]…" |
+| 50 | **[REACH TARGET] farmers** <br><sub>[DISTRICT] · one season</sub> | Number counting up over a district map | "…reaching [REACH TARGET] farmers across [DISTRICT] in one season." |
+| 51 | **SDG 1 · 2 · 8 · 9 · 10 · 13** | Six official SDG tiles, no text | *(silent beat — see SDG table below)* |
+| 52 | **Not a promise. It's live.** | Cut back to the running app | "The rest isn't a promise. It's live. Open it." |
+| 53 | **BhoomiX** <br><sub>Every farmer deserves the right price.</sub> <br>**bhoomix.vercel.app** | Logo + URL, hold to end | "BhoomiX. Every farmer deserves the right price." |
+
+---
+
+## Optional slide — only if you make time
+
+| # | On screen (exact) | Visual | Why it's optional |
+|---|---|---|---|
+| — | **Built and verified end to end.** <br><sub>Every feature shown is live, not staged.</sub> | none | The masterclass scores "real user research" and no interviews were done this round. This slide states what *was* verified rather than implying testing that didn't happen. Drop it if you're over time — it's honest, not persuasive. |
 
 ---
 

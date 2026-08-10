@@ -50,7 +50,7 @@ const NAV: Item[] = [
   { path: "/crop-disease", icon: ScanSearch, label: { en: "Crop Disease", hi: "फसल रोग" } },
   { path: "/kisan-help", icon: HelpCircle, label: { en: "Crop Advisory", hi: "फसल सलाह" } },
   { path: "/agri-market", icon: ShoppingBag, label: { en: "Agri Market", hi: "कृषि बाज़ार" } },
-  { path: "/kisan-mart", icon: Store, label: { en: "Kisan Mart", hi: "किसान मार्ट" } },
+  { path: "/kisan-mart", icon: Store, label: { en: "AgriNova Mart", hi: "एग्रीनोवा मार्ट" } },
   {
     path: "#farming",
     icon: Sprout,

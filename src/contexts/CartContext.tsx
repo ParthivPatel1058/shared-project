@@ -13,7 +13,7 @@ import { trackAddToCart } from '@/lib/analytics';
 
 /**
  * Both stores number their products from 1, and the cart keys on product_id,
- * so an Agri Market item and a Kisan Mart item could collide on the same row.
+ * so an Agri Market item and an AgriNova Mart item could collide on the same row.
  * Each store gets its own numeric band to keep them distinct.
  */
 export const STORE_OFFSET = { agri: 0, mart: 100_000 } as const;

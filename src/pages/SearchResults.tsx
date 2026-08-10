@@ -85,7 +85,7 @@ export default function SearchResults() {
                 {tx('Agri Market', 'कृषि बाज़ार')}
               </Link>
               <Link to="/kisan-mart" className="glass rounded-full px-5 py-2.5 font-semibold">
-                {tx('Kisan Mart', 'किसान मार्ट')}
+                {tx('AgriNova Mart', 'एग्रीनोवा मार्ट')}
               </Link>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function SearchResults() {
         {mart.length > 0 && (
           <section>
             <h2 className="mb-5 text-2xl font-bold text-foreground">
-              {tx('Kisan Mart', 'किसान मार्ट')}{' '}
+              {tx('AgriNova Mart', 'एग्रीनोवा मार्ट')}{' '}
               <span className="text-base font-normal text-muted-foreground">({mart.length})</span>
             </h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

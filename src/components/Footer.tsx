@@ -20,7 +20,7 @@ export default function Footer() {
       heading: tx('Buy & Sell', 'खरीदें और बेचें'),
       links: [
         { label: tx('Agri Market', 'कृषि बाज़ार'), href: '/agri-market' },
-        { label: tx('Kisan Mart', 'किसान मार्ट'), href: '/kisan-mart' },
+        { label: tx('AgriNova Mart', 'एग्रीनोवा मार्ट'), href: '/kisan-mart' },
         { label: tx('Shop Locator', 'दुकान खोजें'), href: '/shop-locator' },
         { label: tx('My Orders', 'मेरे ऑर्डर'), href: '/orders' },
       ],
