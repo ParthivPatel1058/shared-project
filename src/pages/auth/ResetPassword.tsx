@@ -1,25 +1,36 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Button3D from '@/components/ui/button-3d';
-import PixelReactor from '@/components/PixelReactor';
-import heroImage from '@/assets/auth-hero.jpg';
-import { Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ShieldAlert, Loader2 } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Button3D from "@/components/ui/button-3d";
+import TileMosaic from "@/components/TileMosaic";
+import {
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldCheck,
+  ShieldAlert,
+  Loader2,
+} from "lucide-react";
 
 /** Mirrors the rule enforced in create-staff-account, so both agree. */
 function passwordProblem(pw: string): { en: string; hi: string } | null {
-  if (pw.length < 10) return { en: 'At least 10 characters', hi: 'कम से कम 10 अक्षर' };
+  if (pw.length < 10)
+    return { en: "At least 10 characters", hi: "कम से कम 10 अक्षर" };
   if (!/[a-z]/.test(pw) || !/[A-Z]/.test(pw))
-    return { en: 'Needs an upper and a lower case letter', hi: 'एक बड़ा और एक छोटा अक्षर चाहिए' };
-  if (!/\d/.test(pw)) return { en: 'Needs a number', hi: 'एक अंक चाहिए' };
+    return {
+      en: "Needs an upper and a lower case letter",
+      hi: "एक बड़ा और एक छोटा अक्षर चाहिए",
+    };
+  if (!/\d/.test(pw)) return { en: "Needs a number", hi: "एक अंक चाहिए" };
   return null;
 }
 
-type LinkState = 'checking' | 'valid' | 'invalid';
+type LinkState = "checking" | "valid" | "invalid";
 
 /**
  * Step two of password recovery: set the new password.
@@ -34,9 +45,9 @@ export default function ResetPassword() {
   const { tx } = useLanguage();
   const navigate = useNavigate();
 
-  const [state, setState] = useState<LinkState>('checking');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [state, setState] = useState<LinkState>("checking");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -45,9 +56,9 @@ export default function ResetPassword() {
 
     // Fires once supabase-js has consumed the recovery token from the URL.
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || session) {
+      if (event === "PASSWORD_RECOVERY" || session) {
         settled = true;
-        setState('valid');
+        setState("valid");
       }
     });
 
@@ -55,14 +66,14 @@ export default function ResetPassword() {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
         settled = true;
-        setState('valid');
+        setState("valid");
       }
     });
 
     // An expired or reused link leaves no session and fires nothing at all,
     // so silence after a moment is the only signal that it failed.
     const timer = window.setTimeout(() => {
-      if (!settled) setState('invalid');
+      if (!settled) setState("invalid");
     }, 3000);
 
     return () => {
@@ -80,7 +91,7 @@ export default function ResetPassword() {
       return;
     }
     if (password !== confirm) {
-      toast.error(tx('Passwords do not match', 'पासवर्ड मेल नहीं खाते'));
+      toast.error(tx("Passwords do not match", "पासवर्ड मेल नहीं खाते"));
       return;
     }
 
@@ -91,14 +102,22 @@ export default function ResetPassword() {
     if (error) {
       toast.error(
         /same/i.test(error.message)
-          ? tx('That is your current password. Choose a new one.', 'यह आपका मौजूदा पासवर्ड है। नया चुनें।')
+          ? tx(
+              "That is your current password. Choose a new one.",
+              "यह आपका मौजूदा पासवर्ड है। नया चुनें।",
+            )
           : error.message,
       );
       return;
     }
 
-    toast.success(tx('Password updated. You are signed in.', 'पासवर्ड बदल गया। आप साइन इन हैं।'));
-    navigate('/', { replace: true });
+    toast.success(
+      tx(
+        "Password updated. You are signed in.",
+        "पासवर्ड बदल गया। आप साइन इन हैं।",
+      ),
+    );
+    navigate("/", { replace: true });
   };
 
   const problem = password ? passwordProblem(password) : null;
@@ -108,70 +127,70 @@ export default function ResetPassword() {
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
         <div className="relative hidden md:block">
-          <PixelReactor
-            src={heroImage}
-            alt="Lush green hills"
-            cell={9}
-            levels={12}
-            ripples={0}
-            className="h-full w-full"
-          />
+          <TileMosaic alt={"Field mosaic"} className="h-full w-full" />
         </div>
 
         <div className="p-7 sm:p-10">
-          {state === 'checking' && (
+          {state === "checking" && (
             <div className="flex min-h-[18rem] flex-col items-center justify-center gap-3">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <p className="text-muted-foreground">{tx('Checking your link…', 'आपका लिंक जाँचा जा रहा है…')}</p>
+              <p className="text-muted-foreground">
+                {tx("Checking your link…", "आपका लिंक जाँचा जा रहा है…")}
+              </p>
             </div>
           )}
 
-          {state === 'invalid' && (
+          {state === "invalid" && (
             <div className="min-h-[18rem]">
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10">
                 <ShieldAlert className="h-7 w-7 text-amber-500" />
               </div>
               <h1 className="font-display text-3xl font-bold text-foreground">
-                {tx('This link has expired', 'यह लिंक समाप्त हो गया')}
+                {tx("This link has expired", "यह लिंक समाप्त हो गया")}
               </h1>
               <p className="mt-2 text-muted-foreground">
                 {tx(
-                  'Reset links last one hour and work only once. Ask for a fresh one.',
-                  'रीसेट लिंक एक घंटे चलता है और एक ही बार काम करता है। नया लिंक मंगाएं।',
+                  "Reset links last one hour and work only once. Ask for a fresh one.",
+                  "रीसेट लिंक एक घंटे चलता है और एक ही बार काम करता है। नया लिंक मंगाएं।",
                 )}
               </p>
               <Link
                 to="/auth/forgot-password"
                 className="mt-7 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground"
               >
-                {tx('Send a new link', 'नया लिंक भेजें')}
+                {tx("Send a new link", "नया लिंक भेजें")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           )}
 
-          {state === 'valid' && (
+          {state === "valid" && (
             <>
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
                 <ShieldCheck className="h-7 w-7 text-primary" />
               </div>
               <div className="mb-7">
                 <h1 className="font-display text-3xl font-bold text-foreground">
-                  {tx('Choose a new password', 'नया पासवर्ड चुनें')}
+                  {tx("Choose a new password", "नया पासवर्ड चुनें")}
                 </h1>
                 <p className="mt-1.5 text-muted-foreground">
-                  {tx('You will be signed in straight after.', 'इसके तुरंत बाद आप साइन इन हो जाएंगे।')}
+                  {tx(
+                    "You will be signed in straight after.",
+                    "इसके तुरंत बाद आप साइन इन हो जाएंगे।",
+                  )}
                 </p>
               </div>
 
               <form onSubmit={submit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="password">{tx('New password', 'नया पासवर्ड')}</Label>
+                  <Label htmlFor="password">
+                    {tx("New password", "नया पासवर्ड")}
+                  </Label>
                   <div className="relative">
                     <Lock className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="password"
-                      type={show ? 'text' : 'password'}
+                      type={show ? "text" : "password"}
                       autoComplete="new-password"
                       autoFocus
                       value={password}
@@ -183,28 +202,43 @@ export default function ResetPassword() {
                     <button
                       type="button"
                       onClick={() => setShow((s) => !s)}
-                      aria-label={show ? tx('Hide password', 'पासवर्ड छिपाएं') : tx('Show password', 'पासवर्ड दिखाएं')}
+                      aria-label={
+                        show
+                          ? tx("Hide password", "पासवर्ड छिपाएं")
+                          : tx("Show password", "पासवर्ड दिखाएं")
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
-                      {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {show ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
                   </div>
-                  <p className={`text-xs ${problem ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
+                  <p
+                    className={`text-xs ${problem ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"}`}
+                  >
                     {problem
                       ? tx(problem.en, problem.hi)
                       : password
-                        ? tx('Strong enough', 'पर्याप्त मजबूत')
-                        : tx('At least 10 characters, with upper, lower and a number', 'कम से कम 10 अक्षर, बड़े-छोटे अक्षर और एक अंक')}
+                        ? tx("Strong enough", "पर्याप्त मजबूत")
+                        : tx(
+                            "At least 10 characters, with upper, lower and a number",
+                            "कम से कम 10 अक्षर, बड़े-छोटे अक्षर और एक अंक",
+                          )}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirm">{tx('Confirm password', 'पासवर्ड दोबारा')}</Label>
+                  <Label htmlFor="confirm">
+                    {tx("Confirm password", "पासवर्ड दोबारा")}
+                  </Label>
                   <div className="relative">
                     <Lock className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="confirm"
-                      type={show ? 'text' : 'password'}
+                      type={show ? "text" : "password"}
                       autoComplete="new-password"
                       value={confirm}
                       onChange={(e) => setConfirm(e.target.value)}
@@ -215,7 +249,7 @@ export default function ResetPassword() {
                   </div>
                   {mismatch && (
                     <p className="text-xs text-amber-600 dark:text-amber-400">
-                      {tx('Passwords do not match', 'पासवर्ड मेल नहीं खाते')}
+                      {tx("Passwords do not match", "पासवर्ड मेल नहीं खाते")}
                     </p>
                   )}
                 </div>
@@ -226,7 +260,9 @@ export default function ResetPassword() {
                   disabled={saving || !!problem || mismatch || !confirm}
                   className="!mt-7"
                 >
-                  {saving ? tx('Saving…', 'सहेजा जा रहा है…') : tx('Update password', 'पासवर्ड बदलें')}
+                  {saving
+                    ? tx("Saving…", "सहेजा जा रहा है…")
+                    : tx("Update password", "पासवर्ड बदलें")}
                   {!saving && <ArrowRight className="h-4 w-4" />}
                 </Button3D>
               </form>

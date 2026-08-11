@@ -1,32 +1,43 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Button3D from '@/components/ui/button-3d';
-import PixelReactor from '@/components/PixelReactor';
-import heroImage from '@/assets/auth-hero.jpg';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
-import { ArrowLeft, Mail, Lock, User, ArrowRight } from 'lucide-react';
-import { FcGoogle } from 'react-icons/fc';
-import { z } from 'zod';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Button3D from "@/components/ui/button-3d";
+import TileMosaic from "@/components/TileMosaic";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
+import { ArrowLeft, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { z } from "zod";
 
 const signupSchema = z.object({
-  username: z.string().trim().min(3, 'Username must be at least 3 characters').max(50),
-  email: z.string().trim().email('Invalid email address').max(255),
-  password: z.string().min(6, 'Password must be at least 6 characters').max(100),
+  username: z
+    .string()
+    .trim()
+    .min(3, "Username must be at least 3 characters")
+    .max(50),
+  email: z.string().trim().email("Invalid email address").max(255),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(100),
 });
 
 export default function Signup() {
   const navigate = useNavigate();
   const { tx } = useLanguage();
   const [searchParams] = useSearchParams();
-  const rawNext = searchParams.get('next') ?? '';
-  const nextPath = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
+  const rawNext = searchParams.get("next") ?? "";
+  const nextPath =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,26 +58,30 @@ export default function Signup() {
       });
 
       if (error) {
-        if (error.message.includes('already registered')) {
+        if (error.message.includes("already registered")) {
           toast.error(
             tx(
-              'This email is already registered. Please sign in instead.',
-              'यह ईमेल पहले से पंजीकृत है। कृपया साइन इन करें।',
+              "This email is already registered. Please sign in instead.",
+              "यह ईमेल पहले से पंजीकृत है। कृपया साइन इन करें।",
             ),
           );
         } else {
           toast.error(error.message);
         }
       } else {
-        toast.success(tx('Account created! Redirecting…', 'खाता बन गया! ले जा रहे हैं…'));
-        if (nextPath === '/') navigate('/');
+        toast.success(
+          tx("Account created! Redirecting…", "खाता बन गया! ले जा रहे हैं…"),
+        );
+        if (nextPath === "/") navigate("/");
         else window.location.href = nextPath;
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error(tx('An error occurred during signup', 'साइन अप करते समय समस्या हुई'));
+        toast.error(
+          tx("An error occurred during signup", "साइन अप करते समय समस्या हुई"),
+        );
       }
     } finally {
       setLoading(false);
@@ -76,7 +91,7 @@ export default function Signup() {
   const handleGoogleSignup = async () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: { redirectTo: `${window.location.origin}${nextPath}` },
     });
 
@@ -89,19 +104,15 @@ export default function Signup() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
-        <PixelReactor
-          src={heroImage}
-          alt={tx('Lush green hills', 'हरी-भरी पहाड़ियां')}
-          cell={9}
-          levels={12}
-          ripples={0}
+        <TileMosaic
+          alt={tx("Lush green hills", "हरी-भरी पहाड़ियां")}
           className="h-40 w-full md:h-full"
         />
 
         <div className="p-8 sm:p-10">
           <button
-            onClick={() => navigate('/auth/welcome')}
-            aria-label={tx('Back', 'वापस')}
+            onClick={() => navigate("/auth/welcome")}
+            aria-label={tx("Back", "वापस")}
             className="mb-6 text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -109,24 +120,28 @@ export default function Signup() {
 
           <div className="mb-7">
             <h1 className="font-display text-3xl font-bold text-foreground">
-              {tx('Create an account', 'खाता बनाएं')}
+              {tx("Create an account", "खाता बनाएं")}
             </h1>
             <p className="mt-1.5 text-muted-foreground">
-              {tx('Join BhoomiX today', 'आज ही BhoomiX से जुड़ें')}
+              {tx("Join BhoomiX today", "आज ही BhoomiX से जुड़ें")}
             </p>
           </div>
 
           <form onSubmit={handleSignup} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="username">{tx('Username', 'उपयोगकर्ता नाम')}</Label>
+              <Label htmlFor="username">
+                {tx("Username", "उपयोगकर्ता नाम")}
+              </Label>
               <div className="relative">
                 <User className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="username"
                   type="text"
-                  placeholder={tx('your name', 'आपका नाम')}
+                  placeholder={tx("your name", "आपका नाम")}
                   value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                   className="h-12 pl-11"
                   required
                   disabled={loading}
@@ -135,7 +150,7 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">{tx('Email', 'ईमेल')}</Label>
+              <Label htmlFor="email">{tx("Email", "ईमेल")}</Label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -143,7 +158,9 @@ export default function Signup() {
                   type="email"
                   placeholder="you@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="h-12 pl-11"
                   required
                   disabled={loading}
@@ -152,7 +169,7 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">{tx('Password', 'पासवर्ड')}</Label>
+              <Label htmlFor="password">{tx("Password", "पासवर्ड")}</Label>
               <div className="relative">
                 <Lock className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -160,7 +177,9 @@ export default function Signup() {
                   type="password"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="h-12 pl-11"
                   required
                   disabled={loading}
@@ -168,15 +187,24 @@ export default function Signup() {
               </div>
             </div>
 
-            <Button3D type="submit" tone="emerald" disabled={loading} className="!mt-7">
-              {loading ? tx('Creating account…', 'खाता बन रहा है…') : tx('Register', 'पंजीकरण करें')}
+            <Button3D
+              type="submit"
+              tone="emerald"
+              disabled={loading}
+              className="!mt-7"
+            >
+              {loading
+                ? tx("Creating account…", "खाता बन रहा है…")
+                : tx("Register", "पंजीकरण करें")}
               {!loading && <ArrowRight className="h-4 w-4" />}
             </Button3D>
           </form>
 
           <div className="my-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-border" />
-            <span className="text-sm text-muted-foreground">{tx('or', 'या')}</span>
+            <span className="text-sm text-muted-foreground">
+              {tx("or", "या")}
+            </span>
             <div className="h-px flex-1 bg-border" />
           </div>
 
@@ -187,18 +215,21 @@ export default function Signup() {
             disabled={loading}
           >
             <FcGoogle className="mr-2 h-5 w-5" />
-            {tx('Continue with Google', 'Google से जारी रखें')}
+            {tx("Continue with Google", "Google से जारी रखें")}
           </Button>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            {tx('Already have an account?', 'पहले से खाता है?')}{' '}
+            {tx("Already have an account?", "पहले से खाता है?")}{" "}
             <button
               onClick={() =>
-                navigate('/auth/login' + (rawNext ? `?next=${encodeURIComponent(rawNext)}` : ''))
+                navigate(
+                  "/auth/login" +
+                    (rawNext ? `?next=${encodeURIComponent(rawNext)}` : ""),
+                )
               }
               className="font-semibold text-primary hover:underline"
             >
-              {tx('Sign in', 'साइन इन करें')}
+              {tx("Sign in", "साइन इन करें")}
             </button>
           </p>
         </div>
