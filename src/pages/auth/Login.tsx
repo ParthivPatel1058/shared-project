@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Button3D from '@/components/ui/button-3d';
 import PixelReactor from '@/components/PixelReactor';
-import BhoomixMark from '@/components/BhoomixMark';
 import heroImage from '@/assets/auth-hero.jpg';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -150,10 +149,9 @@ export default function Login() {
         <PixelReactor
           src={heroImage}
           alt={tx('Lush green hills', 'हरी-भरी पहाड़ियां')}
-          cell={4}
-          levels={14}
+          cell={9}
+          levels={12}
           ripples={0}
-          centerMark={<BhoomixMark />}
           className="h-40 w-full md:h-full"
         />
 

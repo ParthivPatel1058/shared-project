@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Button3D from '@/components/ui/button-3d';
 import PixelReactor from '@/components/PixelReactor';
-import BhoomixMark from '@/components/BhoomixMark';
 import heroImage from '@/assets/auth-hero.jpg';
 import { ArrowLeft, Mail, ArrowRight, MailCheck, Phone, Loader2 } from 'lucide-react';
 
@@ -89,10 +88,9 @@ export default function ForgotPassword() {
           <PixelReactor
             src={heroImage}
             alt="Lush green hills"
-            cell={4}
-            levels={14}
+            cell={9}
+            levels={12}
             ripples={0}
-            centerMark={<BhoomixMark />}
             className="h-full w-full"
           />
         </div>

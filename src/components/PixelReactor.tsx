@@ -24,8 +24,16 @@ interface PixelReactorProps {
   strength?: number;
   /** Steps per colour channel. Lower = flatter, more poster-like bands. */
   levels?: number;
-  /** Ring density of the ripple. Higher = tighter, more water-like rings. */
+  /**
+   * Ring density of the ripple. Higher = tighter, more water-like rings.
+   * Defaults to 0: rings drew attention away from the sign-in form, so the
+   * panel now smears smoothly outward instead of pulsing.
+   */
   ripples?: number;
+  /** Colour intensity multiplier applied before quantising. 1 = untouched. */
+  saturation?: number;
+  /** Overall lightness multiplier applied before quantising. 1 = untouched. */
+  brightness?: number;
   /** Mark drawn over the centre of the panel, e.g. a logo. */
   centerMark?: React.ReactNode;
   className?: string;
@@ -36,9 +44,11 @@ export default function PixelReactor({
   alt,
   cell = 9,
   radius = 185,
-  strength = 130,
-  levels = 5,
-  ripples = 3,
+  strength = 45,
+  levels = 12,
+  ripples = 0,
+  saturation = 1.28,
+  brightness = 1.06,
   centerMark,
   className,
 }: PixelReactorProps) {
@@ -97,10 +107,19 @@ export default function PixelReactor({
       const step = 255 / (levels - 1);
       const quantise = (v: number) => Math.round(Math.round(v / step) * step);
 
+      // Lift saturation and brightness first. The hero photo is an evening
+      // field, so quantising it straight produces flat olive blocks — the
+      // bands are there but the colour is not. Pushing each channel away from
+      // its own grey point before snapping is what makes the mosaic read as
+      // deliberate graphic art rather than a dark, blurry photograph.
       for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
-        grid[j] = quantise(data[i]);
-        grid[j + 1] = quantise(data[i + 1]);
-        grid[j + 2] = quantise(data[i + 2]);
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const grey = (r + g + b) / 3;
+        grid[j] = quantise((grey + (r - grey) * saturation) * brightness);
+        grid[j + 1] = quantise((grey + (g - grey) * saturation) * brightness);
+        grid[j + 2] = quantise((grey + (b - grey) * saturation) * brightness);
       }
     };
 
@@ -146,11 +165,12 @@ export default function PixelReactor({
             if (dist < radius && dist > 0.001) {
               // Falls off smoothly to nothing at the edge of the radius.
               const f = 1 - dist / radius;
-              // Concentric rings displaced alternately in and out, so the
-              // surface reads as water disturbed by the pointer rather than a
-              // single radial smear. Rings tighten as they travel outward,
-              // which is what makes it look like a spreading ripple.
-              const ripple = Math.sin(dist * ripples * 0.05) * f;
+              // With rings on, cells are displaced alternately in and out so
+              // the surface reads as water disturbed by the pointer. At zero
+              // the sine would be flat zero and kill the effect outright, so
+              // zero instead means a single smooth outward smear — quieter,
+              // and it never pulls focus from the form beside it.
+              const ripple = ripples > 0 ? Math.sin(dist * ripples * 0.05) * f : f;
               const amount = (ripple * f * push) / cell;
               sx = Math.round(rx + (dx / dist) * amount);
               sy = Math.round(ry + (dy / dist) * amount);
@@ -222,7 +242,7 @@ export default function PixelReactor({
       host.removeEventListener('pointerleave', onLeave);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [src, cell, radius, strength, levels, ripples]);
+  }, [src, cell, radius, strength, levels, ripples, saturation, brightness]);
 
   return (
     <div

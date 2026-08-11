@@ -4,7 +4,6 @@ import heroImage from '@/assets/auth-hero.jpg';
 import { Globe, Check, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PixelReactor from '@/components/PixelReactor';
-import BhoomixMark from '@/components/BhoomixMark';
 import { FancyButton } from '@/components/ui/fancy-button';
 
 /** How long the launch animation plays before the route actually changes. */
@@ -45,9 +44,8 @@ export default function Welcome() {
           src={heroImage}
           alt={tx('Lush green hills', 'हरी-भरी पहाड़ियां')}
           cell={9}
-          levels={10}
-          ripples={6}
-          centerMark={<BhoomixMark />}
+          levels={12}
+          ripples={0}
           className="h-56 w-full md:h-full"
         />
 
