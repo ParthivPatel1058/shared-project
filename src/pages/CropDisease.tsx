@@ -28,6 +28,7 @@ import { useDiagnoses } from '@/hooks/useDiagnoses';
 import FollowUpPrompt from '@/components/FollowUpPrompt';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { analyzeCropImage, isGeminiConfigured } from '@/lib/geminiApi';
 
 /* ------------------------------------------------------------------ */
 /* Shared photo-scan panel (used by Crop Detection and Disease scan)  */
@@ -117,12 +118,22 @@ function PhotoScan({ id, mode, title, hint, analyzeLabel }: PhotoScanProps) {
     setAnalyzing(true);
     setResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke('crop-vision', {
-        body: { image: preview, mode, language },
-      });
-      if (error) throw error;
-      if (!data?.result) throw new Error('empty response');
-      const r = data.result as VisionResult;
+      let r: VisionResult;
+
+      // Use client-side Gemini API if key is configured, otherwise
+      // fall back to the Supabase edge function.
+      if (isGeminiConfigured()) {
+        const response = await analyzeCropImage(preview, mode, language);
+        r = response.result;
+      } else {
+        const { data, error } = await supabase.functions.invoke('crop-vision', {
+          body: { image: preview, mode, language },
+        });
+        if (error) throw error;
+        if (!data?.result) throw new Error('empty response');
+        r = data.result as VisionResult;
+      }
+
       setResult(r);
 
       // Store it so we can come back in a week and ask whether the treatment

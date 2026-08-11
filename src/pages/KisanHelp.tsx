@@ -6,6 +6,7 @@ import BackButton from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { kisanChat, kisanImageAnalysis, isGeminiConfigured } from '@/lib/geminiApi';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -44,18 +45,26 @@ const KisanHelp = () => {
         });
 
         try {
-          const { data, error } = await supabase.functions.invoke('kisan-ai-chat', {
-            body: {
-              type: 'image',
-              image: imageData,
-              message: 'Analyze this crop image for diseases, pests, or health issues.',
-              language: language
-            }
-          });
+          let reply: string;
 
-          if (error) throw error;
+          // Use client-side Gemini API if key is configured, otherwise
+          // fall back to the Supabase edge function.
+          if (isGeminiConfigured()) {
+            reply = await kisanImageAnalysis(imageData, language);
+          } else {
+            const { data, error } = await supabase.functions.invoke('kisan-ai-chat', {
+              body: {
+                type: 'image',
+                image: imageData,
+                message: 'Analyze this crop image for diseases, pests, or health issues.',
+                language: language
+              }
+            });
+            if (error) throw error;
+            reply = data.reply || 'Unable to analyze image. Please try again.';
+          }
 
-          setDiseaseAnalysis(data.reply || 'Unable to analyze image. Please try again.');
+          setDiseaseAnalysis(reply);
           toast({
             title: 'Analysis Complete',
             description: 'AI analysis is ready!'
@@ -85,19 +94,27 @@ const KisanHelp = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('kisan-ai-chat', {
-        body: {
-          type: 'text',
-          message: inputMessage,
-          language: language
-        }
-      });
+      let replyText: string;
 
-      if (error) throw error;
+      // Use client-side Gemini API if key is configured, otherwise
+      // fall back to the Supabase edge function.
+      if (isGeminiConfigured()) {
+        replyText = await kisanChat(inputMessage, language);
+      } else {
+        const { data, error } = await supabase.functions.invoke('kisan-ai-chat', {
+          body: {
+            type: 'text',
+            message: inputMessage,
+            language: language
+          }
+        });
+        if (error) throw error;
+        replyText = data.reply || 'I apologize, but I could not generate a response. Please try again.';
+      }
 
       const assistantMessage: Message = { 
         role: 'assistant', 
-        content: data.reply || 'I apologize, but I could not generate a response. Please try again.' 
+        content: replyText 
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
