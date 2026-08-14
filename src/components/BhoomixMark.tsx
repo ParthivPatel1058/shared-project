@@ -1,13 +1,21 @@
 /**
- * The BhoomiX mark, for laying over imagery.
+ * The BhoomiX mark.
  *
- * A rosette of overlapping rings with the brand X at its centre. Drawn as thin
- * strokes rather than a filled plate so the image still reads through it — a
- * solid badge would punch a hole in the very texture it sits on. Stroke-based
- * rather than a font glyph so it stays crisp at any size and never depends on
- * the display font having loaded.
+ * A rosette of overlapping rings turning around a still centre point. Drawn as
+ * thin strokes rather than a filled plate so it can sit over imagery without
+ * punching a hole in the texture beneath it, and stroke-based rather than a
+ * font glyph so it stays crisp at any size and never waits on a webfont.
+ *
+ * Strokes use `currentColor`, so the caller sets the colour with a text class —
+ * white over a photograph, brand green inside a light badge.
  */
-export default function BhoomixMark({ size = 84 }: { size?: number }) {
+export default function BhoomixMark({
+  size = 84,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
   // Twelve rings stepped around a small orbit make the interference pattern.
   const petals = Array.from({ length: 12 }, (_, i) => (i * 360) / 12);
 
@@ -18,9 +26,9 @@ export default function BhoomixMark({ size = 84 }: { size?: number }) {
       viewBox="0 0 100 100"
       fill="none"
       aria-hidden="true"
-      className="drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]"
+      className={className}
     >
-      <g stroke="white" strokeWidth="0.9" opacity="0.92">
+      <g stroke="currentColor" strokeWidth="0.9" opacity="0.92">
         {petals.map((deg) => (
           <circle
             key={deg}
@@ -33,7 +41,7 @@ export default function BhoomixMark({ size = 84 }: { size?: number }) {
       </g>
 
       {/* Centre dot, the still point the rosette turns around. */}
-      <circle cx="50" cy="50" r="2.4" fill="white" />
+      <circle cx="50" cy="50" r="2.4" fill="currentColor" />
     </svg>
   );
 }

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/auth-hero.jpg";
+import BhoomixMark from "@/components/BhoomixMark";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -193,7 +194,8 @@ export default function Login() {
         {/* ── Form ─────────────────────────────────────────────── */}
         <div className="order-last flex flex-col p-7 sm:p-10 md:order-first">
           <div className="mb-8 flex items-center justify-between">
-            <span className="rounded-full border border-stone-300/80 px-5 py-2 font-display text-lg font-semibold text-stone-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+            <span className="flex items-center gap-2 rounded-full border border-stone-300/80 bg-white/60 px-4 py-2 font-display text-lg font-semibold text-stone-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+              <BhoomixMark size={20} className="text-emerald-600" />
               BhoomiX
             </span>
             <button
@@ -247,8 +249,8 @@ export default function Login() {
                   {tx("Mobile number", "मोबाइल नंबर")}
                 </Label>
                 <div className="relative">
-                  <Phone className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
-                  <span className="pointer-events-none absolute left-12 top-1/2 -translate-y-1/2 text-stone-400">
+                  <Phone className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500" />
+                  <span className="pointer-events-none absolute left-12 top-1/2 -translate-y-1/2 text-stone-500">
                     +91
                   </span>
                   <Input
@@ -272,7 +274,7 @@ export default function Login() {
                     {tx("Six-digit code", "छह अंकों का कोड")}
                   </Label>
                   <div className="relative">
-                    <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
+                    <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500" />
                     <Input
                       id="otp"
                       inputMode="numeric"
@@ -319,7 +321,7 @@ export default function Login() {
                 {tx("Email", "ईमेल")}
               </Label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
+                <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500" />
                 <Input
                   id="email"
                   type="email"
@@ -340,7 +342,7 @@ export default function Login() {
                 {tx("Password", "पासवर्ड")}
               </Label>
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
+                <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500" />
                 <Input
                   id="password"
                   type={showPw ? "text" : "password"}
@@ -397,7 +399,7 @@ export default function Login() {
             {tx("Continue with Google", "Google से जारी रखें")}
           </Button>
 
-          <div className="mt-auto flex items-center justify-between pt-8 text-sm">
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-8 text-sm">
             <p className="text-stone-500">
               {tx("Don't have an account?", "खाता नहीं है?")}{" "}
               <button
@@ -414,7 +416,7 @@ export default function Login() {
             </p>
             <Link
               to="/support"
-              className="text-stone-500 underline underline-offset-2 hover:text-stone-700"
+              className="whitespace-nowrap text-stone-500 underline underline-offset-2 hover:text-stone-700"
             >
               {tx("Need help?", "मदद चाहिए?")}
             </Link>
