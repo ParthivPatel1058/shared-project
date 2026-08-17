@@ -24,6 +24,13 @@
         "mcp-remote",
         "https://mcp.icons8.com/mcp/"
       ]
+    },
+    "refero": {
+      "type": "http",
+      "url": "https://api.refero.design/mcp",
+      "headers": {
+        "Authorization": "Bearer ${REFERO_MCP_TOKEN}"
+      }
     }
   }
 }
