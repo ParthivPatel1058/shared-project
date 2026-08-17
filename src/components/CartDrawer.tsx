@@ -6,7 +6,14 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Button } from '@/components/ui/button';
 import AddressPicker from '@/components/address/AddressPicker';
 import { useAddresses, formatAddress } from '@/hooks/useAddresses';
-import { useCart, STORE_OFFSET, type StoreKey } from '@/contexts/CartContext';
+import {
+  useCart,
+  STORE_OFFSET,
+  MAX_LINE_QUANTITY,
+  QuantityLimitError,
+  type CartLine,
+  type StoreKey,
+} from '@/contexts/CartContext';
 import { unitForKey, imageForKey } from '@/data/catalog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,6 +58,24 @@ interface CartDrawerProps {
 export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const { lines, totalItems, totalPrice, setQuantity, remove, clear } = useCart();
   const { language, tx } = useLanguage();
+
+  /** Raising a line can hit the per-item ceiling, so it needs its own handler. */
+  const bumpLine = async (l: CartLine) => {
+    try {
+      await setQuantity(storeOf(l.key), productIdOf(l.key), 1);
+    } catch (err) {
+      if (err instanceof QuantityLimitError) {
+        toast.error(
+          tx(
+            'You can order at most {n} of one item',
+            'एक आइटम के ज़्यादा से ज़्यादा {n} ही ऑर्डर कर सकते हैं',
+          ).replace('{n}', String(MAX_LINE_QUANTITY)),
+        );
+      } else {
+        toast.error(tx('Could not update cart', 'कार्ट अपडेट नहीं हो सका'));
+      }
+    }
+  };
   const { user } = useAuth();
   const navigate = useNavigate();
   const en = language === 'en';
@@ -193,9 +218,14 @@ export default function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                           {l.quantity}
                         </span>
                         <button
-                          onClick={() => setQuantity(storeOf(l.key), productIdOf(l.key), 1)}
-                          aria-label={tx('Increase', 'बढ़ाएं')}
-                          className="flex h-8 w-8 items-center justify-center rounded-r-lg hover:bg-foreground/[0.06]"
+                          onClick={() => bumpLine(l)}
+                          disabled={l.quantity >= MAX_LINE_QUANTITY}
+                          aria-label={
+                            l.quantity >= MAX_LINE_QUANTITY
+                              ? tx('Maximum reached', 'अधिकतम हो गया')
+                              : tx('Increase', 'बढ़ाएं')
+                          }
+                          className="flex h-8 w-8 items-center justify-center rounded-r-lg hover:bg-foreground/[0.06] disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           <Plus strokeWidth={2.5} className="h-3.5 w-3.5" />
                         </button>

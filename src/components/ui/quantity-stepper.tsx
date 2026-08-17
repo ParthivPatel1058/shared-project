@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { Minus, Plus, ShoppingBag, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { useCart, type StoreKey } from '@/contexts/CartContext';
+import {
+  useCart,
+  MAX_LINE_QUANTITY,
+  QuantityLimitError,
+  type StoreKey,
+} from '@/contexts/CartContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -60,20 +65,36 @@ export default function QuantityStepper({
       toast.success(
         tx('{item} added to cart', '{item} कार्ट में जोड़ा गया').replace('{item}', tx(name, nameHi)),
       );
-    } catch {
-      toast.error(tx('Could not add to cart', 'कार्ट में नहीं जोड़ा जा सका'));
+    } catch (err) {
+      if (err instanceof QuantityLimitError) limitReached();
+      else toast.error(tx('Could not add to cart', 'कार्ट में नहीं जोड़ा जा सका'));
     } finally {
       setBusy(false);
     }
   };
 
+  const atLimit = qty >= MAX_LINE_QUANTITY;
+
+  const limitReached = () =>
+    toast.error(
+      tx(
+        'You can order at most {n} of one item',
+        'एक आइटम के ज़्यादा से ज़्यादा {n} ही ऑर्डर कर सकते हैं',
+      ).replace('{n}', String(MAX_LINE_QUANTITY)),
+    );
+
   const step = async (delta: number) => {
     if (!requireAuth() || busy) return;
+    if (delta > 0 && atLimit) {
+      limitReached();
+      return;
+    }
     setBusy(true);
     try {
       await setQuantity(store, productId, delta);
-    } catch {
-      toast.error(tx('Could not update cart', 'कार्ट अपडेट नहीं हो सका'));
+    } catch (err) {
+      if (err instanceof QuantityLimitError) limitReached();
+      else toast.error(tx('Could not update cart', 'कार्ट अपडेट नहीं हो सका'));
     } finally {
       setBusy(false);
     }
@@ -136,9 +157,21 @@ export default function QuantityStepper({
 
       <button
         onClick={() => step(1)}
-        disabled={busy}
-        aria-label={tx('Increase quantity', 'मात्रा बढ़ाएं')}
-        className="flex h-full w-11 items-center justify-center rounded-r-xl transition-colors hover:bg-black/10 active:bg-black/20 disabled:opacity-60"
+        disabled={busy || atLimit}
+        aria-label={
+          atLimit
+            ? tx('Maximum quantity reached', 'अधिकतम मात्रा हो गई')
+            : tx('Increase quantity', 'मात्रा बढ़ाएं')
+        }
+        title={
+          atLimit
+            ? tx('Limit is {n} per item', 'प्रति आइटम सीमा {n} है').replace(
+                '{n}',
+                String(MAX_LINE_QUANTITY),
+              )
+            : undefined
+        }
+        className="flex h-full w-11 items-center justify-center rounded-r-xl transition-colors hover:bg-black/10 active:bg-black/20 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <Plus strokeWidth={3} className="h-4 w-4" />
       </button>

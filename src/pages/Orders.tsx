@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Package,
   Clock,
@@ -11,11 +11,16 @@ import {
   Phone,
   ChevronDown,
   ShoppingBag,
+  Loader2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/contexts/CartContext';
+import {
+  useCart,
+  MAX_LINE_QUANTITY,
+  QuantityLimitError,
+} from '@/contexts/CartContext';
 import Navigation from '@/components/Navigation';
 import BackButton from '@/components/BackButton';
 import CartBar from '@/components/CartBar';
@@ -73,12 +78,16 @@ const STATUS_META: Record<
 const Orders = () => {
   const { language, tx } = useLanguage();
   const { user } = useAuth();
-  const { add } = useCart();
+  const { addQuantity } = useCart();
   const en = language === 'en';
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  /** Order id currently being re-added, for the button's spinner. */
+  const [reordering, setReordering] = useState<string | null>(null);
+  /** Synchronous twin of `reordering`; state updates land too late to gate clicks. */
+  const reorderingRef = useRef(false);
   const [tab, setTab] = useState<'active' | 'past'>('active');
 
   useEffect(() => {
@@ -160,29 +169,64 @@ const Orders = () => {
   };
 
   const reorder = async (order: Order) => {
-    let added = 0;
-    for (const it of order.items) {
-      if (typeof it.product_id !== 'number') continue;
-      const store = storeForKey(it.product_id);
-      const productId = store === 'mart' ? it.product_id - 100_000 : it.product_id;
-      try {
-        for (let i = 0; i < it.quantity; i++) {
-          await add({
-            store,
-            productId,
-            name: it.name,
-            nameHi: it.name_hi ?? it.name,
-            price: it.price,
-            image: imageForKey(it.product_id, it.image) ?? '',
-          });
+    // Spamming the button used to fire one reorder per click, each still in
+    // flight, multiplying the cart. The ref is checked and set synchronously so
+    // a second click cannot slip through before React re-renders the disabled
+    // state — `reordering` state alone would leave that gap open.
+    if (reorderingRef.current) return;
+    reorderingRef.current = true;
+    setReordering(order.id);
+
+    try {
+      let added = 0;
+      let capped = false;
+
+      for (const it of order.items) {
+        if (typeof it.product_id !== 'number') continue;
+        const store = storeForKey(it.product_id);
+        const productId = store === 'mart' ? it.product_id - 100_000 : it.product_id;
+        const want = Math.min(it.quantity, MAX_LINE_QUANTITY);
+        if (want < it.quantity) capped = true;
+
+        try {
+          // One call per line. The old loop awaited once per unit, so a
+          // 100-unit line meant 100 sequential round trips — slow enough that
+          // the user clicked again, which is how the duplicates appeared.
+          await addQuantity(
+            {
+              store,
+              productId,
+              name: it.name,
+              nameHi: it.name_hi ?? it.name,
+              price: it.price,
+              image: imageForKey(it.product_id, it.image) ?? '',
+            },
+            want,
+          );
+          added += 1;
+        } catch (err) {
+          // A line already at the ceiling is not a failure worth reporting as
+          // one — the rest of the order should still go in.
+          if (err instanceof QuantityLimitError) capped = true;
         }
-        added += 1;
-      } catch {
-        /* skip lines that fail */
       }
+
+      if (added && capped) {
+        toast.success(
+          tx(
+            'Added to cart. Some items were capped at {n}.',
+            'कार्ट में जोड़ा गया। कुछ आइटम {n} तक सीमित रहे।',
+          ).replace('{n}', String(MAX_LINE_QUANTITY)),
+        );
+      } else if (added) {
+        toast.success(tx('Items added to cart', 'आइटम कार्ट में जोड़े गए'));
+      } else {
+        toast.error(tx('Could not re-add these items', 'ये आइटम दोबारा नहीं जुड़े'));
+      }
+    } finally {
+      reorderingRef.current = false;
+      setReordering(null);
     }
-    if (added) toast.success(tx('Items added to cart', 'आइटम कार्ट में जोड़े गए'));
-    else toast.error(tx('Could not re-add these items', 'ये आइटम दोबारा नहीं जुड़े'));
   };
 
   const shown = tab === 'active' ? activeOrders : pastOrders;
@@ -316,9 +360,21 @@ const Orders = () => {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => reorder(order)} className="gap-1.5">
-              <RotateCcw className="h-3.5 w-3.5" />
-              {tx('Reorder', 'फिर से ऑर्डर')}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => reorder(order)}
+              disabled={reordering !== null}
+              className="gap-1.5"
+            >
+              {reordering === order.id ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <RotateCcw className="h-3.5 w-3.5" />
+              )}
+              {reordering === order.id
+                ? tx('Adding…', 'जोड़ा जा रहा है…')
+                : tx('Reorder', 'फिर से ऑर्डर')}
             </Button>
 
             {cancellable && (

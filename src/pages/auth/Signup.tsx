@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod";
+import { isDisposableEmail } from "@/lib/email-policy";
 
 const signupSchema = z.object({
   username: z
@@ -44,6 +45,19 @@ export default function Signup() {
 
     try {
       const validated = signupSchema.parse(formData);
+
+      // Caught here only to give a clear message; sign-in re-checks this
+      // server-side, so a bypass at this step buys an attacker nothing.
+      if (isDisposableEmail(validated.email)) {
+        toast.error(
+          tx(
+            "Use a permanent email address. Temporary inboxes are not accepted.",
+            "स्थायी ईमेल पता इस्तेमाल करें। अस्थायी इनबॉक्स स्वीकार नहीं हैं।",
+          ),
+        );
+        return;
+      }
+
       setLoading(true);
 
       const redirectUrl = `${window.location.origin}${nextPath}`;

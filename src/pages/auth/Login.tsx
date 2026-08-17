@@ -19,6 +19,7 @@ import {
   EyeOff,
   ScanLine,
   TrendingUp,
+  ShieldCheck,
 } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod";
@@ -35,6 +36,37 @@ const phoneSchema = z
   .regex(/^(\+?91)?[6-9]\d{9}$/, "Enter a valid 10-digit mobile number");
 
 type Method = "email" | "phone";
+
+/**
+ * supabase-js wraps a non-2xx function response in a FunctionsHttpError and
+ * puts the real message in the response body, so the useful text is one await
+ * away rather than on `error.message`.
+ */
+async function readFunctionError(error: unknown): Promise<string | null> {
+  const res = (error as { context?: Response })?.context;
+  if (res && typeof res.json === "function") {
+    try {
+      const body = await res.json();
+      if (body?.error) return String(body.error);
+    } catch {
+      /* fall through to the generic message */
+    }
+  }
+  return (error as Error)?.message ?? null;
+}
+
+/**
+ * True only when the endpoint itself is absent — a network failure or a 404.
+ * A deployed function answering 401 or 403 is a decision, not an outage, and
+ * must never be treated as "fall back to the weaker path".
+ */
+async function isFunctionMissing(error: unknown): Promise<boolean> {
+  const res = (error as { context?: Response })?.context;
+  if (res && typeof res.status === "number") return res.status === 404;
+  const name = (error as Error)?.name ?? "";
+  const message = (error as Error)?.message ?? "";
+  return /FunctionsFetchError/.test(name) || /Failed to (fetch|send)/i.test(message);
+}
 
 /* Clay surfaces, defined once so every control shares one light source.
    Claymorphism only reads as soft when the inner highlight and the outer
@@ -63,6 +95,9 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
+  /** Set once the server has emailed a code; drives the second step. */
+  const [challengeId, setChallengeId] = useState<string | null>(null);
+  const [code, setCode] = useState("");
 
   // Many farmers have a mobile number but no email address, so phone sign-in
   // is offered as an equal option rather than hidden behind "more ways".
@@ -137,39 +172,137 @@ export default function Login() {
     else window.location.href = nextPath;
   };
 
+  /** Trade the one-time token from the server for a real session. */
+  const completeSignIn = async (tokenHash: string) => {
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "magiclink",
+    });
+    if (error) {
+      toast.error(tx("Could not complete sign-in", "साइन इन पूरा नहीं हो सका"));
+      return;
+    }
+    toast.success(tx("Welcome back!", "वापसी पर स्वागत है!"));
+    if (nextPath === "/") navigate("/");
+    else window.location.href = nextPath;
+  };
+
+  /**
+   * Step one. The password goes to the edge function, not straight to the auth
+   * API: calling signInWithPassword here would hand this browser a working
+   * session before any code is entered, which would make the code screen
+   * decorative. The server decides whether a second factor is needed.
+   */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    let validated: { email: string; password: string };
     try {
-      const validated = loginSchema.parse(formData);
-      setLoading(true);
+      validated = loginSchema.parse(formData);
+    } catch (error) {
+      if (error instanceof z.ZodError) toast.error(error.errors[0].message);
+      return;
+    }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: validated.email,
-        password: validated.password,
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("login-2fa", {
+        body: {
+          action: "start",
+          email: validated.email,
+          password: validated.password,
+        },
       });
 
-      if (error) {
-        if (error.message.includes("Invalid login credentials")) {
+      // TEMPORARY. Until `login-2fa` is deployed the function is simply not
+      // there, and without this the sign-in page is dead for everyone. Only a
+      // missing endpoint falls through — a real 401 or 403 from a deployed
+      // function is an answer, not an outage, and must not be retried here.
+      //
+      // Delete this block the moment the function is live. While it exists,
+      // anyone who can stop that one request from completing gets password-only
+      // sign-in, which is the very bypass the function was written to close.
+      if (error && (await isFunctionMissing(error))) {
+        console.warn("login-2fa is not deployed; falling back to password sign-in");
+        const { error: pwError } = await supabase.auth.signInWithPassword({
+          email: validated.email,
+          password: validated.password,
+        });
+        if (pwError) {
           toast.error(
-            tx("Invalid email or password", "ईमेल या पासवर्ड ग़लत है"),
+            /Invalid login credentials/.test(pwError.message)
+              ? tx("Invalid email or password", "ईमेल या पासवर्ड ग़लत है")
+              : pwError.message,
           );
-        } else {
-          toast.error(error.message);
+          return;
         }
-      } else {
         toast.success(tx("Welcome back!", "वापसी पर स्वागत है!"));
         if (nextPath === "/") navigate("/");
         else window.location.href = nextPath;
+        return;
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
-      } else {
-        toast.error(
-          tx("An error occurred during login", "साइन इन करते समय समस्या हुई"),
+
+      // A non-2xx from the function arrives as an error with the body attached.
+      const message =
+        (data as { error?: string } | null)?.error ??
+        (error ? await readFunctionError(error) : null);
+
+      if (message) {
+        toast.error(message);
+        return;
+      }
+
+      const result = data as { needsCode?: boolean; challengeId?: string; tokenHash?: string };
+
+      if (result.needsCode && result.challengeId) {
+        setChallengeId(result.challengeId);
+        setCode("");
+        toast.success(
+          tx("We sent a code to your email", "हमने आपके ईमेल पर कोड भेजा है"),
         );
+        return;
       }
+
+      if (result.tokenHash) {
+        await completeSignIn(result.tokenHash);
+        return;
+      }
+
+      toast.error(tx("Could not sign in", "साइन इन नहीं हो सका"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** Step two: exchange the emailed code for a session. */
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!challengeId) return;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("login-2fa", {
+        body: { action: "verify", challengeId, code: code.trim() },
+      });
+
+      const message =
+        (data as { error?: string } | null)?.error ??
+        (error ? await readFunctionError(error) : null);
+
+      if (message) {
+        toast.error(message);
+        // A spent or expired challenge cannot be retried; send them back to
+        // the password step rather than leaving them typing into a dead form.
+        if (/expired|already used|Sign in again/i.test(message)) {
+          setChallengeId(null);
+          setCode("");
+        }
+        return;
+      }
+
+      const tokenHash = (data as { tokenHash?: string }).tokenHash;
+      if (tokenHash) await completeSignIn(tokenHash);
+      else toast.error(tx("Could not sign in", "साइन इन नहीं हो सका"));
     } finally {
       setLoading(false);
     }
@@ -219,8 +352,72 @@ export default function Login() {
             </p>
           </div>
 
+          {/* Second factor. Replaces the whole form: the password step is done
+              and there is nothing useful to go back to except starting over. */}
+          {challengeId && (
+            <form onSubmit={handleVerifyCode} className="space-y-4">
+              <div className="flex items-center gap-3 rounded-2xl bg-white/60 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
+                <ShieldCheck className="h-5 w-5 flex-shrink-0 text-emerald-600" />
+                <p className="text-sm text-stone-600">
+                  {tx(
+                    "We emailed a six digit code to {e}. It expires in 10 minutes.",
+                    "हमने {e} पर छह अंकों का कोड भेजा है। यह 10 मिनट में समाप्त होगा।",
+                  ).replace("{e}", formData.email)}
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="code" className="pl-1 text-xs text-stone-500">
+                  {tx("Six digit code", "छह अंकों का कोड")}
+                </Label>
+                <div className="relative">
+                  <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500" />
+                  <Input
+                    id="code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    autoFocus
+                    maxLength={6}
+                    placeholder="123456"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                    className={`${CLAY_INPUT} tracking-[0.4em]`}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || code.length !== 6}
+                className={CLAY_BUTTON}
+              >
+                {loading
+                  ? tx("Checking…", "जाँच हो रही है…")
+                  : tx("Verify and sign in", "जाँचें और साइन इन करें")}
+                {!loading && <ArrowRight className="h-4 w-4" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setChallengeId(null);
+                  setCode("");
+                }}
+                className="w-full py-1 text-center text-sm text-stone-500 hover:text-stone-800"
+              >
+                {tx("Start over", "फिर से शुरू करें")}
+              </button>
+            </form>
+          )}
+
           {/* Two equal ways in. */}
-          <div className="mb-6 grid grid-cols-2 gap-1.5 rounded-2xl bg-stone-500/10 p-1.5 shadow-[inset_0_2px_6px_rgba(120,113,108,0.16)]">
+          <div
+            className={`mb-6 grid grid-cols-2 gap-1.5 rounded-2xl bg-stone-500/10 p-1.5 shadow-[inset_0_2px_6px_rgba(120,113,108,0.16)] ${
+              challengeId ? "hidden" : ""
+            }`}
+          >
             {(["email", "phone"] as Method[]).map((m) => (
               <button
                 key={m}
@@ -242,7 +439,7 @@ export default function Login() {
             ))}
           </div>
 
-          {method === "phone" && (
+          {method === "phone" && !challengeId && (
             <form onSubmit={otpSent ? verifyOtp : sendOtp} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="phone" className="pl-1 text-xs text-stone-500">
@@ -314,7 +511,7 @@ export default function Login() {
 
           <form
             onSubmit={handleLogin}
-            className={`space-y-4 ${method === "email" ? "" : "hidden"}`}
+            className={`space-y-4 ${method === "email" && !challengeId ? "" : "hidden"}`}
           >
             <div className="space-y-1.5">
               <Label htmlFor="email" className="pl-1 text-xs text-stone-500">
@@ -389,6 +586,7 @@ export default function Login() {
             </button>
           </form>
 
+          {!challengeId && (
           <Button
             onClick={handleGoogleLogin}
             variant="ghost"
@@ -398,6 +596,7 @@ export default function Login() {
             <FcGoogle className="mr-2 h-5 w-5" />
             {tx("Continue with Google", "Google से जारी रखें")}
           </Button>
+          )}
 
           <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pt-8 text-sm">
             <p className="text-stone-500">

@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -21,6 +22,23 @@ export type StoreKey = keyof typeof STORE_OFFSET;
 
 export const cartKey = (store: StoreKey, productId: number) =>
   STORE_OFFSET[store] + productId;
+
+/**
+ * Hard ceiling on any single line. Enforced here rather than in each button so
+ * every caller inherits it — the stepper, reorder, and anything added later.
+ * A matching CHECK constraint on `cart_items` enforces it in the database too,
+ * because a client-side cap is only a courtesy: the row can be written by any
+ * signed-in user holding a token.
+ */
+export const MAX_LINE_QUANTITY = 100;
+
+/** Raised when a change would push a line past the ceiling. */
+export class QuantityLimitError extends Error {
+  constructor() {
+    super('quantity-limit');
+    this.name = 'QuantityLimitError';
+  }
+}
 
 export interface CartLine {
   /** Namespaced key actually stored in the DB. */
@@ -48,6 +66,13 @@ interface CartContextValue {
   /** Quantity currently in the cart for a given product. */
   quantityOf: (store: StoreKey, productId: number) => number;
   add: (item: AddToCartInput) => Promise<void>;
+  /**
+   * Add several units at once, capped at the ceiling. Reorder needs this:
+   * calling `add` in a loop cost one round trip per unit, and calling `add`
+   * then `setQuantity` raced the state update — the second call read a stale
+   * `lines` where the row did not exist yet and quietly did nothing.
+   */
+  addQuantity: (item: AddToCartInput, quantity: number) => Promise<void>;
   /** Change by a delta; dropping to zero removes the line. */
   setQuantity: (store: StoreKey, productId: number, delta: number) => Promise<void>;
   remove: (key: number) => Promise<void>;
@@ -101,10 +126,77 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [user]);
 
+  /**
+   * Mirror of `lines` that is current the instant state is set, rather than on
+   * the next render. Back-to-back writes (reorder, or a spammed button) read
+   * this so each one sees the previous one's result.
+   */
+  const linesRef = useRef<CartLine[]>([]);
+  useEffect(() => {
+    linesRef.current = lines;
+  }, [lines]);
+
   const quantityOf = useCallback(
     (store: StoreKey, productId: number) =>
       lines.find((l) => l.key === cartKey(store, productId))?.quantity ?? 0,
     [lines],
+  );
+
+  const addQuantity = useCallback(
+    async (item: AddToCartInput, quantity: number) => {
+      if (!user) throw new Error('not-signed-in');
+      const key = cartKey(item.store, item.productId);
+      const existing = linesRef.current.find((l) => l.key === key);
+      const have = existing?.quantity ?? 0;
+
+      if (have >= MAX_LINE_QUANTITY) throw new QuantityLimitError();
+
+      const next = Math.min(have + Math.max(1, quantity), MAX_LINE_QUANTITY);
+
+      if (existing) {
+        const restore = existing.quantity;
+        const updated = lines.map((l) => (l.key === key ? { ...l, quantity: next } : l));
+        linesRef.current = updated;
+        setLines(updated);
+        const { error } = await supabase
+          .from('cart_items')
+          .update({ quantity: next })
+          .eq('user_id', user.id)
+          .eq('product_id', key);
+        if (error) {
+          setLines((ls) => ls.map((l) => (l.key === key ? { ...l, quantity: restore } : l)));
+          throw error;
+        }
+        return;
+      }
+
+      const line: CartLine = {
+        key,
+        name: item.name,
+        nameHi: item.nameHi,
+        price: item.price,
+        quantity: next,
+        image: item.image,
+      };
+      linesRef.current = [...linesRef.current, line];
+      setLines((ls) => [...ls, line]);
+      trackAddToCart({ id: key, name: item.name, price: item.price });
+      const { error } = await supabase.from('cart_items').insert({
+        user_id: user.id,
+        product_id: key,
+        product_name: item.name,
+        product_name_hi: item.nameHi,
+        price: item.price,
+        quantity: next,
+        image: item.image,
+      });
+      if (error) {
+        linesRef.current = linesRef.current.filter((l) => l.key !== key);
+        setLines((ls) => ls.filter((l) => l.key !== key));
+        throw error;
+      }
+    },
+    [user, lines],
   );
 
   const add = useCallback(
@@ -114,6 +206,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existing = lines.find((l) => l.key === key);
 
       if (existing) {
+        if (existing.quantity >= MAX_LINE_QUANTITY) throw new QuantityLimitError();
         const next = existing.quantity + 1;
         setLines((ls) => ls.map((l) => (l.key === key ? { ...l, quantity: next } : l)));
         const { error } = await supabase
@@ -166,6 +259,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (!existing) return;
 
       const next = existing.quantity + delta;
+
+      if (next > MAX_LINE_QUANTITY) throw new QuantityLimitError();
 
       if (next <= 0) {
         setLines((ls) => ls.filter((l) => l.key !== key));
@@ -231,6 +326,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     loading,
     quantityOf,
     add,
+    addQuantity,
     setQuantity,
     remove,
     clear,
