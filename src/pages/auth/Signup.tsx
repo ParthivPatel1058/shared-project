@@ -79,6 +79,17 @@ export default function Signup() {
               "यह ईमेल पहले से पंजीकृत है। कृपया साइन इन करें।",
             ),
           );
+        } else if (/Database error saving new user/i.test(error.message)) {
+          // `profiles.username` is UNIQUE, and the trigger that creates the
+          // row runs inside the signup transaction. A taken name therefore
+          // surfaces as an opaque 500 from the auth API rather than as a
+          // validation error, so it has to be translated here.
+          toast.error(
+            tx(
+              "That username is already taken. Try another one.",
+              "यह उपयोगकर्ता नाम पहले से लिया जा चुका है। दूसरा आज़माएं।",
+            ),
+          );
         } else {
           toast.error(error.message);
         }
