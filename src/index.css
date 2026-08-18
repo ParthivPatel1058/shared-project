@@ -1458,143 +1458,150 @@ All colors MUST be HSL.
 }
 
 /* ==================================================================
-   NEUMORPHISM — soft 3D surfaces
+   NEUMORPHISM — one solid material, lit from the top-left
    ==================================================================
-   Classic neumorphism needs a solid mid-tone canvas, because its whole
-   illusion is that the surface is extruded from the background behind it.
-   This app sits on a photograph, so a literal copy of the reference
-   (#e0e0e0 with #bcbcbc / #ffffff shadows) would float rather than extrude.
+   Every surface is opaque. Neumorphism only reads if the element and the
+   canvas behind it are the same material — the extrusion is the illusion
+   that the shape was pushed up out of the page. Any transparency, frost or
+   blur breaks that, so backdrop-filter is removed everywhere below rather
+   than merely reduced.
 
-   The adaptation: push the frosted surfaces to near-opaque so they read as
-   one continuous material, then light them from the top-left with a paired
-   dark/light shadow. That keeps the softness of neumorphism while still
-   letting the backdrop show at the edges — a glass/neu hybrid rather than a
-   pastiche of either.
+   Shadow geometry follows the reference: a dark shade down-right and an
+   equal white highlight up-left, at #bebebe / #ffffff against an #e0e0e0
+   base. Radii are large because a soft corner is what sells the extrusion.
    ================================================================== */
 
 @layer base {
   :root {
-    /* Warm cream, the material every raised surface is cut from. */
-    --neu-surface: 40 30% 96%;
-    --neu-surface-2: 38 25% 92%;
-    /* Light from the top-left: warm shade below-right, white above-left. */
-    --neu-dark: 28 25% 42% / 0.42;
-    --neu-light: 0 0% 100% / 0.98;
-    --neu-radius: 20px;
+    --neu-bg: 0 0% 88%;            /* #e0e0e0  panels and cards  */
+    --neu-bg-2: 0 0% 91%;          /* #e8e8e8  buttons, controls */
+    --neu-shade: 0 0% 75%;         /* #bebebe  down-right         */
+    --neu-glow: 0 0% 100%;         /* #ffffff  up-left            */
+    --neu-ink: 0 0% 4%;            /* #090909  text on the metal  */
+    --neu-radius: 22px;
   }
 
   .dark {
-    /* Same geometry, inverted material — the shade deepens and the
-       highlight drops to a rim rather than a glow, otherwise the surface
-       looks chalky against the night backdrop. */
-    --neu-surface: 215 28% 17%;
-    --neu-surface-2: 216 30% 13%;
-    --neu-dark: 220 60% 3% / 0.75;
-    --neu-light: 0 0% 100% / 0.14;
+    /* Same lighting, inverted material. The highlight becomes a rim rather
+       than a glow — a white bloom on a dark surface reads as haze. */
+    --neu-bg: 220 14% 16%;
+    --neu-bg-2: 220 14% 19%;
+    --neu-shade: 222 24% 7%;
+    --neu-glow: 220 12% 27%;
+    --neu-ink: 0 0% 100%;
+  }
+
+  /* The canvas the extrusion rises out of. The photograph stays as a
+     vignette at the edges; content sits on solid material. */
+  body {
+    background-color: hsl(var(--neu-bg));
   }
 }
 
 @layer components {
-  /* Raised: the default card, button and control surface. */
-  .neu {
-    background: linear-gradient(
-      145deg,
-      hsl(var(--neu-surface)),
-      hsl(var(--neu-surface-2))
-    );
+  /* ---- Raised: cards, panels, the default surface ---- */
+  .neu,
+  .glass,
+  .glass-strong {
+    background: hsl(var(--neu-bg));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
     border-radius: var(--neu-radius);
-    border: 1px solid hsl(var(--neu-light));
     box-shadow:
-      7px 7px 16px hsl(var(--neu-dark)),
-      -6px -6px 14px hsl(var(--neu-light)),
-      inset 0 1px 0 hsl(var(--neu-light));
-    transition:
-      box-shadow 0.28s var(--ease-editorial),
-      transform 0.28s var(--ease-editorial);
+      12px 12px 30px hsl(var(--neu-shade)),
+      -12px -12px 30px hsl(var(--neu-glow));
   }
 
-  /* Carved into the surface — inputs, wells, the selected state. */
+  .glass-strong {
+    box-shadow:
+      18px 18px 45px hsl(var(--neu-shade)),
+      -16px -16px 40px hsl(var(--neu-glow));
+  }
+
+  /* ---- Carved: inputs, wells, selected states ---- */
   .neu-inset {
-    background: hsl(var(--neu-surface-2));
-    border-radius: var(--neu-radius);
-    border: 1px solid transparent;
+    background: hsl(var(--neu-bg));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 14px;
     box-shadow:
-      inset 5px 5px 11px hsl(var(--neu-dark)),
-      inset -5px -5px 11px hsl(var(--neu-light));
+      inset 5px 5px 12px hsl(var(--neu-shade)),
+      inset -5px -5px 12px hsl(var(--neu-glow));
   }
 
-  /* Pressed: the shadow crosses from outside to inside, which is what makes
-     a neumorphic control feel physically depressed rather than merely dark. */
-  .neu:active,
+  /* ---- Controls: the reference button, exactly ---- */
+  .neu-btn {
+    background: hsl(var(--neu-bg-2));
+    color: hsl(var(--neu-ink));
+    border: 1px solid hsl(var(--neu-bg-2));
+    border-radius: 0.75em;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow:
+      6px 6px 12px hsl(var(--neu-shade)),
+      -6px -6px 12px hsl(var(--neu-glow));
+    transition: all 0.3s;
+  }
+
+  /* The shadow crossing from outside to inside is what makes it feel
+     physically depressed rather than simply darker. */
+  .neu-btn:active,
   .neu-pressable:active {
     box-shadow:
-      inset 4px 4px 9px hsl(var(--neu-dark)),
-      inset -4px -4px 9px hsl(var(--neu-light));
-    transform: translateY(1px);
+      inset 4px 4px 12px hsl(var(--neu-shade)),
+      inset -4px -4px 12px hsl(var(--neu-glow));
+    transform: none;
   }
 
-  .neu-raised:hover {
+  .neu-btn:hover {
     box-shadow:
-      9px 9px 20px hsl(var(--neu-dark)),
-      -7px -7px 16px hsl(var(--neu-light)),
-      inset 0 1px 0 hsl(var(--neu-light));
-    transform: translateY(-1px);
+      8px 8px 16px hsl(var(--neu-shade)),
+      -8px -8px 16px hsl(var(--neu-glow));
   }
 
-  /* Pill control, matching the reference button's geometry. */
   .neu-pill {
     border-radius: 9999px;
   }
 
-  /* The existing frosted cards become neumorphic without touching fifteen
-     page components: same class name, new material. Opacity climbs from
-     0.7 to near-solid because paired shadows read as noise on a surface
-     you can see straight through. */
-  .glass {
-    background: linear-gradient(
-      145deg,
-      hsl(var(--neu-surface) / 0.97),
-      hsl(var(--neu-surface-2) / 0.94)
-    );
-    backdrop-filter: blur(18px) saturate(1.35);
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
-    border: 1px solid hsl(var(--neu-light));
-    border-radius: var(--neu-radius);
-    box-shadow:
-      7px 7px 18px hsl(var(--neu-dark)),
-      -6px -6px 14px hsl(var(--neu-light)),
-      inset 0 1px 0 hsl(var(--neu-light));
-  }
-
-  .glass-strong {
-    background: linear-gradient(
-      145deg,
-      hsl(var(--neu-surface)),
-      hsl(var(--neu-surface-2))
-    );
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid hsl(var(--neu-light));
-    border-radius: var(--neu-radius);
-    box-shadow:
-      10px 10px 26px hsl(var(--neu-dark)),
-      -8px -8px 20px hsl(var(--neu-light)),
-      inset 0 1px 0 hsl(var(--neu-light));
-  }
-
-  /* The floating sidebar reads as one extruded slab. */
+  /* ---- Floating dock (sidebar) ---- */
   .glass-dock {
-    background: linear-gradient(
-      160deg,
-      hsl(var(--neu-surface) / 0.98),
-      hsl(var(--neu-surface-2) / 0.95)
-    );
-    backdrop-filter: blur(22px) saturate(1.4);
-    -webkit-backdrop-filter: blur(22px) saturate(1.4);
-    border: 1px solid hsl(var(--neu-light));
+    background: hsl(var(--neu-bg));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
     box-shadow:
-      12px 12px 30px hsl(var(--neu-dark)),
-      -8px -8px 22px hsl(var(--neu-light));
+      16px 16px 40px hsl(var(--neu-shade)),
+      -14px -14px 34px hsl(var(--neu-glow));
+  }
+
+  /* ---- Sweep every remaining frosted surface ----
+     Utility classes are applied inline across the pages, so the blur and
+     the see-through fills are cancelled here rather than by editing every
+     call site. Without this the app is neumorphic in some places and
+     frosted in others, which looks like a bug rather than a style. */
+  /* Page-level cards are written inline as `border border-border bg-card`
+     across ten pages rather than with .glass, so the material is applied to
+     that utility directly. Doing it here keeps one definition of the
+     surface instead of ten copies that drift apart. */
+  .bg-card {
+    background: hsl(var(--neu-bg)) !important;
+    border-color: transparent !important;
+    box-shadow:
+      12px 12px 30px hsl(var(--neu-shade)),
+      -12px -12px 30px hsl(var(--neu-glow));
+  }
+
+  .backdrop-blur-sm,
+  .backdrop-blur,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }
 

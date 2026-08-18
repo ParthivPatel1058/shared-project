@@ -204,7 +204,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-3 top-3 bottom-3 z-40 hidden lg:flex flex-col rounded-[26px] border transition-[width] duration-300 backdrop-blur-2xl border-black/10 bg-white/80 shadow-[0_24px_70px_rgba(30,40,60,0.16)] dark:border-white/10 dark:bg-[#0b0d12]/85 dark:shadow-[0_24px_70px_rgba(0,0,0,0.5)]",
+        "glass-dock fixed left-3 top-3 bottom-3 z-40 hidden lg:flex flex-col rounded-[26px] transition-[width] duration-300",
         collapsed ? "w-[76px]" : "w-[264px]",
       )}
     >

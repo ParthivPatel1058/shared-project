@@ -34,8 +34,7 @@ import SettingsSidebar from './SettingsSidebar';
 /** Frosted control that adapts to light and dark. */
 const CTRL =
   'flex items-center justify-center rounded-full border transition-all duration-300 ' +
-  'border-black/10 bg-white/70 text-neutral-600 hover:bg-white hover:text-neutral-900 ' +
-  'dark:border-white/15 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/20 dark:hover:text-white';
+  'neu-btn neu-pill neu-pressable text-neutral-700 dark:text-white/85';
 
 const Navigation = () => {
   const location = useLocation();
@@ -88,9 +87,7 @@ const Navigation = () => {
   return (
     <nav className="sticky top-3 z-50 mx-3 lg:mx-4 xl:mx-6">
       <div
-        className="flex h-[68px] items-center gap-2.5 rounded-[22px] border px-2.5 backdrop-blur-2xl sm:gap-3 sm:px-3.5
-                   border-black/[0.07] bg-white/75 shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_14px_44px_rgba(30,40,60,0.14)]
-                   dark:border-white/[0.14] dark:bg-white/[0.07] dark:shadow-[0_1px_0_rgba(255,255,255,0.14)_inset,0_14px_44px_rgba(0,0,0,0.45)]"
+        className="neu flex h-[68px] items-center gap-2.5 rounded-[22px] px-2.5 sm:gap-3 sm:px-3.5"
       >
         {/* Brand — the dock owns this on lg+ */}
         <Link to="/" className="flex flex-shrink-0 items-center gap-2.5 lg:hidden">
@@ -103,7 +100,7 @@ const Navigation = () => {
         {/* Weather — one segmented capsule instead of two loose chips */}
         <div
           className="hidden flex-shrink-0 items-center gap-2.5 rounded-full border py-2 pl-3.5 pr-4 xl:flex
-                     border-black/[0.07] bg-black/[0.035] dark:border-white/[0.12] dark:bg-white/[0.06]"
+                     neu-inset"
         >
           <span className="flex items-center gap-1.5 text-sm font-medium text-neutral-700 dark:text-white">
             <span className="relative flex h-1.5 w-1.5">
