@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, Check, ArrowRight, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import TileMosaic from "@/components/TileMosaic";
+import BrandRipple from "@/components/BrandRipple";
 import BhoomixMark from "@/components/BhoomixMark";
 
 /** How long the launch animation plays before the route actually changes. */
@@ -53,10 +53,7 @@ export default function Welcome() {
       <div className="grid w-full max-w-5xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f6f6f3] via-[#f2f4ec] to-[#e4efd6] shadow-[0_45px_90px_-25px_rgba(30,40,25,0.55)] md:grid-cols-2">
         {/* ── Mosaic panel ─────────────────────────────────────── */}
         <div className="relative m-3 h-52 overflow-hidden rounded-[2rem] shadow-[0_20px_45px_-15px_rgba(30,40,25,0.5)] md:h-auto">
-          <TileMosaic
-            alt={tx("Lush green hills", "हरी-भरी पहाड़ियां")}
-            className="h-full w-full"
-          />
+          <BrandRipple />
 
           {/* One lockup rather than a separate mark and wordmark: two badges
               side by side read as two logos, and the small square one turned

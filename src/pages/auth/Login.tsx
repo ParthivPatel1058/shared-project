@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/auth-hero.jpg";
+import BrandRipple from "@/components/BrandRipple";
 import BhoomixMark from "@/components/BhoomixMark";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -624,14 +624,7 @@ export default function Login() {
 
         {/* ── Image panel ──────────────────────────────────────── */}
         <div className="relative m-3 h-48 overflow-hidden rounded-[2rem] shadow-[0_20px_45px_-15px_rgba(30,40,25,0.5)] md:h-auto">
-          <img
-            src={heroImage}
-            alt={tx("Lush green farmland", "हरे-भरे खेत")}
-            className="h-full w-full object-cover"
-          />
-          {/* Warms the photo into the card's palette, so the two do not read
-              as separate images pasted beside each other. */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950/45 via-transparent to-amber-100/25" />
+          <BrandRipple />
 
           {/* Floating cards: real BhoomiX moments, not filler. */}
           <div className="absolute left-4 top-4 hidden rounded-2xl bg-emerald-500/95 px-4 py-3 shadow-[0_10px_25px_-8px_rgba(6,78,59,0.7),inset_0_1px_0_rgba(255,255,255,0.35)] backdrop-blur-sm md:block">

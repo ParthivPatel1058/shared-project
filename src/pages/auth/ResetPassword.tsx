@@ -6,7 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Button3D from "@/components/ui/button-3d";
-import TileMosaic from "@/components/TileMosaic";
+import BrandRipple from "@/components/BrandRipple";
 import {
   Lock,
   Eye,
@@ -127,7 +127,7 @@ export default function ResetPassword() {
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
         <div className="relative hidden md:block">
-          <TileMosaic alt={"Field mosaic"} className="h-full w-full" />
+          <BrandRipple />
         </div>
 
         <div className="p-7 sm:p-10">

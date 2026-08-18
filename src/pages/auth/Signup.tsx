@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Button3D from "@/components/ui/button-3d";
-import TileMosaic from "@/components/TileMosaic";
+import BrandRipple from "@/components/BrandRipple";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -129,10 +129,11 @@ export default function Signup() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl md:grid-cols-2">
-        <TileMosaic
-          alt={tx("Lush green hills", "हरी-भरी पहाड़ियां")}
-          className="h-40 w-full md:h-full"
-        />
+        {/* Positioned so the WebGL canvas has a box to fill; the ripple is
+            absolutely placed inside it. */}
+        <div className="relative h-40 w-full overflow-hidden md:h-auto">
+          <BrandRipple />
+        </div>
 
         <div className="p-8 sm:p-10">
           <button

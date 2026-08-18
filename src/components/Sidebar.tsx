@@ -204,7 +204,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "glass-dock fixed left-3 top-3 bottom-3 z-40 hidden lg:flex flex-col rounded-[26px] transition-[width] duration-300",
+        "fixed left-3 top-3 bottom-3 z-40 hidden lg:flex flex-col rounded-[26px] border transition-[width] duration-300 backdrop-blur-2xl border-black/10 bg-white/80 shadow-[0_24px_70px_rgba(30,40,60,0.16)] dark:border-white/10 dark:bg-[#0b0d12]/85 dark:shadow-[0_24px_70px_rgba(0,0,0,0.5)]",
         collapsed ? "w-[76px]" : "w-[264px]",
       )}
     >
@@ -234,7 +234,19 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className={cn("h-px bg-black/10 dark:bg-white/10", collapsed ? "mx-4" : "mx-4")} />
 
       {/* Navigation */}
-      <nav className={cn("flex-1 overflow-y-auto overflow-x-visible py-4 space-y-1", collapsed ? "px-3" : "px-3")}>
+      {/* `min-h-0` is what actually makes this scroll. A flex child defaults
+          to `min-height:auto`, so without it the list grows to its content
+          height, pushes the user footer off the bottom of the dock, and
+          `overflow-y-auto` never engages. */}
+      <nav
+        className={cn(
+          "min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-1",
+          "[scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5",
+          "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/15",
+          "dark:[&::-webkit-scrollbar-thumb]:bg-white/20",
+          "[&::-webkit-scrollbar-track]:bg-transparent",
+        )}
+      >
         {NAV.map((item) => (
           <div key={item.path}>
             <Row item={item} />

@@ -21,11 +21,5 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  // Keyed on the user id so a genuine account switch replays the fade,
-  // rather than only animating the first sign-in of the session.
-  return user ? (
-    <div key={user.id} className="auth-swap">
-      {children}
-    </div>
-  ) : null;
+  return user ? <>{children}</> : null;
 }
