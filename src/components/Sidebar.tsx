@@ -47,7 +47,7 @@ interface Item {
 
 const NAV: Item[] = [
   { path: "/", icon: LayoutGrid, label: { en: "Overview", hi: "अवलोकन" } },
-  { path: "/crop-disease", icon: ScanSearch, label: { en: "Crop Disease", hi: "फसल रोग" } },
+  { path: "/crop-disease", icon: ScanSearch, label: { en: "Crop Intelligence", hi: "फसल इंटेलिजेंस" } },
   { path: "/kisan-help", icon: HelpCircle, label: { en: "Crop Advisory", hi: "फसल सलाह" } },
   { path: "/agri-market", icon: ShoppingBag, label: { en: "Agri Market", hi: "कृषि बाज़ार" } },
   { path: "/kisan-mart", icon: Store, label: { en: "AgriNova Mart", hi: "एग्रीनोवा मार्ट" } },

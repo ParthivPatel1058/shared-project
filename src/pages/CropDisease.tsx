@@ -439,6 +439,7 @@ const CropDisease = () => {
   const en = language === 'en';
 
   const [tab, setTab] = useState('crop');
+  const [scanMode, setScanMode] = useState<'crop' | 'disease'>('crop');
   const [plantQuery, setPlantQuery] = useState('');
   const [plantCat, setPlantCat] = useState<PlantCategory | 'all'>('all');
 
@@ -493,8 +494,8 @@ const CropDisease = () => {
           <TabsList className="grid w-full grid-cols-3 mb-8 h-11">
             <TabsTrigger value="crop" className="gap-2">
               <Sprout className="h-4 w-4" />
-              <span className="hidden sm:inline">{tx('Crop Detection', 'फसल पहचान')}</span>
-              <span className="sm:hidden">{tx('Crop', 'फसल')}</span>
+              <span className="hidden sm:inline">{tx('Scan a Photo', 'फोटो स्कैन करें')}</span>
+              <span className="sm:hidden">{tx('Scan', 'स्कैन')}</span>
             </TabsTrigger>
             <TabsTrigger value="buyer" className="gap-2">
               <ShoppingCart className="h-4 w-4" />
@@ -503,21 +504,57 @@ const CropDisease = () => {
             </TabsTrigger>
             <TabsTrigger value="disease" className="gap-2">
               <Stethoscope className="h-4 w-4" />
-              <span className="hidden sm:inline">{tx('Disease', 'रोग')}</span>
-              <span className="sm:hidden">{tx('Disease', 'रोग')}</span>
+              <span className="hidden sm:inline">{tx('Disease Library', 'रोग पुस्तकालय')}</span>
+              <span className="sm:hidden">{tx('Library', 'पुस्तकालय')}</span>
             </TabsTrigger>
           </TabsList>
 
-          {/* ---- Part 1: Crop Detection ---- */}
+          {/* ---- Part 1: Scan ---- */}
           <TabsContent value="crop">
+            {/* One scanner, two questions. Previously these were two tabs
+                running the same component, which made the app look like it
+                had two ways to do the same thing. */}
+            <div className="mb-5 flex flex-wrap gap-2">
+              {([
+                ['crop', tx('Identify the crop', 'फसल पहचानें')],
+                ['disease', tx('Find a disease', 'रोग खोजें')],
+              ] as Array<[typeof scanMode, string]>).map(([m, label]) => (
+                <button
+                  key={m}
+                  onClick={() => setScanMode(m)}
+                  className={cn(
+                    'rounded-full border px-4 py-2 text-sm font-medium transition-colors',
+                    scanMode === m
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
             <PhotoScan
-              id="crop-detect-photo"
-              mode="crop"
-              title={tx('Upload a photo of the crop', 'फसल की फोटो अपलोड करें')}
-              hint={
-                tx('The AI identifies the crop and its growth stage from a clear field photo', 'एआई साफ फोटो से फसल और उसकी वृद्धि अवस्था पहचानता है')
+              /* Remounts on switch so a previous result never sits under the
+                 heading for the other question. */
+              key={scanMode}
+              id="crop-scan-photo"
+              mode={scanMode}
+              title={
+                scanMode === 'crop'
+                  ? tx('Upload a photo of the crop', 'फसल की फोटो अपलोड करें')
+                  : tx('Upload a photo of the affected crop', 'प्रभावित फसल की फोटो अपलोड करें')
               }
-              analyzeLabel={tx('Detect Crop', 'फसल पहचानें')}
+              hint={
+                scanMode === 'crop'
+                  ? tx('The AI identifies the crop and its growth stage from a clear field photo', 'एआई साफ फोटो से फसल और उसकी वृद्धि अवस्था पहचानता है')
+                  : tx('Clear, close-up photo of the affected leaf or plant works best', 'प्रभावित पत्ती या पौधे की साफ, नज़दीकी फोटो सबसे अच्छी रहती है')
+              }
+              analyzeLabel={
+                scanMode === 'crop'
+                  ? tx('Scan Crop', 'फसल स्कैन करें')
+                  : tx('Detect Disease', 'रोग पहचानें')
+              }
             />
           </TabsContent>
 
@@ -611,15 +648,12 @@ const CropDisease = () => {
 
           {/* ---- Part 3: Disease ---- */}
           <TabsContent value="disease" className="space-y-10">
-            <PhotoScan
-              id="disease-photo"
-              mode="disease"
-              title={tx('Upload a photo of the affected crop', 'प्रभावित फसल की फोटो अपलोड करें')}
-              hint={
-                tx('Clear, close-up photo of the affected leaf or plant works best', 'प्रभावित पत्ती या पौधे की साफ, नज़दीकी फोटो सबसे अच्छी रहती है')
-              }
-              analyzeLabel={tx('Detect Disease', 'रोग पहचानें')}
-            />
+            {/* The upload panel that used to sit here was the same PhotoScan
+                component as the Crop Detection tab, so the two tabs opened
+                near-identical screens and it was never clear which one to
+                use. Scanning now lives on one tab; this one is the reference
+                material you read when you already know what you are looking
+                at. */}
 
             {/* Disease library */}
             <section>
