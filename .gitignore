@@ -27,6 +27,9 @@ dist-ssr
 
 .vercel
 .env*
+# The template carries placeholders only, and is useless to anyone setting the
+# project up if git silently swallows it along with the real env files.
+!.env.example
 
 # Supabase CLI local state
 supabase/.temp/
