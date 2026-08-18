@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { LumaSpin } from '@/components/ui/luma-spin';
 
 /**
  * Shown while a lazily-loaded route chunk downloads.
@@ -9,8 +9,12 @@ import { Loader2 } from 'lucide-react';
  */
 export default function RouteFallback() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center gap-3" role="status" aria-live="polite">
-      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+    <div
+      className="flex min-h-[60vh] flex-col items-center justify-center gap-6"
+      role="status"
+      aria-live="polite"
+    >
+      <LumaSpin label="Loading" className="text-primary" />
       <span className="text-sm text-muted-foreground">Loading… / लोड हो रहा है…</span>
     </div>
   );
