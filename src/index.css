@@ -1456,3 +1456,168 @@ All colors MUST be HSL.
     }
   }
 }
+
+/* ==================================================================
+   NEUMORPHISM — soft 3D surfaces
+   ==================================================================
+   Classic neumorphism needs a solid mid-tone canvas, because its whole
+   illusion is that the surface is extruded from the background behind it.
+   This app sits on a photograph, so a literal copy of the reference
+   (#e0e0e0 with #bcbcbc / #ffffff shadows) would float rather than extrude.
+
+   The adaptation: push the frosted surfaces to near-opaque so they read as
+   one continuous material, then light them from the top-left with a paired
+   dark/light shadow. That keeps the softness of neumorphism while still
+   letting the backdrop show at the edges — a glass/neu hybrid rather than a
+   pastiche of either.
+   ================================================================== */
+
+@layer base {
+  :root {
+    /* Warm cream, the material every raised surface is cut from. */
+    --neu-surface: 40 30% 96%;
+    --neu-surface-2: 38 25% 92%;
+    /* Light from the top-left: warm shade below-right, white above-left. */
+    --neu-dark: 28 25% 42% / 0.42;
+    --neu-light: 0 0% 100% / 0.98;
+    --neu-radius: 20px;
+  }
+
+  .dark {
+    /* Same geometry, inverted material — the shade deepens and the
+       highlight drops to a rim rather than a glow, otherwise the surface
+       looks chalky against the night backdrop. */
+    --neu-surface: 215 28% 17%;
+    --neu-surface-2: 216 30% 13%;
+    --neu-dark: 220 60% 3% / 0.75;
+    --neu-light: 0 0% 100% / 0.14;
+  }
+}
+
+@layer components {
+  /* Raised: the default card, button and control surface. */
+  .neu {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--neu-surface)),
+      hsl(var(--neu-surface-2))
+    );
+    border-radius: var(--neu-radius);
+    border: 1px solid hsl(var(--neu-light));
+    box-shadow:
+      7px 7px 16px hsl(var(--neu-dark)),
+      -6px -6px 14px hsl(var(--neu-light)),
+      inset 0 1px 0 hsl(var(--neu-light));
+    transition:
+      box-shadow 0.28s var(--ease-editorial),
+      transform 0.28s var(--ease-editorial);
+  }
+
+  /* Carved into the surface — inputs, wells, the selected state. */
+  .neu-inset {
+    background: hsl(var(--neu-surface-2));
+    border-radius: var(--neu-radius);
+    border: 1px solid transparent;
+    box-shadow:
+      inset 5px 5px 11px hsl(var(--neu-dark)),
+      inset -5px -5px 11px hsl(var(--neu-light));
+  }
+
+  /* Pressed: the shadow crosses from outside to inside, which is what makes
+     a neumorphic control feel physically depressed rather than merely dark. */
+  .neu:active,
+  .neu-pressable:active {
+    box-shadow:
+      inset 4px 4px 9px hsl(var(--neu-dark)),
+      inset -4px -4px 9px hsl(var(--neu-light));
+    transform: translateY(1px);
+  }
+
+  .neu-raised:hover {
+    box-shadow:
+      9px 9px 20px hsl(var(--neu-dark)),
+      -7px -7px 16px hsl(var(--neu-light)),
+      inset 0 1px 0 hsl(var(--neu-light));
+    transform: translateY(-1px);
+  }
+
+  /* Pill control, matching the reference button's geometry. */
+  .neu-pill {
+    border-radius: 9999px;
+  }
+
+  /* The existing frosted cards become neumorphic without touching fifteen
+     page components: same class name, new material. Opacity climbs from
+     0.7 to near-solid because paired shadows read as noise on a surface
+     you can see straight through. */
+  .glass {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--neu-surface) / 0.97),
+      hsl(var(--neu-surface-2) / 0.94)
+    );
+    backdrop-filter: blur(18px) saturate(1.35);
+    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    border: 1px solid hsl(var(--neu-light));
+    border-radius: var(--neu-radius);
+    box-shadow:
+      7px 7px 18px hsl(var(--neu-dark)),
+      -6px -6px 14px hsl(var(--neu-light)),
+      inset 0 1px 0 hsl(var(--neu-light));
+  }
+
+  .glass-strong {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--neu-surface)),
+      hsl(var(--neu-surface-2))
+    );
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid hsl(var(--neu-light));
+    border-radius: var(--neu-radius);
+    box-shadow:
+      10px 10px 26px hsl(var(--neu-dark)),
+      -8px -8px 20px hsl(var(--neu-light)),
+      inset 0 1px 0 hsl(var(--neu-light));
+  }
+
+  /* The floating sidebar reads as one extruded slab. */
+  .glass-dock {
+    background: linear-gradient(
+      160deg,
+      hsl(var(--neu-surface) / 0.98),
+      hsl(var(--neu-surface-2) / 0.95)
+    );
+    backdrop-filter: blur(22px) saturate(1.4);
+    -webkit-backdrop-filter: blur(22px) saturate(1.4);
+    border: 1px solid hsl(var(--neu-light));
+    box-shadow:
+      12px 12px 30px hsl(var(--neu-dark)),
+      -8px -8px 22px hsl(var(--neu-light));
+  }
+}
+
+/* Account switch: the sign-out path swaps the whole tree at once, which
+   reads as a flash. A short cross-fade on the auth boundary turns it into a
+   transition instead. Held under 300ms so it never feels like latency. */
+@keyframes auth-swap {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.auth-swap {
+  animation: auth-swap 0.28s var(--ease-editorial) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-swap {
+    animation: none;
+  }
+}

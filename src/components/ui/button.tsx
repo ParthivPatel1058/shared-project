@@ -13,10 +13,11 @@ const buttonVariants = cva(
           "btn-metal btn-metal-live",
         destructive: "bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 hover:shadow-lg",
         outline:
-          "border border-white/25 bg-white/10 backdrop-blur-xl hover:border-white/45 hover:bg-white/20",
+          "neu neu-raised neu-pill neu-pressable text-foreground",
         secondary:
           "btn-metal",
         ghost: "hover:bg-primary/10 hover:text-primary",
+        neu: "neu neu-raised neu-pill neu-pressable text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
