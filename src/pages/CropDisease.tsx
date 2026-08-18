@@ -28,6 +28,7 @@ import { useDiagnoses } from '@/hooks/useDiagnoses';
 import FollowUpPrompt from '@/components/FollowUpPrompt';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { PLANTS, PLANT_CATEGORIES, type Plant, type PlantCategory } from '@/data/plants';
 import { analyzeCropImage, isGeminiConfigured } from '@/lib/geminiApi';
 
 /* ------------------------------------------------------------------ */
@@ -359,32 +360,6 @@ function PhotoScan({ id, mode, title, hint, analyzeLabel }: PhotoScanProps) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Plant Buyer data                                                    */
-/* ------------------------------------------------------------------ */
-
-interface Plant {
-  name: string;
-  hindiName: string;
-  emoji: string;
-  price: number;
-  unit: string;
-  partner: string;
-  distanceKm: number;
-  rating: number;
-}
-
-const PLANTS: Plant[] = [
-  { name: 'Mint', hindiName: 'पुदीना', emoji: '🌿', price: 25, unit: 'bundle', partner: 'GreenLeaf Nursery', distanceKm: 2.4, rating: 4.7 },
-  { name: 'Tulsi', hindiName: 'तुलसी', emoji: '🪴', price: 40, unit: 'plant', partner: 'Shakti Agro Farm', distanceKm: 3.1, rating: 4.8 },
-  { name: 'Curry Leaf', hindiName: 'करी पत्ता', emoji: '🌱', price: 60, unit: 'plant', partner: 'GreenLeaf Nursery', distanceKm: 2.4, rating: 4.6 },
-  { name: 'Aloe Vera', hindiName: 'एलोवेरा', emoji: '🌵', price: 50, unit: 'plant', partner: 'Vasudha Organics', distanceKm: 5.8, rating: 4.5 },
-  { name: 'Lemongrass', hindiName: 'लेमनग्रास', emoji: '🎋', price: 35, unit: 'bundle', partner: 'Shakti Agro Farm', distanceKm: 3.1, rating: 4.4 },
-  { name: 'Stevia', hindiName: 'स्टीविया', emoji: '🍃', price: 80, unit: 'plant', partner: 'Vasudha Organics', distanceKm: 5.8, rating: 4.3 },
-  { name: 'Ashwagandha', hindiName: 'अश्वगंधा', emoji: '🌾', price: 90, unit: 'plant', partner: 'Himalaya Herbs Co.', distanceKm: 8.2, rating: 4.6 },
-  { name: 'Rosemary', hindiName: 'रोज़मेरी', emoji: '🌲', price: 70, unit: 'plant', partner: 'Himalaya Herbs Co.', distanceKm: 8.2, rating: 4.5 },
-];
-
-/* ------------------------------------------------------------------ */
 /* Disease library data                                                */
 /* ------------------------------------------------------------------ */
 
@@ -465,8 +440,10 @@ const CropDisease = () => {
 
   const [tab, setTab] = useState('crop');
   const [plantQuery, setPlantQuery] = useState('');
+  const [plantCat, setPlantCat] = useState<PlantCategory | 'all'>('all');
 
   const filteredPlants = PLANTS.filter((p) => {
+    if (plantCat !== 'all' && p.category !== plantCat) return false;
     const q = plantQuery.trim().toLowerCase();
     if (!q) return true;
     return p.name.toLowerCase().includes(q) || p.hindiName.includes(q);
@@ -556,6 +533,25 @@ const CropDisease = () => {
               />
             </div>
 
+            {/* The catalogue now spans indoor decor through kitchen herbs, so a
+                flat list is hard to scan — category first, search second. */}
+            <div className="mb-5 flex flex-wrap gap-2">
+              {PLANT_CATEGORIES.map((c) => (
+                <button
+                  key={c.key}
+                  onClick={() => setPlantCat(c.key)}
+                  className={cn(
+                    'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
+                    plantCat === c.key
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {tx(c.en, c.hi)}
+                </button>
+              ))}
+            </div>
+
             {filteredPlants.length === 0 ? (
               <div className="glass p-10 text-center text-muted-foreground">
                 {tx('No plants found for "{q}"', '"{q}" के लिए कोई पौधा नहीं मिला').replace('{q}', plantQuery)}
@@ -564,34 +560,49 @@ const CropDisease = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredPlants.map((plant) => (
                   <div
-                    key={plant.name}
-                    className="glass p-5 flex flex-col transition-all duration-200 hover:border-primary/40 hover:shadow-md"
+                    key={plant.id}
+                    className="glass flex flex-col overflow-hidden transition-all duration-200 hover:border-primary/40 hover:shadow-md"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <span className="text-3xl leading-none">{plant.emoji}</span>
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-secondary-foreground bg-secondary/20 px-2 py-0.5 rounded-full">
-                        <Star className="h-3 w-3 fill-current" />
+                    <div className="relative aspect-square overflow-hidden bg-muted">
+                      <img
+                        src={plant.image}
+                        alt={tx(plant.name, plant.hindiName)}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-xs font-medium backdrop-blur">
+                        <Star className="h-3 w-3 fill-current text-secondary-foreground" />
                         {plant.rating}
                       </span>
                     </div>
-                    <h3 className="font-display font-semibold text-foreground leading-tight">
-                      {tx(plant.name, plant.hindiName)}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {tx(plant.hindiName, plant.name)}
-                    </p>
-                    <p className="text-lg font-bold text-foreground mb-1">
-                      ₹{plant.price}
-                      <span className="text-xs font-medium text-muted-foreground"> / {plant.unit}</span>
-                    </p>
-                    <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
-                      <MapPin className="h-3.5 w-3.5 text-primary" />
-                      {plant.partner} · {plant.distanceKm} km
-                    </p>
-                    <Button size="sm" className="mt-auto" onClick={() => orderPlant(plant)}>
-                      <ShoppingCart className="h-4 w-4" />
-                      {tx('Order from Partner', 'पार्टनर से ऑर्डर करें')}
-                    </Button>
+
+                    <div className="flex flex-1 flex-col p-4">
+                      <h3 className="font-display font-semibold leading-tight text-foreground">
+                        {tx(plant.name, plant.hindiName)}
+                      </h3>
+                      <p className="mb-1.5 text-xs text-muted-foreground">
+                        {tx(plant.hindiName, plant.name)}
+                      </p>
+                      <p className="mb-2 text-xs leading-snug text-muted-foreground">
+                        {tx(plant.blurb, plant.blurbHi)}
+                      </p>
+                      <p className="mb-1 text-lg font-bold text-foreground">
+                        ₹{plant.price}
+                        <span className="text-xs font-medium text-muted-foreground"> / {plant.unit}</span>
+                      </p>
+                      <p className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 text-primary" />
+                        {plant.partner} · {plant.distanceKm} km
+                      </p>
+                      <Button size="sm" className="mt-auto" onClick={() => orderPlant(plant)}>
+                        <ShoppingCart className="h-4 w-4" />
+                        {tx('Order from Partner', 'पार्टनर से ऑर्डर करें')}
+                      </Button>
+                      {/* The CC-BY family requires the photographer be credited. */}
+                      <p className="mt-2 text-[10px] leading-tight text-muted-foreground/70">
+                        {plant.credit}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
