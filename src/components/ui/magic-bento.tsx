@@ -45,7 +45,6 @@ function BentoCard({
   onOpen: () => void;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const el = ref.current;
@@ -56,18 +55,33 @@ function BentoCard({
     // Card-local coords drive the spotlight; normalised coords drive tilt.
     el.style.setProperty('--mx', `${e.clientX - r.left}px`);
     el.style.setProperty('--my', `${e.clientY - r.top}px`);
-    if (!simple) setTilt({ ry: (px - 0.5) * 7, rx: (0.5 - py) * 7 });
+    // Tilt rides CSS variables rather than React state. Setting state on
+    // every mousemove re-rendered the whole grid per frame; a custom
+    // property changes the transform without React touching the tree.
+    if (!simple) {
+      el.style.setProperty('--rx', `${((0.5 - py) * 9).toFixed(2)}deg`);
+      el.style.setProperty('--ry', `${((px - 0.5) * 9).toFixed(2)}deg`);
+    }
+  };
+
+  const onLeave = () => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty('--rx', '0deg');
+    el.style.setProperty('--ry', '0deg');
   };
 
   return (
     <button
       ref={ref}
       onMouseMove={onMove}
-      onMouseLeave={() => setTilt({ rx: 0, ry: 0 })}
+      onMouseLeave={onLeave}
       onClick={onOpen}
       className={cn('bento-card group relative overflow-hidden rounded-[26px] text-left', span)}
       style={{
-        transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+        transform:
+          'perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
+        transformStyle: 'preserve-3d',
       }}
     >
       <img
@@ -82,7 +96,12 @@ function BentoCard({
       <span className="bento-spot pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
       {/* Copy */}
-      <span className="relative z-10 flex h-full flex-col justify-end p-5">
+      {/* Lifted off the image plane so the two surfaces separate as the card
+          tilts — that parallax is what sells the depth, not the rotation. */}
+      <span
+        className="relative z-10 flex h-full flex-col justify-end p-5"
+        style={{ transform: 'translateZ(38px)' }}
+      >
         <span className="flex items-end justify-between gap-3">
           <span className="min-w-0">
             <span

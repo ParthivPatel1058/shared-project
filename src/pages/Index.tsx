@@ -174,8 +174,10 @@ Smarter`, `स्मार्ट
             <FarmAdvisory />
           </section>
 
-          {/* Feature gallery — hover-reveal 3×3 grid */}
-          <section className="mt-12 mb-8">
+          {/* Feature gallery — hover-reveal 3×3 grid.
+              Negative margins cancel the parent container's padding so the
+              grid runs edge to edge instead of sitting in a column. */}
+          <section className="mt-12 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
             <GalleryHoverGrid
               heading={tx('Everything you need', 'आपकी हर ज़रूरत')}
               subheading={tx('From seed to sale — explore every tool in one place.', 'बीज से बिक्री तक — हर टूल एक ही जगह।')}

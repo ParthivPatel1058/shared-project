@@ -20,13 +20,18 @@ export default function GalleryHoverGrid({
   subheading = "From seed to sale — explore every tool in one place.",
   items,
 }: GalleryHoverGridProps) {
+  // The scrim panel that used to box this in has gone: it drew a grey
+  // rectangle around the gallery and cropped it well short of the viewport,
+  // so the cards read as the contents of a card rather than as the page. The
+  // heading keeps its own contrast from the text shadows below, which is the
+  // only thing the scrim was actually doing.
   return (
-    <section className="section-scrim w-full rounded-[32px] p-6 md:p-10">
+    <section className="w-full">
       <Reveal className="mb-8 max-w-2xl" blur distance={22}>
-        <h2 className="font-serif-display text-3xl text-white sm:text-4xl lg:text-5xl">
+        <h2 className="font-serif-display text-3xl text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.65)] sm:text-4xl lg:text-5xl">
           <ShinyText text={heading} speed={6} />
         </h2>
-        <p className="mt-2 text-sm text-white/70 sm:text-base">{subheading}</p>
+        <p className="mt-2 text-sm text-white/80 drop-shadow-[0_1px_12px_rgba(0,0,0,0.6)] sm:text-base">{subheading}</p>
       </Reveal>
 
       <Reveal distance={34}>
