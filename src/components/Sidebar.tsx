@@ -124,7 +124,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {active && (
           <motion.span
             layoutId="sidebar-accent"
-            className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full accent-grad-v"
+            className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-none accent-grad-v"
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
           />
         )}
@@ -166,7 +166,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     );
 
     const rowClass = cn(
-      "group/row relative flex items-center rounded-xl transition-colors duration-200",
+      "group/row relative flex items-center rounded-md transition-colors duration-200",
       collapsed ? "h-11 w-11 justify-center" : "h-11 gap-3 px-3",
       nested && !collapsed && "h-10 pl-3",
       active
@@ -175,7 +175,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     );
 
     const flyout = collapsed && (
-      <span className="pointer-events-none absolute left-[calc(100%+14px)] top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded-xl accent-grad accent-ink px-3 py-2 text-xs font-semibold opacity-0 shadow-lg transition-all duration-200 group-hover/row:opacity-100">
+      <span className="pointer-events-none absolute left-[calc(100%+14px)] top-1/2 z-50 -translate-y-1/2 whitespace-nowrap rounded-md accent-grad accent-ink px-3 py-2 text-xs font-semibold opacity-0 shadow-lg transition-all duration-200 group-hover/row:opacity-100">
         {tx(item.label.en, item.label.hi)}
       </span>
     );
@@ -204,7 +204,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-3 top-3 bottom-3 z-40 hidden lg:flex flex-col rounded-[26px] border transition-[width] duration-300 backdrop-blur-2xl border-black/10 bg-white/80 shadow-[0_24px_70px_rgba(30,40,60,0.16)] dark:border-white/10 dark:bg-[#0b0d12]/85 dark:shadow-[0_24px_70px_rgba(0,0,0,0.5)]",
+        "fixed left-3 top-3 bottom-3 z-40 hidden lg:flex flex-col rounded-lg border transition-[width] duration-300 backdrop-blur-2xl border-black/10 bg-white/80 shadow-[0_24px_70px_rgba(30,40,60,0.16)] dark:border-white/10 dark:bg-[#0b0d12]/85 dark:shadow-[0_24px_70px_rgba(0,0,0,0.5)]",
         collapsed ? "w-[76px]" : "w-[264px]",
       )}
     >
@@ -212,7 +212,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <button
         onClick={onToggle}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="absolute -right-3.5 top-[72px] z-50 flex h-7 w-7 items-center justify-center rounded-full border shadow-lg transition-colors border-black/10 bg-white text-neutral-500 hover:text-neutral-900 dark:border-white/15 dark:bg-[#141821] dark:text-white/70 dark:hover:text-white"
+        className="absolute -right-3.5 top-[72px] z-50 flex h-7 w-7 items-center justify-center rounded-md border shadow-lg transition-colors border-black/10 bg-white text-neutral-500 hover:text-neutral-900 dark:border-white/15 dark:bg-[#141821] dark:text-white/70 dark:hover:text-white"
       >
         {collapsed ? (
           <ChevronsRight strokeWidth={2.5} className="h-3.5 w-3.5" />
@@ -223,7 +223,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Brand */}
       <div className={cn("flex items-center pt-5 pb-4", collapsed ? "justify-center" : "px-4 gap-2.5")}>
-        <img src={logo} alt="" className="h-8 w-8 flex-shrink-0 rounded-lg object-cover ring-1 ring-black/10 dark:ring-white/15" />
+        <img src={logo} alt="" className="h-8 w-8 flex-shrink-0 rounded-md object-cover ring-1 ring-black/10 dark:ring-white/15" />
         {!collapsed && (
           <span className="truncate text-[17px] font-semibold tracking-tight text-neutral-900 dark:text-white">
             Bhoomi<span className="text-neutral-400 dark:text-white/50">X</span>
@@ -269,7 +269,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         key={child.path}
                         to={child.path}
                         className={cn(
-                          "flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors duration-200",
+                          "flex h-9 items-center gap-2.5 rounded-md px-3 text-sm transition-colors duration-200",
                           isActive(child.path)
                             ? "bg-black/[0.06] font-medium text-neutral-900 dark:bg-white/[0.10] dark:text-white"
                             : "text-neutral-500 hover:bg-black/[0.04] hover:text-neutral-900 dark:text-white/55 dark:hover:bg-white/[0.05] dark:hover:text-white",
@@ -301,7 +301,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className={cn("flex items-center py-4", collapsed ? "justify-center px-3" : "gap-3 px-4")}>
         <button
           onClick={() => navigate("/settings")}
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full accent-grad accent-ink text-[11px] font-bold ring-2 ring-black/5 dark:ring-white/10"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md accent-grad accent-ink text-[11px] font-bold ring-2 ring-black/5 dark:ring-white/10"
         >
           {initials || "BX"}
         </button>
@@ -326,7 +326,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            className="flex h-11 w-11 items-center justify-center rounded-xl transition-colors text-neutral-500 hover:bg-black/[0.04] hover:text-neutral-900 dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white"
+            className="flex h-11 w-11 items-center justify-center rounded-md transition-colors text-neutral-500 hover:bg-black/[0.04] hover:text-neutral-900 dark:text-white/60 dark:hover:bg-white/[0.06] dark:hover:text-white"
           >
             {theme === "dark" ? (
               <Moon strokeWidth={2} className="h-[18px] w-[18px]" />
