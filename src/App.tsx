@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import SceneParallax from "@/components/SceneParallax";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import AppShell from "@/components/AppShell";
@@ -63,6 +64,9 @@ const App = () => {
       <LanguageProvider>
         <TooltipProvider>
           <ClickSpark />
+          {/* Drives the backdrop drift. Renders nothing; it only
+              writes two custom properties on the root. */}
+          <SceneParallax />
           <ThemeSwitchDefs />
           <Toaster />
           <Sonner />
