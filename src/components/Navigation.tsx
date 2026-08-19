@@ -88,10 +88,20 @@ const Navigation = () => {
   return (
     <nav className="sticky top-3 z-50 mx-3 lg:mx-4 xl:mx-6">
       <div
-        className="flex h-[68px] items-center gap-2.5 rounded-[22px] border px-2.5 backdrop-blur-2xl sm:gap-3 sm:px-3.5
-                   border-black/[0.07] bg-white/75 shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_14px_44px_rgba(30,40,60,0.14)]
-                   dark:border-white/[0.14] dark:bg-white/[0.07] dark:shadow-[0_1px_0_rgba(255,255,255,0.14)_inset,0_14px_44px_rgba(0,0,0,0.45)]"
+        className="relative flex h-[68px] items-center gap-2.5 overflow-hidden rounded-[24px] border px-2.5 backdrop-blur-2xl sm:gap-3 sm:px-3.5
+                   border-black/[0.06] bg-gradient-to-b from-white/85 to-white/70
+                   shadow-[0_1px_0_rgba(255,255,255,0.95)_inset,0_2px_6px_rgba(30,40,60,0.05),0_22px_60px_-18px_rgba(30,40,60,0.28)]
+                   dark:border-white/[0.12] dark:from-white/[0.10] dark:to-white/[0.05]
+                   dark:shadow-[0_1px_0_rgba(255,255,255,0.16)_inset,0_22px_60px_-18px_rgba(0,0,0,0.6)]"
       >
+        {/* One specular band along the top edge. Purely optical: it gives the
+            glass a lit edge so it reads as a physical surface rather than a
+            translucent rectangle. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-white/80 to-transparent dark:via-white/40"
+        />
+
         {/* Brand — the dock owns this on lg+ */}
         <Link to="/" className="flex flex-shrink-0 items-center gap-2.5 lg:hidden">
           <img src={logo} alt="" className="h-8 w-8 rounded-lg object-cover ring-1 ring-black/10 dark:ring-white/20" />

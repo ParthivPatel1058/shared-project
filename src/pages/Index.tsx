@@ -7,7 +7,7 @@ import FarmAdvisory from '@/components/FarmAdvisory';
 import FollowUpPrompt from '@/components/FollowUpPrompt';
 import SearchBar from '@/components/SearchBar';
 import GalleryHoverGrid from '@/components/ui/gallery-hover-carousel';
-import GooeyNav from '@/components/GooeyNav';
+import TubelightNavBar from '@/components/ui/tubelight-navbar';
 import Reveal, { RevealWords } from '@/components/Reveal';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { LiquidMetalButton } from '@/components/ui/liquid-metal-button';
@@ -138,27 +138,19 @@ Smarter`, `स्मार्ट
             Five pills do not fit a phone screen. Scroll the strip itself rather
             than letting it push the whole page sideways.
           */}
-          <Reveal className="scrollbar-hide mt-14 overflow-x-auto px-4" delay={0.05}>
-            <div className="glass mx-auto w-max px-2 py-1.5 !rounded-full">
-              <GooeyNav
-                items={[
-                  { label: tx('Crop AI', 'फसल एआई'), href: '/crop-disease' },
-                  { label: tx('Market', 'बाज़ार'), href: '/agri-market' },
-                  { label: tx('AgriNova Mart', 'एग्रीनोवा मार्ट'), href: '/kisan-mart' },
-                  { label: tx('Advisory', 'सलाह'), href: '/kisan-help' },
-                  { label: tx('Schemes', 'योजनाएं'), href: '/gov-schemes' },
-                ]}
-                particleCount={15}
-                particleDistances={[90, 10]}
-                particleR={100}
-                animationTime={600}
-                timeVariance={300}
-                colors={[1, 2, 3, 1, 2, 3, 1, 4]}
-                initialActiveIndex={0}
-                /* Let the gooey particles play before routing away. */
-                onItemClick={(_, item) => window.setTimeout(() => navigate(item.href), 420)}
-              />
-            </div>
+          <Reveal className="scrollbar-hide mt-14 flex justify-center overflow-x-auto px-4" delay={0.05}>
+            {/* The gooey particle nav looked the same on every page — it had no
+                notion of where you were. The tubelight reads the route, so the
+                glow already sits on the section you are in. */}
+            <TubelightNavBar
+              items={[
+                { name: tx('Crop AI', 'फसल एआई'), url: '/crop-disease', icon: ScanSearch },
+                { name: tx('Market', 'बाज़ार'), url: '/agri-market', icon: ShoppingBag },
+                { name: tx('Mart', 'मार्ट'), url: '/kisan-mart', icon: Store },
+                { name: tx('Advisory', 'सलाह'), url: '/kisan-help', icon: HelpCircle },
+                { name: tx('Schemes', 'योजनाएं'), url: '/gov-schemes', icon: Landmark },
+              ]}
+            />
           </Reveal>
 
           {/* Above everything when it has something to ask. A follow-up a week
